@@ -1,46 +1,71 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@{
+    var isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
+    var userName = User?.Identity?.Name;
+    var isAdmin = User?.IsInRole("Admin") ?? false;
+}
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - BetaFit.UI</title>
+    <title>@ViewData["Title"] - Beta Fit</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BetaFit.UI.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BetaFit.UI</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - BetaFit.UI - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <header class="bf-navbar">
+        <div class="bf-container bf-navbar__inner">
+            <a class="bf-logo" asp-controller="Home" asp-action="Index">BETA<span>FIT</span></a>
+            <nav class="bf-nav">
+                <a asp-controller="Home" asp-action="Index">Home</a>
+                <a asp-controller="Catalog" asp-action="Index">Catálogo</a>
+                @if (isAdmin)
+                {
+                    <a asp-controller="Admin" asp-action="Index">Admin</a>
+                }
+                <a asp-controller="Cart" asp-action="Index">Carrinho</a>
+                @if (isAuthenticated)
+                {
+                    <span>Olá, @userName</span>
+                    <a asp-controller="Account" asp-action="Logout">Sair</a>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Login">Entrar</a>
+                }
+            </nav>
         </div>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer class="bf-footer">
+        <div class="bf-container bf-footer__inner">
+            <div>
+                <h4>Beta Fit</h4>
+                <p>Roupas fitness pensadas para quem treina forte e vive intenso.</p>
+            </div>
+            <div>
+                <h4>Institucional</h4>
+                <ul>
+                    <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li><a asp-controller="Home" asp-action="Privacy">Privacidade</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Loja</h4>
+                <ul>
+                    <li><a asp-controller="Catalog" asp-action="Index">Catálogo</a></li>
+                    <li><a asp-controller="Cart" asp-action="Index">Carrinho</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="bf-footer__copy">&copy; @DateTime.Now.Year - Beta Fit</p>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

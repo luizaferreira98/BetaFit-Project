@@ -1,0 +1,27 @@
+﻿@model List<CartItem>
+@{
+    ViewData["Title"] = "Carrinho";
+    var total = (decimal)(ViewData["Total"] ?? 0m);
+}
+<div class="bf-container bf-section">
+    <div class="bf-section__head"><div><h1>Seu carrinho</h1><p>Um carrinho simples, sem checkout real.</p></div></div>
+    @if (!Model.Any())
+    {
+        <p>Seu carrinho está vazio. <a asp-controller="Catalog" asp-action="Index">Ver produtos</a></p>
+    }
+    else
+    {
+        <div class="bf-cart">
+            @foreach (var item in Model)
+            {
+                <div class="bf-cart__item">
+                    <div class="bf-cart__image" style="background-image:url('@(item.ImageUrl ?? "/images/placeholder.jpg")')"></div>
+                    <div><strong>@item.Name</strong><span>@item.Price.ToString("C") × @item.Quantity</span></div>
+                    <strong>@((item.Price * item.Quantity).ToString("C"))</strong>
+                    <a asp-controller="Cart" asp-action="Index" asp-route-remove="@item.ProductId">Remover</a>
+                </div>
+            }
+        </div>
+        <div class="bf-cart__total"><strong>Total: @total.ToString("C")</strong></div>
+    }
+</div>

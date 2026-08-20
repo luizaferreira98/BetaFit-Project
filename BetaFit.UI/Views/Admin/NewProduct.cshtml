@@ -1,0 +1,34 @@
+﻿@model ProductFormViewModel
+@{
+    ViewData["Title"] = "Novo produto";
+}
+<div class="bf-container bf-admin bf-auth">
+    <h1>Novo produto</h1>
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-warning">@Html.ValidationSummary(true, "", new { @class = "text-danger" })</div>
+    }
+    <form asp-controller="Admin" asp-action="NewProduct" method="post" enctype="multipart/form-data" class="bf-form">
+        @Html.AntiForgeryToken()
+        <label>Nome<input asp-for="Name" required /></label>
+        <label>Descrição<textarea asp-for="Description"></textarea></label>
+        <label>Preço<input asp-for="Price" type="number" step="0.01" required /></label>
+        <label>
+            Categoria
+            <select name="CategoryId" required>
+                <option value="">Selecione...</option>
+                @foreach (var category in Model.Categories)
+                {
+                    <option value="@category.Id">@category.Name</option>
+                }
+            </select>
+        </label>
+        <label>
+            Gênero
+            <select asp-items="Html.GetEnumSelectList<Gender>()" name="gender"></select>
+        </label>
+        <label>Imagem<input name="image" type="file" accept="image/png,image/jpeg,image/webp" /></label>
+        <label><input asp-for="IsFeatured" type="checkbox" /> Produto em destaque</label>
+        <button class="bf-btn bf-btn--primary" type="submit">Salvar produto</button>
+    </form>
+</div>

@@ -1,0 +1,19 @@
+﻿@model RegisterDto
+@{
+    ViewData["Title"] = "Cadastro";
+}
+<div class="bf-container bf-auth">
+    <h1>Criar conta</h1>
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-warning">@Html.ValidationSummary(true, "", new { @class = "text-danger" })</div>
+    }
+    <form asp-controller="Account" asp-action="Register" method="post" class="bf-form">
+        @Html.AntiForgeryToken()
+        <label>E-mail<input asp-for="Email" type="email" required /></label>
+        <label>Senha<input asp-for="Password" type="password" minlength="6" required /></label>
+        <label>Confirmar senha<input asp-for="ConfirmPassword" type="password" minlength="6" required /></label>
+        <button class="bf-btn bf-btn--primary" type="submit">Cadastrar</button>
+    </form>
+    <p>Já possui conta? <a asp-controller="Account" asp-action="Login">Entrar</a></p>
+</div>

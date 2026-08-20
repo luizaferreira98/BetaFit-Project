@@ -1,22 +1,538 @@
-html {
-  font-size: 14px;
+:root {
+    --bf-black: #0b0b0d;
+    --bf-black-2: #17171a;
+    --bf-white: #f5f5f5;
+    --bf-accent: #d7ff3f; /* verde-limão elétrico: identidade própria da Beta Fit */
+    --bf-gray: #8a8a8f;
+    --bf-radius: 4px;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+* {
+    box-sizing: border-box;
 }
 
 body {
-  margin-bottom: 60px;
+    margin: 0;
+    background: var(--bf-black);
+    color: var(--bf-white);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    line-height: 1.5;
 }
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.bf-container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Navbar */
+.bf-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(11, 11, 13, 0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid #232326;
+}
+
+.bf-navbar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+}
+
+.bf-logo {
+    font-weight: 900;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+    .bf-logo span {
+        color: var(--bf-accent);
+    }
+
+.bf-nav {
+    display: flex;
+    gap: 28px;
+}
+
+    .bf-nav a {
+        font-weight: 600;
+        font-size: .9rem;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: var(--bf-gray);
+        transition: color .2s;
+    }
+
+        .bf-nav a:hover {
+            color: var(--bf-white);
+        }
+
+/* Hero */
+.bf-hero {
+    position: relative;
+    padding: 110px 0 90px;
+    background: linear-gradient(180deg, var(--bf-black-2) 0%, var(--bf-black) 100%);
+    border-bottom: 1px solid #232326;
+}
+
+.bf-hero__tag {
+    display: inline-block;
+    color: var(--bf-accent);
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: .8rem;
+    margin-bottom: 18px;
+}
+
+.bf-hero h1 {
+    font-size: 3.4rem;
+    font-weight: 900;
+    line-height: 1.05;
+    margin: 0 0 20px;
+    max-width: 720px;
+}
+
+.bf-hero p {
+    color: var(--bf-gray);
+    max-width: 540px;
+    font-size: 1.05rem;
+    margin-bottom: 32px;
+}
+
+.bf-btn {
+    display: inline-block;
+    padding: 14px 32px;
+    border-radius: var(--bf-radius);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    font-size: .85rem;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.bf-btn--primary {
+    background: var(--bf-accent);
+    color: #0b0b0d;
+}
+
+    .bf-btn--primary:hover {
+        filter: brightness(0.92);
+    }
+
+.bf-btn--outline {
+    border-color: var(--bf-white);
+    color: var(--bf-white);
+}
+
+    .bf-btn--outline:hover {
+        background: var(--bf-white);
+        color: var(--bf-black);
+    }
+
+/* Sections */
+.bf-section {
+    padding: 80px 0;
+}
+
+.bf-section__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 36px;
+}
+
+    .bf-section__head h2 {
+        font-size: 2rem;
+        font-weight: 900;
+        margin: 0;
+    }
+
+    .bf-section__head p {
+        color: var(--bf-gray);
+        margin: 6px 0 0;
+    }
+
+.bf-section--alt {
+    background: var(--bf-black-2);
+}
+
+/* Grids */
+.bf-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 24px;
+}
+
+/* Product card */
+.bf-card {
+    background: var(--bf-black-2);
+    border: 1px solid #232326;
+    border-radius: var(--bf-radius);
+    overflow: hidden;
+    transition: transform .2s, border-color .2s;
+    display: flex;
+    flex-direction: column;
+}
+
+    .bf-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--bf-accent);
+    }
+
+.bf-card__image {
+    aspect-ratio: 4 / 5;
+    background: #1f1f22 center/cover no-repeat;
+    position: relative;
+}
+
+.bf-card__badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: var(--bf-accent);
+    color: #0b0b0d;
+    font-size: .7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 2px;
+}
+
+.bf-card__body {
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.bf-card__cat {
+    color: var(--bf-gray);
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.bf-card__name {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.bf-card__price {
+    color: var(--bf-accent);
+    font-weight: 800;
+    margin-top: auto;
+    padding-top: 8px;
+}
+
+/* Category pill */
+.bf-cat-pill {
+    background: var(--bf-black-2);
+    border: 1px solid #232326;
+    border-radius: var(--bf-radius);
+    padding: 22px;
+    text-align: center;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    transition: border-color .2s, color .2s;
+}
+
+    .bf-cat-pill:hover {
+        border-color: var(--bf-accent);
+        color: var(--bf-accent);
+    }
+
+/* About / benefits */
+.bf-benefits {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+}
+
+.bf-benefit {
+    padding: 26px;
+    border: 1px solid #232326;
+    border-radius: var(--bf-radius);
+}
+
+    .bf-benefit h3 {
+        margin: 0 0 8px;
+        font-size: 1.05rem;
+    }
+
+    .bf-benefit p {
+        color: var(--bf-gray);
+        margin: 0;
+        font-size: .9rem;
+    }
+
+/* CTA */
+.bf-cta {
+    text-align: center;
+    padding: 90px 0;
+    background: radial-gradient(ellipse at center, #1c1c1f 0%, var(--bf-black) 70%);
+}
+
+    .bf-cta h2 {
+        font-size: 2.2rem;
+        font-weight: 900;
+        margin: 0 0 12px;
+    }
+
+    .bf-cta p {
+        color: var(--bf-gray);
+        margin-bottom: 28px;
+    }
+
+/* Footer */
+.bf-footer {
+    border-top: 1px solid #232326;
+    padding: 56px 0 24px;
+}
+
+.bf-footer__inner {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 32px;
+}
+
+.bf-footer h4 {
+    text-transform: uppercase;
+    font-size: .85rem;
+    letter-spacing: .5px;
+    margin: 0 0 12px;
+}
+
+.bf-footer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.bf-footer li {
+    margin-bottom: 8px;
+    color: var(--bf-gray);
+}
+
+.bf-footer p {
+    color: var(--bf-gray);
+    font-size: .88rem;
+}
+
+.bf-footer__copy {
+    text-align: center;
+    color: #5a5a5f;
+    font-size: .8rem;
+    margin-top: 40px;
+}
+
+/* Catalog */
+.bf-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 32px;
+    align-items: center;
+}
+
+.bf-input, .bf-select {
+    background: var(--bf-black-2);
+    border: 1px solid #2c2c30;
+    color: var(--bf-white);
+    padding: 10px 14px;
+    border-radius: var(--bf-radius);
+    font-size: .9rem;
+}
+
+.bf-pagination {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+    .bf-pagination a, .bf-pagination span {
+        padding: 8px 14px;
+        border: 1px solid #2c2c30;
+        border-radius: var(--bf-radius);
+        color: var(--bf-gray);
+    }
+
+    .bf-pagination .active {
+        background: var(--bf-accent);
+        color: #0b0b0d;
+        border-color: var(--bf-accent);
+    }
+
+/* Product detail */
+.bf-product {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    padding: 60px 0;
+}
+
+.bf-product__image {
+    aspect-ratio: 4/5;
+    background: #1f1f22 center/cover no-repeat;
+    border-radius: var(--bf-radius);
+}
+
+.bf-product__cat {
+    color: var(--bf-accent);
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: .8rem;
+    letter-spacing: 1px;
+}
+
+.bf-product__name {
+    font-size: 2.1rem;
+    font-weight: 900;
+    margin: 10px 0;
+}
+
+.bf-product__price {
+    font-size: 1.6rem;
+    color: var(--bf-accent);
+    font-weight: 800;
+    margin-bottom: 24px;
+}
+
+.bf-product__desc {
+    color: var(--bf-gray);
+    margin-bottom: 24px;
+}
+
+.bf-product__meta {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+    color: var(--bf-gray);
+    font-size: .9rem;
+}
+
+@media (max-width: 860px) {
+    .bf-hero h1 {
+        font-size: 2.2rem;
+    }
+
+    .bf-footer__inner {
+        grid-template-columns: 1fr;
+    }
+
+    .bf-product {
+        grid-template-columns: 1fr;
+    }
+
+    .bf-nav {
+        display: none;
+    }
+}
+
+
+/* Authentication, admin and cart */
+.bf-auth {
+    max-width: 620px;
+    padding: 56px 20px;
+}
+
+.bf-form {
+    display: grid;
+    gap: 16px;
+    max-width: 620px;
+}
+
+    .bf-form label {
+        display: grid;
+        gap: 7px;
+        font-weight: 600;
+    }
+
+    .bf-form input, .bf-form textarea, .bf-form select {
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font: inherit;
+    }
+
+    .bf-form textarea {
+        min-height: 120px;
+    }
+
+.bf-admin {
+    padding: 48px 20px;
+}
+
+.bf-cart {
+    display: grid;
+    gap: 12px;
+}
+
+.bf-cart__item {
+    display: grid;
+    grid-template-columns: 80px 1fr auto auto;
+    gap: 18px;
+    align-items: center;
+    padding: 14px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+}
+
+.bf-cart__image {
+    width: 80px;
+    height: 80px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+    background-color: #f3f3f3;
+}
+
+.bf-cart__item span {
+    display: block;
+    color: #777;
+    margin-top: 4px;
+}
+
+.bf-cart__total {
+    display: flex;
+    justify-content: flex-end;
+    padding: 24px 0;
+    font-size: 1.2rem;
+}
+
+@media (max-width:700px) {
+    .bf-cart__item {
+        grid-template-columns: 64px 1fr;
+    }
+
+    .bf-cart__image {
+        width: 64px;
+        height: 64px;
+    }
+}
+
+/* Botão de logout estilizado como link, dentro do <form> POST (CSRF-safe) */
+.bf-link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+    .bf-link-button:hover {
+        text-decoration: underline;
+    }

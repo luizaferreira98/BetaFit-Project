@@ -1,0 +1,57 @@
+﻿@model List<ProductDto>
+@{
+    ViewData["Title"] = "Administração";
+    var dashboard = ViewData["Dashboard"] as DashboardDto;
+    var message = ViewData["Message"] as string;
+}
+<div class="bf-container bf-admin">
+    <div class="bf-section__head">
+        <div><h1>Painel administrativo</h1><p>Gerencie os produtos da loja Beta Fit.</p></div>
+        <a class="bf-btn bf-btn--primary" asp-controller="Admin" asp-action="NewProduct">+ Adicionar produto</a>
+    </div>
+
+    @if (TempData["Success"] is not null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] is not null)
+    {
+        <div class="alert alert-warning">@TempData["Error"]</div>
+    }
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="alert alert-warning">@message</div>
+    }
+
+    @if (dashboard is not null)
+    {
+        <div class="bf-grid" style="margin-bottom:32px;">
+            <div class="bf-card"><div class="bf-card__body"><span class="bf-card__cat">Produtos</span><span class="bf-card__name">@dashboard.TotalProducts</span></div></div>
+            <div class="bf-card"><div class="bf-card__body"><span class="bf-card__cat">Categorias</span><span class="bf-card__name">@dashboard.TotalCategories</span></div></div>
+            <div class="bf-card"><div class="bf-card__body"><span class="bf-card__cat">Em destaque</span><span class="bf-card__name">@dashboard.FeaturedProducts</span></div></div>
+            <div class="bf-card"><div class="bf-card__body"><span class="bf-card__cat">Ativos</span><span class="bf-card__name">@dashboard.ActiveProducts</span></div></div>
+        </div>
+    }
+
+    <div class="bf-grid">
+        @foreach (var product in Model)
+        {
+            <div class="bf-card">
+                <div class="bf-card__image" style="background-image:url('@(product.ImageUrl ?? "/images/placeholder.jpg")')"></div>
+                <div class="bf-card__body">
+                    <span class="bf-card__cat">@product.CategoryName</span>
+                    <span class="bf-card__name">@product.Name</span>
+                    <span class="bf-card__price">@product.Price.ToString("C")</span>
+                    <div style="display:flex; gap:12px; margin-top:8px;">
+                        <a class="bf-btn bf-btn--outline" asp-controller="Admin" asp-action="EditProduct" asp-route-id="@product.Id">Editar</a>
+                        <a class="bf-btn bf-btn--outline" asp-controller="Admin" asp-action="DeleteProduct" asp-route-id="@product.Id">Excluir</a>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (!Model.Any())
+        {
+            <p>Nenhum produto cadastrado ainda.</p>
+        }
+    </div>
+</div>

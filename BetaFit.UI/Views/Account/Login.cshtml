@@ -1,0 +1,18 @@
+﻿@model LoginDto
+@{
+    ViewData["Title"] = "Entrar";
+}
+<div class="bf-container bf-auth">
+    <h1>Entrar</h1>
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-warning">@Html.ValidationSummary(true, "", new { @class = "text-danger" })</div>
+    }
+    <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" class="bf-form">
+        @Html.AntiForgeryToken()
+        <label>E-mail<input asp-for="Login" type="email" required /></label>
+        <label>Senha<input asp-for="Password" type="password" required /></label>
+        <button class="bf-btn bf-btn--primary" type="submit">Entrar</button>
+    </form>
+    <p>Não possui conta? <a asp-controller="Account" asp-action="Register">Cadastre-se</a></p>
+</div>

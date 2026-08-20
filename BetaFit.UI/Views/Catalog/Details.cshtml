@@ -1,0 +1,72 @@
+﻿@model ProductDto
+@{
+    var apiUnavailable = (bool)(ViewData["ApiUnavailable"] ?? false);
+    var relatedProducts = (IReadOnlyList<ProductDto>)(ViewData["RelatedProducts"] ?? Array.Empty<ProductDto>());
+    ViewData["Title"] = Model?.Name ?? "Produto";
+}
+
+@if (apiUnavailable)
+{
+    <section class="bf-section">
+        <div class="bf-container">
+            <div class="alert alert-warning" role="alert">O serviço de catálogo está temporariamente indisponível. Inicie a BetaFit.API e tente novamente.</div>
+        </div>
+    </section>
+}
+
+@if (Model is not null)
+{
+    var product = Model;
+
+    <section class="bf-container bf-product">
+        <div class="bf-product__image" style="background-image:url('@(product.ImageUrl ?? "/images/placeholder.jpg")')"></div>
+        <div>
+            <span class="bf-product__cat">@product.CategoryName</span>
+            <h1 class="bf-product__name">@product.Name</h1>
+            <div class="bf-product__price">@product.Price.ToString("C")</div>
+
+            <div class="bf-product__meta">
+                <span><strong>Gênero:</strong> @product.Gender</span>
+                <span><strong>Categoria:</strong> @product.CategoryName</span>
+            </div>
+
+            <p class="bf-product__desc">@product.Description</p>
+
+            <form asp-controller="Catalog" asp-action="AddToCart" method="post" style="display:inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@product.Id" />
+                <button class="bf-btn bf-btn--primary" type="submit">Adicionar ao carrinho</button>
+            </form>
+
+            <p style="color:var(--bf-gray); font-size:.8rem; margin-top:16px;">
+                * Preço demonstrativo. Este é um projeto institucional de portfólio, sem venda real.
+            </p>
+        </div>
+    </section>
+
+    @if (relatedProducts.Any())
+    {
+        <section class="bf-section bf-section--alt">
+            <div class="bf-container">
+                <div class="bf-section__head">
+                    <div>
+                        <h2>Produtos relacionados</h2>
+                    </div>
+                </div>
+                <div class="bf-grid">
+                    @foreach (var related in relatedProducts)
+                    {
+                        <a class="bf-card" asp-controller="Catalog" asp-action="Details" asp-route-id="@related.Id">
+                            <div class="bf-card__image" style="background-image:url('@(related.ImageUrl ?? "/images/placeholder.jpg")')"></div>
+                            <div class="bf-card__body">
+                                <span class="bf-card__cat">@related.CategoryName</span>
+                                <span class="bf-card__name">@related.Name</span>
+                                <span class="bf-card__price">@related.Price.ToString("C")</span>
+                            </div>
+                        </a>
+                    }
+                </div>
+            </div>
+        </section>
+    }
+}
