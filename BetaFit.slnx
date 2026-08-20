@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="BetaFit.API/BetaFit.API.csproj" />
+  <Project Path="BetaFit.Application/BetaFit.Application.csproj" />
+  <Project Path="BetaFit.Desktop/BetaFit.Desktop.csproj" />
+  <Project Path="BetaFit.Domain/BetaFit.Domain.csproj" />
+  <Project Path="BetaFit.Infraestructure/BetaFit.Infraestructure.csproj" />
+  <Project Path="BetaFit.UI/BetaFit.UI.csproj" />
+</Solution>

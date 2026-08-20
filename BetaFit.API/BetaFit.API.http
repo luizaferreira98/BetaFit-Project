@@ -1,0 +1,6 @@
+@BetaFit.API_HostAddress = http://localhost:5168
+
+GET {{BetaFit.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
