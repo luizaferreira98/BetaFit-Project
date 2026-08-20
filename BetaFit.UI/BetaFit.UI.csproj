@@ -13,4 +13,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BetaFit.Application\BetaFit.Application.csproj" />
+    <ProjectReference Include="..\BetaFit.Infraestructure\BetaFit.Infraestructure.csproj" />
+  </ItemGroup>
+
 </Project>
