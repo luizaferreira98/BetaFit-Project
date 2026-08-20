@@ -1,11 +1,9 @@
 ﻿using BetaFit.Application.DTOs;
 using BetaFit.Application.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using SenacGames.Application.DTOs;
-using SenacGames.Application.Interfaces;
 using System.Linq;
 
-namespace SenacGames.Application.Services
+namespace BetaFit.Application.Services
 {
     public class UsuariosService : IUsuariosService
     {
@@ -58,7 +56,7 @@ namespace SenacGames.Application.Services
 
         public async Task<(bool Success, UsuarioDto? Usuario, string ErrorMessage)> CreateAsync(CreateUsuarioDto dto)
         {
-            // Validação simples (corrigido para !=)
+            // Validação simples
             if (dto.Password != dto.ConfirmPassword)
                 return (false, null, "As senhas não coincidem.");
 
@@ -73,8 +71,8 @@ namespace SenacGames.Application.Services
                 return (false, null, string.IsNullOrWhiteSpace(mensagens) ? "Erro ao criar usuário." : mensagens);
             }
 
-            // Adiciona o perfil (ex: "Admin" ou "User")
-            var role = string.IsNullOrWhiteSpace(dto.Role) ? "Usuário" : dto.Role;
+            // Adiciona o perfil (ex: "Admin" ou "Usuario")
+            var role = string.IsNullOrWhiteSpace(dto.Role) ? "Usuario" : dto.Role;
             if (!await _roleManager.RoleExistsAsync(role))
                 await _roleManager.CreateAsync(new IdentityRole(role));
 
@@ -112,7 +110,7 @@ namespace SenacGames.Application.Services
                 if (dto.Password != dto.ConfirmPassword)
                     return (false, null, "As senhas não coincidem.");
 
-                // Remover senha antiga e adicionar a nova (ou usar ChangePassword)
+                // Remover senha antiga e adicionar a nova (via token de reset)
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var passResult = await _userManager.ResetPasswordAsync(user, token, dto.Password);
                 if (!passResult.Succeeded)

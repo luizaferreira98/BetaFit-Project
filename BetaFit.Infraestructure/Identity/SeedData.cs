@@ -81,7 +81,7 @@ namespace BetaFit.Infraestructure.Identity
                         Description = "Camiseta com tecido de secagem rápida, ideal para treinos de alta intensidade.",
                         Price = 89.90m,
                         ImageUrl = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab",
-                        Gender = Enums.Masculino,
+                        Gender = Gender.Masculino,
                         CategoryId = camisetas.Id,
                         IsFeatured = true,
                         CreatedAt = DateTime.Now
@@ -92,7 +92,7 @@ namespace BetaFit.Infraestructure.Identity
                         Description = "Legging de cintura alta com compressão, perfeita para treinos funcionais e corrida.",
                         Price = 129.90m,
                         ImageUrl = "https://images.unsplash.com/photo-1594381898411-846e7d193883",
-                        Gender = Enums.Feminino,
+                        Gender = Gender.Feminino,
                         CategoryId = leggings.Id,
                         IsFeatured = true,
                         CreatedAt = DateTime.Now
@@ -103,7 +103,7 @@ namespace BetaFit.Infraestructure.Identity
                         Description = "Moletom com capuz e bolso canguru, forro macio para dias frios de treino.",
                         Price = 179.90m,
                         ImageUrl = "https://images.unsplash.com/photo-1556821840-3a63f95609a7",
-                        Gender = Enums.Unissex,
+                        Gender = Gender.Unissex,
                         CategoryId = moletons.Id,
                         IsFeatured = true,
                         CreatedAt = DateTime.Now
@@ -114,7 +114,7 @@ namespace BetaFit.Infraestructure.Identity
                         Description = "Short leve e respirável, com bolso lateral e cordão de ajuste.",
                         Price = 69.90m,
                         ImageUrl = "https://images.unsplash.com/photo-1591195853828-11db59a44f6b",
-                        Gender = Enums.Masculino,
+                        Gender = Gender.Masculino,
                         CategoryId = shorts.Id,
                         IsFeatured = false,
                         CreatedAt = DateTime.Now
@@ -125,7 +125,7 @@ namespace BetaFit.Infraestructure.Identity
                         Description = "Tênis para corrida com amortecimento em gel e solado antiderrapante.",
                         Price = 349.90m,
                         ImageUrl = "https://images.unsplash.com/photo-1542291026-7eec264c27ff",
-                        Gender = Enums.Unissex,
+                        Gender =    Gender.Unissex,
                         CategoryId = tenis.Id,
                         IsFeatured = true,
                         CreatedAt = DateTime.Now
@@ -136,7 +136,7 @@ namespace BetaFit.Infraestructure.Identity
                         Description = "Boné esportivo ajustável com proteção UV e tecido de secagem rápida.",
                         Price = 49.90m,
                         ImageUrl = "https://images.unsplash.com/photo-1521369909029-2afed882baee",
-                        Gender = Enums.Unissex,
+                        Gender = Gender.Unissex,
                         CategoryId = acessorios.Id,
                         IsFeatured = false,
                         CreatedAt = DateTime.Now

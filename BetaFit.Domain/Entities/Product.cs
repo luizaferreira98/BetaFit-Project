@@ -49,7 +49,7 @@ namespace BetaFit.Domain.Entities
         /// <summary>
         /// Público-alvo do produto.
         /// </summary>
-        public Enums.Enums Gender { get; set; }
+        public Gender Gender { get; set; }
 
         /// <summary>
         /// Indica se o produto está em destaque na página inicial.

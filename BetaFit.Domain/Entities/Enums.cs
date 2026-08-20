@@ -9,7 +9,7 @@ namespace BetaFit.Domain.Enums
     /// <summary>
     /// Público-alvo do produto.
     /// </summary>
-    public enum Enums
+    public enum Gender
     {
         Unissex = 0,
         Masculino = 1,
