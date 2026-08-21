@@ -1,0 +1,337 @@
+﻿// =============================================================================
+// BetaFit.Desktop - Themes/BetaFitTheme.cs
+// =============================================================================
+//  CONCEITO: Design System / Theme Manager
+//
+// Centraliza TODAS as cores, fontes e estilos da aplicação desktop.
+// Por que centralizar?
+//    Mudança de cor em um lugar  aplica em toda a aplicação
+//    Consistência visual garantida
+//    Facilita manutenção e customização
+//
+// Paleta oficial extraída de BetaFit.UI/wwwroot/css/site.css (:root)
+//   Preto (marca):     #0B0B0B (bf-black)  / #151515 (bf-black-2)
+//   Tinta (texto):      #111111 (bf-ink)
+//   Branco:             #FFFFFF
+//   Superfície:         #F6F6F3 (bf-surface) / #EEEEEA (bf-surface-2)
+//   Linha (bordas):     #DEDED9 (bf-line)
+//   Texto secundário:   #6F706C (bf-muted)
+//   Lima (destaque):    #C9FF22 (bf-lime) / #9BC900 (bf-lime-dark)
+//   Perigo:             #B83A34 (bf-danger)
+//   Raio de borda:      2px (bf-radius) — visual quase reto, NUNCA arredondado
+//
+// Estilo: minimalista, "streetwear", preto & branco com um único acento
+// (lima), tipografia em CAIXA ALTA e peso forte (Montserrat 800/900),
+// bordas retas, muito espaço em branco. É o oposto de um visual "fofo"
+// com cantos arredondados — por isso BorderRadius aqui é propositalmente
+// pequeno (2px), diferente de temas mais "corporate/fluent".
+//
+// Inspiração:
+//   - BetaFit.UI (Razor) — wwwroot/css/site.css
+//   - Estética streetwear / sneaker drop (preto + lima, tipografia bold)
+// =============================================================================
+
+using System;
+using System.Drawing;
+using System.Drawing.Text;
+using System.Windows.Forms;
+
+namespace BetaFit.Desktop.Themes
+{
+    /// <summary>
+    /// Tema visual oficial do BetaFit Desktop.
+    /// Define todas as cores, fontes e dimensões usadas na interface,
+    /// espelhando a paleta usada na BetaFit.UI (site.css).
+    /// </summary>
+    public static class BetaFitTheme
+    {
+        // =====================================================================
+        // PALETA DE CORES BETAFIT
+        // =====================================================================
+
+        /// <summary>Preto de marca — sidebar, header admin, botões escuros, hero</summary>
+        public static Color PretoPrimario => Color.FromArgb(11, 11, 11);        // #0B0B0B
+
+        /// <summary>Preto variante — hover de superfícies escuras</summary>
+        public static Color PretoSecundario => Color.FromArgb(21, 21, 21);      // #151515
+
+        /// <summary>Tinta — cor de texto principal (quase preto, mais suave que o preto de marca)</summary>
+        public static Color Tinta => Color.FromArgb(17, 17, 17);                // #111111
+
+        /// <summary>Branco puro — fundos principais, texto sobre preto</summary>
+        public static Color Branco => Color.White;
+
+        /// <summary>Superfície — fundo levemente acinzentado (seções soft, painéis)</summary>
+        public static Color Superficie => Color.FromArgb(246, 246, 243);        // #F6F6F3
+
+        /// <summary>Superfície alternativa — hover sutil sobre a superfície</summary>
+        public static Color SuperficieAlt => Color.FromArgb(238, 238, 234);     // #EEEEEA
+
+        /// <summary>Linha — bordas e separadores</summary>
+        public static Color Linha => Color.FromArgb(222, 222, 217);             // #DEDED9
+
+        /// <summary>Texto secundário / placeholder / labels mudos</summary>
+        public static Color TextoMuted => Color.FromArgb(111, 112, 108);        // #6F706C
+
+        /// <summary>Lima — cor de destaque da marca (CTAs primários, ativo, ícones)</summary>
+        public static Color Lima => Color.FromArgb(201, 255, 34);               // #C9FF22
+
+        /// <summary>Lima escuro — hover/estado ativo sobre fundo claro, links</summary>
+        public static Color LimaEscuro => Color.FromArgb(155, 201, 0);          // #9BC900
+
+        /// <summary>Lima claro — fundo suave para badges/seleção sobre fundo lima</summary>
+        public static Color LimaClaro => Color.FromArgb(242, 248, 223);         // aprox. #F2F8DF (bf-alert--success)
+
+        /// <summary>Perigo — ações destrutivas, erros</summary>
+        public static Color Perigo => Color.FromArgb(184, 58, 52);              // #B83A34
+
+        // =====================================================================
+        // CORES SEMÂNTICAS (STATUS) — valores reais extraídos dos .bf-alert do site
+        // =====================================================================
+
+        public static Color SucessoTexto => Color.FromArgb(82, 103, 11);        // #52670B
+        public static Color SucessoFundo => Color.FromArgb(242, 248, 223);      // #F2F8DF
+        public static Color SucessoBorda => Color.FromArgb(207, 224, 141);      // #CFE08D
+
+        public static Color PerigoTexto => Color.FromArgb(140, 48, 43);         // #8C302B
+        public static Color PerigoFundo => Color.FromArgb(255, 241, 240);       // #FFF1F0
+        public static Color PerigoBorda => Color.FromArgb(231, 189, 185);       // #E7BDB9
+
+        // Aviso e Info não existem no site (BetaFit só usa sucesso/erro/neutro),
+        // mas são úteis no desktop admin — seguem a MESMA linguagem visual
+        // (fundo claro + texto escuro + borda), só que dessaturados.
+        public static Color AvisoTexto => Color.FromArgb(122, 93, 0);           // #7A5D00
+        public static Color AvisoFundo => Color.FromArgb(255, 246, 217);        // #FFF6D9
+        public static Color AvisoBorda => Color.FromArgb(240, 217, 140);        // #F0D98C
+
+        public static Color InfoTexto => Color.FromArgb(44, 76, 97);            // #2C4C61
+        public static Color InfoFundo => Color.FromArgb(231, 238, 243);         // #E7EEF3
+        public static Color InfoBorda => Color.FromArgb(185, 203, 214);         // #B9CBD6
+
+        /// <summary>Alerta neutro — mesmo cinza usado em .bf-alert (padrão, sem variante)</summary>
+        public static Color NeutroTexto => Color.FromArgb(70, 71, 67);          // #464743
+        public static Color NeutroFundo => Color.FromArgb(241, 241, 237);       // #F1F1ED
+
+        // =====================================================================
+        // BADGES DE STATUS (ex.: produto ativo/inativo) — valores reais do site
+        // =====================================================================
+
+        public static Color BadgeAtivoFundo => Color.FromArgb(237, 247, 200);   // #EDF7C8
+        public static Color BadgeAtivoTexto => Color.FromArgb(97, 122, 0);      // #617A00
+        public static Color BadgeInativoFundo => Color.FromArgb(239, 239, 236); // #EFEFEC
+        public static Color BadgeInativoTexto => Color.FromArgb(119, 120, 115); // #777873
+
+        // =====================================================================
+        // SIDEBAR (fundo preto, igual ao header admin do site)
+        // =====================================================================
+
+        public static Color SidebarFundo => PretoPrimario;
+        public static Color SidebarTexto => Color.White;
+        public static Color SidebarTextoMuted => Color.FromArgb(158, 158, 154); // #9E9E9A
+        public static Color SidebarBotaoHover => PretoSecundario;
+        public static Color SidebarBotaoAtivoFundo => Lima;
+        public static Color SidebarBotaoAtivoTexto => PretoPrimario;
+        public static Color SidebarDivisor => Color.FromArgb(41, 41, 41);       // #292929
+
+        // =====================================================================
+        // CABEÇALHO (HEADER) — fundo claro, como o header do site
+        // =====================================================================
+
+        public static Color HeaderFundo => Branco;
+        public static Color HeaderBorda => Linha;
+        public static Color HeaderTexto => Tinta;
+
+        // =====================================================================
+        // CARDS (DASHBOARD)
+        // =====================================================================
+
+        public static Color CardFundo => Branco;
+        public static Color CardBorda => Linha;
+        public static Color CardSombra => Color.FromArgb(20, 0, 0, 0);          // rgba(0,0,0,.08)
+
+        // =====================================================================
+        // FORMULÁRIOS — no site os inputs são SEMPRE de canto reto (radius:0)
+        // =====================================================================
+
+        public static Color InputFundo => Branco;
+        public static Color InputBorda => Linha;
+        public static Color InputBordaFoco => PretoPrimario;
+        public static Color InputTexto => PretoPrimario;
+        public static Color InputPlaceholder => Color.FromArgb(161, 161, 157);  // #A1A19D
+
+        // =====================================================================
+        // BOTÕES (equivalentes a .bf-btn--primary / --dark / --ghost / --danger)
+        // =====================================================================
+
+        public static Color BotaoPrimarioFundo => Lima;
+        public static Color BotaoPrimarioTexto => PretoPrimario;
+        public static Color BotaoPrimarioHover => Color.FromArgb(215, 255, 84); // #D7FF54
+
+        public static Color BotaoEscuroFundo => PretoPrimario;
+        public static Color BotaoEscuroTexto => Branco;
+        public static Color BotaoEscuroHover => Color.FromArgb(43, 43, 43);     // #2B2B2B
+
+        public static Color BotaoFantasmaFundo => Color.Transparent;
+        public static Color BotaoFantasmaTexto => PretoPrimario;
+        public static Color BotaoFantasmaBorda => Linha;
+        public static Color BotaoFantasmaBordaHover => PretoPrimario;
+
+        public static Color BotaoPerigoFundo => Perigo;
+        public static Color BotaoPerigoTexto => Branco;
+
+        // =====================================================================
+        // DATAGRIDVIEW
+        // =====================================================================
+
+        public static Color GridCabecalhoFundo => PretoPrimario;
+        public static Color GridCabecalhoTexto => Branco;
+        public static Color GridLinhaPar => Branco;
+        public static Color GridLinhaImpar => Superficie;
+        public static Color GridLinhaSelecionada => Color.FromArgb(245, 255, 209); // tint claro de Lima
+        public static Color GridTextoPrincipal => Tinta;
+        public static Color GridBorda => Linha;
+
+        // =====================================================================
+        // TIPOGRAFIA
+        // =====================================================================
+
+        /// <summary>
+        /// Fonte da marca (site usa "Montserrat"). Se não estiver instalada
+        /// na máquina do usuário (não é fonte padrão do Windows), cai para
+        /// "Segoe UI" automaticamente para não quebrar o layout.
+        /// </summary>
+        public static string FonteBase => ObterFonteDisponivel();
+
+        private static string? _fonteResolvida;
+
+        private static string ObterFonteDisponivel()
+        {
+            if (_fonteResolvida != null) return _fonteResolvida;
+
+            using var instaladas = new InstalledFontCollection();
+            foreach (var familia in instaladas.Families)
+            {
+                if (string.Equals(familia.Name, "Montserrat", StringComparison.OrdinalIgnoreCase))
+                {
+                    _fonteResolvida = "Montserrat";
+                    return _fonteResolvida;
+                }
+            }
+
+            // Fallback seguro: sempre existe no Windows
+            _fonteResolvida = "Segoe UI";
+            return _fonteResolvida;
+        }
+
+        public static Font FontePequena => new(FonteBase, 8f);
+        public static Font FonteNormal => new(FonteBase, 9f);
+        public static Font FonteMedia => new(FonteBase, 10f);
+
+        /// <summary>Rótulos em caixa alta (ex.: labels de formulário, cabeçalho de grid)</summary>
+        public static Font FonteRotulo => new(FonteBase, 8.5f, FontStyle.Bold);
+
+        public static Font FonteSubtitulo => new(FonteBase, 11f, FontStyle.Bold);
+        public static Font FonteTitulo => new(FonteBase, 14f, FontStyle.Bold);
+        public static Font FonteGrande => new(FonteBase, 20f, FontStyle.Bold);
+        public static Font FonteNumero => new(FonteBase, 30f, FontStyle.Bold);
+
+        // =====================================================================
+        // DIMENSÕES
+        // =====================================================================
+
+        /// <summary>Largura da sidebar lateral</summary>
+        public static int SidebarLargura => 230;
+
+        /// <summary>Altura do cabeçalho superior</summary>
+        public static int HeaderAltura => 64;
+
+        /// <summary>
+        /// Raio de borda padrão. Propositalmente pequeno (quase reto),
+        /// pois o site usa --bf-radius: 2px — NÃO arredondar demais os
+        /// controles, isso descaracteriza a identidade visual do BetaFit.
+        /// </summary>
+        public static int BorderRadius => 2;
+
+        /// <summary>Espaçamento interno padrão (padding)</summary>
+        public static int Padding => 16;
+
+        // =====================================================================
+        // MÉTODOS UTILITÁRIOS
+        // =====================================================================
+
+        /// <summary>
+        /// Aplica o estilo BetaFit a um DataGridView: cabeçalho preto,
+        /// linhas alternadas, seleção em tom de lima.
+        /// </summary>
+        public static void AplicarEstiloGrid(DataGridView grid)
+        {
+            // Estilo geral
+            grid.BackgroundColor = Superficie;
+            grid.BorderStyle = BorderStyle.None;
+            grid.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            grid.GridColor = Linha;
+            grid.Font = FonteNormal;
+
+            // Cabeçalho (preto/branco, caixa alta como no site)
+            grid.ColumnHeadersDefaultCellStyle.BackColor = GridCabecalhoFundo;
+            grid.ColumnHeadersDefaultCellStyle.ForeColor = GridCabecalhoTexto;
+            grid.ColumnHeadersDefaultCellStyle.Font = FonteRotulo;
+            grid.ColumnHeadersDefaultCellStyle.Padding = new Padding(10, 4, 10, 4);
+            grid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            grid.ColumnHeadersHeight = 42;
+            grid.EnableHeadersVisualStyles = false;
+
+            // Linhas
+            grid.DefaultCellStyle.BackColor = GridLinhaPar;
+            grid.DefaultCellStyle.ForeColor = GridTextoPrincipal;
+            grid.DefaultCellStyle.Font = FonteNormal;
+            grid.DefaultCellStyle.SelectionBackColor = GridLinhaSelecionada;
+            grid.DefaultCellStyle.SelectionForeColor = Tinta;
+            grid.DefaultCellStyle.Padding = new Padding(8, 4, 8, 4);
+
+            // Linhas alternadas
+            grid.AlternatingRowsDefaultCellStyle.BackColor = GridLinhaImpar;
+
+            // Linha
+            grid.RowHeadersVisible = false;
+            grid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            grid.RowTemplate.Height = 38;
+
+            // Seleção
+            grid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            grid.MultiSelect = false;
+            grid.ReadOnly = true;
+
+            // Visual
+            grid.AllowUserToAddRows = false;
+            grid.AllowUserToDeleteRows = false;
+            grid.AllowUserToResizeRows = false;
+        }
+
+        /// <summary>
+        /// Aplica o fundo/tipografia base de uma tela (Form ou UserControl)
+        /// ao padrão BetaFit (fundo branco ou superfície, fonte da marca).
+        /// </summary>
+        public static void AplicarEstiloFormulario(Control container, bool fundoSuperficie = false)
+        {
+            container.BackColor = fundoSuperficie ? Superficie : Branco;
+            container.Font = FonteNormal;
+            container.ForeColor = Tinta;
+        }
+
+        /// <summary>
+        /// Configura um Label como "badge" de status (ex.: Ativo/Inativo),
+        /// usando as mesmas cores do site (.bf-admin-product__status).
+        /// </summary>
+        public static void AplicarBadgeStatus(Label lbl, bool ativo)
+        {
+            lbl.BackColor = ativo ? BadgeAtivoFundo : BadgeInativoFundo;
+            lbl.ForeColor = ativo ? BadgeAtivoTexto : BadgeInativoTexto;
+            lbl.Font = FonteRotulo;
+            lbl.Text = (ativo ? "ATIVO" : "INATIVO");
+            lbl.TextAlign = ContentAlignment.MiddleCenter;
+            lbl.AutoSize = false;
+            lbl.Padding = new Padding(6, 2, 6, 2);
+        }
+    }
+}
