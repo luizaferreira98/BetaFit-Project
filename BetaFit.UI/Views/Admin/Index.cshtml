@@ -4,54 +4,62 @@
     var dashboard = ViewData["Dashboard"] as DashboardDto;
     var message = ViewData["Message"] as string;
 }
-<div class="bf-container bf-admin">
-    <div class="bf-section__head">
-        <div><h1>Painel administrativo</h1><p>Gerencie os produtos da loja Beta Fit.</p></div>
-        <a class="bf-btn bf-btn--primary" asp-controller="Admin" asp-action="NewProduct">+ Adicionar produto</a>
+<section class="bf-page-hero bf-page-hero--admin">
+    <div class="bf-container bf-page-hero__inner">
+        <div><span class="bf-eyebrow bf-eyebrow--dark">Backoffice Beta Fit</span><h1>Painel administrativo</h1><p>Gerencie os produtos que aparecem no catálogo.</p></div>
+        <a class="bf-btn bf-btn--dark" asp-controller="Admin" asp-action="NewProduct">+ Novo produto</a>
     </div>
+</section>
 
-    @if (TempData["Success"] is not null)
-    {
-        <div class="alert alert-success">@TempData["Success"]</div>
-    }
-    @if (TempData["Error"] is not null)
-    {
-        <div class="alert alert-warning">@TempData["Error"]</div>
-    }
-    @if (!string.IsNullOrEmpty(message))
-    {
-        <div class="alert alert-warning">@message</div>
-    }
-
-    @if (dashboard is not null)
-    {
-        <div class="bf-grid" style="margin-bottom:32px;">
-            <div class="bf-card"><div class="bf-card__body"><span class="bf-card__cat">Produtos</span><span class="bf-card__name">@dashboard.TotalProducts</span></div></div>
-            <div class="bf-card"><div class="bf-card__body"><span class="bf-card__cat">Categorias</span><span class="bf-card__name">@dashboard.TotalCategories</span></div></div>
-            <div class="bf-card"><div class="bf-card__body"><span class="bf-card__cat">Em destaque</span><span class="bf-card__name">@dashboard.FeaturedProducts</span></div></div>
-            <div class="bf-card"><div class="bf-card__body"><span class="bf-card__cat">Ativos</span><span class="bf-card__name">@dashboard.ActiveProducts</span></div></div>
-        </div>
-    }
-
-    <div class="bf-grid">
-        @foreach (var product in Model)
+<section class="bf-section bf-section--catalog">
+    <div class="bf-container">
+        @if (TempData["Success"] is not null)
         {
-            <div class="bf-card">
-                <div class="bf-card__image" style="background-image:url('@(product.ImageUrl ?? "/images/placeholder.jpg")')"></div>
-                <div class="bf-card__body">
-                    <span class="bf-card__cat">@product.CategoryName</span>
-                    <span class="bf-card__name">@product.Name</span>
-                    <span class="bf-card__price">@product.Price.ToString("C")</span>
-                    <div style="display:flex; gap:12px; margin-top:8px;">
-                        <a class="bf-btn bf-btn--outline" asp-controller="Admin" asp-action="EditProduct" asp-route-id="@product.Id">Editar</a>
-                        <a class="bf-btn bf-btn--outline" asp-controller="Admin" asp-action="DeleteProduct" asp-route-id="@product.Id">Excluir</a>
-                    </div>
-                </div>
+            <div class="bf-alert bf-alert--success" role="alert"><span class="bf-alert__dot"></span>@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] is not null)
+        {
+            <div class="bf-alert bf-alert--error" role="alert"><span class="bf-alert__dot"></span>@TempData["Error"]</div>
+        }
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <div class="bf-alert" role="alert"><span class="bf-alert__dot"></span>@message</div>
+        }
+
+        @if (dashboard is not null)
+        {
+            <div class="bf-admin-stats">
+                <div><span>Produtos</span><strong>@dashboard.TotalProducts</strong><small>Total cadastrado</small></div>
+                <div><span>Categorias</span><strong>@dashboard.TotalCategories</strong><small>Disponíveis</small></div>
+                <div><span>Em destaque</span><strong>@dashboard.FeaturedProducts</strong><small>Na vitrine</small></div>
+                <div><span>Ativos</span><strong>@dashboard.ActiveProducts</strong><small>No catálogo</small></div>
             </div>
         }
-        @if (!Model.Any())
-        {
-            <p>Nenhum produto cadastrado ainda.</p>
-        }
+
+        <div class="bf-admin-list-head"><div><span class="bf-eyebrow bf-eyebrow--dark">Produtos</span><h2>Gerenciar catálogo</h2></div><span>@Model.Count item(ns)</span></div>
+        <div class="bf-admin-products">
+            @foreach (var product in Model)
+            {
+                <article class="bf-admin-product">
+                    <div class="bf-admin-product__media">
+                        @if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div>BF</div>
+                        }
+                    </div>
+                    <div class="bf-admin-product__info"><span>@product.CategoryName · @product.Gender</span><strong>@product.Name</strong><small>@product.Price.ToString("C")</small></div>
+                    <div class="bf-admin-product__status"><span class="@(product.IsActive ? "is-active" : "")">@(product.IsActive ? "Ativo" : "Inativo")</span></div>
+                    <div class="bf-admin-product__actions"><a asp-controller="Admin" asp-action="EditProduct" asp-route-id="@product.Id">Editar</a><a class="is-danger" asp-controller="Admin" asp-action="DeleteProduct" asp-route-id="@product.Id">Excluir</a></div>
+                </article>
+            }
+            @if (!Model.Any())
+            {
+                <div class="bf-empty"><strong>Nenhum produto cadastrado ainda.</strong><span>Use “Novo produto” para adicionar a primeira peça.</span></div>
+            }
+        </div>
     </div>
-</div>
+</section>

@@ -1,8 +1,12 @@
 ﻿@{
     ViewData["Title"] = "Acesso negado";
 }
-<div class="bf-container bf-auth">
-    <h1>Acesso negado</h1>
-    <p>Você não tem permissão para acessar esta página.</p>
-    <a class="bf-btn bf-btn--primary" asp-controller="Home" asp-action="Index">Voltar para a Home</a>
-</div>
+<section class="bf-simple-page">
+    <div class="bf-simple-page__card">
+        <span class="bf-eyebrow bf-eyebrow--dark">Área restrita</span>
+        <div class="bf-simple-page__code">403</div>
+        <h1>Acesso negado.</h1>
+        <p>Você não tem permissão para acessar esta página.</p>
+        <a class="bf-btn bf-btn--dark" asp-controller="Home" asp-action="Index">Voltar para a Home <span>→</span></a>
+    </div>
+</section>

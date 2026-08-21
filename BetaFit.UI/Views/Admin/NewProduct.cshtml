@@ -1,34 +1,46 @@
-﻿@model ProductFormViewModel
+@model ProductFormViewModel
 @{
     ViewData["Title"] = "Novo produto";
 }
-<div class="bf-container bf-admin bf-auth">
-    <h1>Novo produto</h1>
-    @if (!ViewData.ModelState.IsValid)
-    {
-        <div class="alert alert-warning">@Html.ValidationSummary(true, "", new { @class = "text-danger" })</div>
-    }
-    <form asp-controller="Admin" asp-action="NewProduct" method="post" enctype="multipart/form-data" class="bf-form">
-        @Html.AntiForgeryToken()
-        <label>Nome<input asp-for="Name" required /></label>
-        <label>Descrição<textarea asp-for="Description"></textarea></label>
-        <label>Preço<input asp-for="Price" type="number" step="0.01" required /></label>
-        <label>
-            Categoria
-            <select name="CategoryId" required>
-                <option value="">Selecione...</option>
-                @foreach (var category in Model.Categories)
-                {
-                    <option value="@category.Id">@category.Name</option>
-                }
-            </select>
-        </label>
-        <label>
-            Gênero
-            <select asp-items="Html.GetEnumSelectList<Gender>()" name="gender"></select>
-        </label>
-        <label>Imagem<input name="image" type="file" accept="image/png,image/jpeg,image/webp" /></label>
-        <label><input asp-for="IsFeatured" type="checkbox" /> Produto em destaque</label>
-        <button class="bf-btn bf-btn--primary" type="submit">Salvar produto</button>
-    </form>
-</div>
+<section class="bf-page-hero bf-page-hero--compact">
+    <div class="bf-container bf-page-hero__inner"><div><span class="bf-eyebrow bf-eyebrow--dark">Administração</span><h1>Novo produto</h1><p>Adicione uma nova peça ao catálogo.</p></div></div>
+</section>
+<section class="bf-section bf-section--catalog">
+    <div class="bf-container bf-form-page">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="bf-alert bf-alert--error" role="alert">@Html.ValidationSummary(true, "", new { @class = "bf-validation" })</div>
+        }
+        <form asp-controller="Admin" asp-action="NewProduct" method="post" enctype="multipart/form-data" class="bf-form bf-form--admin">
+            @Html.AntiForgeryToken()
+            <div class="bf-form-grid">
+                <label>Nome<input asp-for="Name" placeholder="Ex.: Performance Tee" required /></label>
+                <label>Preço<input asp-for="Price" type="number" step="0.01" placeholder="0,00" required /></label>
+                <label>Categoria<select name="CategoryId" required><option value="">Selecione...</option>@foreach (var category in Model.Categories){<option value="@category.Id">@category.Name</option>}</select></label>
+                <label>Gênero<select asp-items="Html.GetEnumSelectList<Gender>()" name="gender"></select></label>
+                <label class="bf-form-grid__full">Descrição<textarea asp-for="Description" placeholder="Descreva o produto..."></textarea></label>
+                <div class="bf-upload-field bf-form-grid__full">
+                    <label class="bf-file-field">
+                        <span>Imagem do produto</span>
+                        <input id="product-image-input" name="image" type="file" accept="image/png,image/jpeg,image/webp" data-image-preview-input="product-image-preview" />
+                        <small>JPG, PNG ou WEBP. A imagem selecionada aparece na pré-visualização antes de salvar.</small>
+                    </label>
+                    <div id="product-image-preview" class="bf-image-upload-preview" data-empty="true" aria-live="polite">
+                        <div class="bf-image-upload-preview__placeholder">
+                            <span class="bf-image-upload-preview__icon">+</span>
+                            <strong>Pré-visualização</strong>
+                            <span>Selecione uma imagem para visualizar aqui</span>
+                        </div>
+                        <img class="bf-image-upload-preview__image" alt="Pré-visualização da imagem do produto" hidden />
+                        <div class="bf-image-upload-preview__meta" hidden>
+                            <strong class="bf-image-upload-preview__name"></strong>
+                            <span class="bf-image-upload-preview__size"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <label class="bf-check"><input asp-for="IsFeatured" type="checkbox" /><span>Produto em destaque</span></label>
+            <div class="bf-form-actions"><a class="bf-btn bf-btn--ghost" asp-controller="Admin" asp-action="Index">Cancelar</a><button class="bf-btn bf-btn--dark" type="submit">Salvar produto <span>→</span></button></div>
+        </form>
+    </div>
+</section>

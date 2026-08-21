@@ -7,6 +7,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Content Include="Properties\launchSettings.json" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<!--
       CONCEITO IMPORTANTE: A BetaFit.UI (MVC) NUNCA referencia a Infraestructure
       nem acessa o banco de dados diretamente. Ela consome exclusivamente a

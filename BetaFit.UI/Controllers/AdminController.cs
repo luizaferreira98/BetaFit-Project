@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BetaFit.UI - AdminController
 // =============================================================================
 //  CONCEITO: [Authorize(Roles = "Admin")]
@@ -99,7 +99,7 @@ namespace BetaFit.UI.Controllers
                 var savedUrl = await SaveProductImageAsync(image);
                 if (savedUrl is null)
                 {
-                    ModelState.AddModelError(string.Empty, "Use imagens JPG, PNG ou WEBP.");
+                    ModelState.AddModelError(string.Empty, "Use imagens JPG, JPEG, PNG ou WEBP de até 5 MB.");
                     return View(viewModel);
                 }
                 imageUrl = savedUrl;
@@ -166,7 +166,7 @@ namespace BetaFit.UI.Controllers
                 var savedUrl = await SaveProductImageAsync(image);
                 if (savedUrl is null)
                 {
-                    ModelState.AddModelError(string.Empty, "Use imagens JPG, PNG ou WEBP.");
+                    ModelState.AddModelError(string.Empty, "Use imagens JPG, JPEG, PNG ou WEBP de até 5 MB.");
                     return View(viewModel);
                 }
                 imageUrl = savedUrl;
@@ -219,8 +219,21 @@ namespace BetaFit.UI.Controllers
 
         private async Task<string?> SaveProductImageAsync(IFormFile image)
         {
+            const long maxFileSize = 5 * 1024 * 1024;
+            if (image.Length <= 0 || image.Length > maxFileSize)
+                return null;
+
             var ext = Path.GetExtension(image.FileName).ToLowerInvariant();
-            if (ext is not (".jpg" or ".jpeg" or ".png" or ".webp"))
+            var allowed = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
+            {
+                [".jpg"] = ["image/jpeg"],
+                [".jpeg"] = ["image/jpeg"],
+                [".png"] = ["image/png"],
+                [".webp"] = ["image/webp"]
+            };
+
+            if (!allowed.TryGetValue(ext, out var contentTypes) ||
+                !contentTypes.Contains(image.ContentType, StringComparer.OrdinalIgnoreCase))
                 return null;
 
             var folder = Path.Combine(_env.WebRootPath, "images", "products");

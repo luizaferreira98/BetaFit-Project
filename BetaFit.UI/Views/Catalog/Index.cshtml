@@ -6,74 +6,92 @@
 
 @if (apiUnavailable)
 {
-    <div class="bf-container" style="padding-top:24px;">
-        <div class="alert alert-warning" role="alert">O catálogo está temporariamente indisponível. Inicie a BetaFit.API e atualize a página.</div>
+    <div class="bf-container bf-alert-wrap">
+        <div class="bf-alert" role="alert"><span class="bf-alert__dot"></span>O catálogo está temporariamente indisponível. Inicie a BetaFit.API e atualize a página.</div>
     </div>
 }
 
-<section class="bf-section">
-    <div class="bf-container">
-        <div class="bf-section__head">
-            <div>
-                <h2>Catálogo</h2>
-                <p>@Model.TotalCount produto(s) encontrado(s).</p>
-            </div>
+<section class="bf-page-hero">
+    <div class="bf-container bf-page-hero__inner">
+        <div>
+            <span class="bf-eyebrow bf-eyebrow--dark">Coleção Beta Fit</span>
+            <h1>Catálogo</h1>
+            <p>Explore todas as peças disponíveis na coleção atual.</p>
         </div>
+        <div class="bf-page-hero__count"><strong>@Model.TotalCount</strong><span>produtos encontrados</span></div>
+    </div>
+</section>
 
-        <form method="get" class="bf-toolbar">
-            <input class="bf-input" type="text" name="searchTerm" placeholder="Buscar produto..." value="@Model.SearchTerm" />
-
-            <select class="bf-select" name="categoryId">
+<section class="bf-section bf-section--catalog">
+    <div class="bf-container">
+        <form method="get" class="bf-filter-bar">
+            <div class="bf-filter-search">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+                <input class="bf-input" type="text" name="searchTerm" placeholder="Buscar produto..." value="@Model.SearchTerm" />
+            </div>
+            <select class="bf-select" name="categoryId" aria-label="Categoria">
                 <option value="">Todas as categorias</option>
                 @foreach (var category in Model.Categories)
                 {
                     <option value="@category.Id" selected="@(Model.CategoryId == category.Id)">@category.Name</option>
                 }
             </select>
-
-            <select class="bf-select" name="gender">
+            <select class="bf-select" name="gender" aria-label="Gênero">
                 <option value="">Todos os gêneros</option>
                 <option value="Masculino" selected="@(Model.Gender == Gender.Masculino)">Masculino</option>
                 <option value="Feminino" selected="@(Model.Gender == Gender.Feminino)">Feminino</option>
                 <option value="Unissex" selected="@(Model.Gender == Gender.Unissex)">Unissex</option>
             </select>
-
-            <select class="bf-select" name="sortBy">
+            <select class="bf-select" name="sortBy" aria-label="Ordenação">
                 <option value="">Ordenar por nome</option>
                 <option value="price_asc" selected="@(Model.SortBy == "price_asc")">Menor preço</option>
                 <option value="price_desc" selected="@(Model.SortBy == "price_desc")">Maior preço</option>
                 <option value="newest" selected="@(Model.SortBy == "newest")">Novidades</option>
             </select>
-
-            <button class="bf-btn bf-btn--primary" type="submit">Filtrar</button>
+            <button class="bf-btn bf-btn--dark" type="submit">Filtrar</button>
         </form>
 
-        <div class="bf-grid">
+        <div class="bf-catalog-meta"><span>Mostrando <strong>@Model.Items.Count</strong> de <strong>@Model.TotalCount</strong> produtos</span></div>
+
+        <div class="bf-product-grid bf-product-grid--catalog">
             @foreach (var product in Model.Items)
             {
-                <a class="bf-card" asp-controller="Catalog" asp-action="Details" asp-route-id="@product.Id">
-                    <div class="bf-card__image" style="background-image:url('@(product.ImageUrl ?? "/images/placeholder.jpg")')">
+                <a class="bf-product-card" asp-controller="Catalog" asp-action="Details" asp-route-id="@product.Id">
+                    <div class="bf-product-card__media">
                         @if (product.IsFeatured)
                         {
-                            <span class="bf-card__badge">Destaque</span>
+                            <span class="bf-product-card__badge">Destaque</span>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="bf-product-card__placeholder">BF</div>
                         }
                     </div>
-                    <div class="bf-card__body">
-                        <span class="bf-card__cat">@product.CategoryName</span>
-                        <span class="bf-card__name">@product.Name</span>
-                        <span class="bf-card__price">@product.Price.ToString("C")</span>
+                    <div class="bf-product-card__body">
+                        <span class="bf-product-card__cat">@product.CategoryName · @product.Gender</span>
+                        <strong>@product.Name</strong>
+                        <span class="bf-product-card__price">@product.Price.ToString("C")</span>
                     </div>
                 </a>
             }
-            @if (!Model.Items.Any())
-            {
-                <p>Nenhum produto encontrado com os filtros selecionados.</p>
-            }
         </div>
+
+        @if (!Model.Items.Any())
+        {
+            <div class="bf-empty">
+                <div class="bf-empty__icon">⌕</div>
+                <strong>Nenhum produto encontrado</strong>
+                <span>Tente ajustar os filtros para encontrar outras peças.</span>
+            </div>
+        }
 
         @if (Model.TotalPages > 1)
         {
-            <div class="bf-pagination">
+            <div class="bf-pagination" aria-label="Paginação">
                 @for (int i = 1; i <= Model.TotalPages; i++)
                 {
                     <a class="@(i == Model.Page ? "active" : "")"

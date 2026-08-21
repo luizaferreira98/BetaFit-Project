@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BetaFit.UI - AccountController (Proxy HTTP para a BetaFit.API)
 // =============================================================================
 //  CONCEITO: A autenticação real (senhas, hashes, roles) vive inteiramente
@@ -10,6 +10,7 @@
 
 using System.Security.Claims;
 using BetaFit.Application.DTOs;
+using BetaFit.UI.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -45,6 +46,9 @@ namespace BetaFit.UI.Controllers
             ViewData["Title"] = "Entrar";
             ViewData["ReturnUrl"] = returnUrl;
 
+            if (!ModelState.IsValid)
+                return View(dto);
+
             var signedIn = await SignInWithApiAsync(dto);
             if (!signedIn)
             {
@@ -70,6 +74,9 @@ namespace BetaFit.UI.Controllers
         public async Task<IActionResult> Register(RegisterDto dto)
         {
             ViewData["Title"] = "Criar conta";
+
+            if (!ModelState.IsValid)
+                return View(dto);
 
             if (dto.Password != dto.ConfirmPassword)
             {
@@ -105,6 +112,10 @@ namespace BetaFit.UI.Controllers
                 // Mesmo se a API estiver fora do ar, ainda removemos o cookie local.
             }
 
+            // O carrinho é vinculado à sessão do navegador, não à conta.
+            // Limpá-lo no logout evita que outra pessoa usando o mesmo navegador
+            // veja itens deixados pela conta anterior.
+            CartService.Clear(HttpContext);
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
         }

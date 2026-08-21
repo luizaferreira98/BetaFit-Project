@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BetaFit.UI - CatalogController (Área Pública)
 // =============================================================================
 // Controller público do catálogo de roupas — listagem com filtros e a
@@ -15,7 +15,7 @@ using BetaFit.Application.Interfaces;
 using BetaFit.Domain.Enums;
 using BetaFit.UI.Models;
 using BetaFit.UI.Services;
-using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BetaFit.UI.Controllers
@@ -134,16 +134,26 @@ namespace BetaFit.UI.Controllers
         /// POST /Catalog/AddToCart
         /// </summary>
         [HttpPost("Catalog/AddToCart")]
+        [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddToCart(int id)
+        public async Task<IActionResult> AddToCart(int id, int quantity = 1)
         {
-            var product = await _productService.GetByIdAsync(id);
-            if (product is not null)
-            {
-                CartService.Add(HttpContext, product);
-            }
+            quantity = Math.Clamp(quantity, 1, 99);
 
-            return RedirectToAction("Index", "Cart");
+            try
+            {
+                var product = await _productService.GetByIdAsync(id);
+                if (product is null || !product.IsActive)
+                    return NotFound();
+
+                CartService.Add(HttpContext, product, quantity);
+                return RedirectToAction("Index", "Cart");
+            }
+            catch (HttpRequestException)
+            {
+                TempData["Error"] = "Não foi possível adicionar o produto ao carrinho. Tente novamente.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
         }
     }
 }
