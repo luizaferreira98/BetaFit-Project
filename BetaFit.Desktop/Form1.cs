@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 using BetaFit.Desktop.Helpers;
 using BetaFit.Desktop.UserControls;
 using BetaFit.Desktop.Themes;
@@ -57,6 +58,15 @@ namespace BetaFit.Desktop
                 SessionManager.Instance.Clear();
                 Close();
             }
+=======
+namespace BetaFit.Desktop
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+>>>>>>> 9aa9898d3f31f5e28e0f9360943b6a83a794de8c
         }
     }
 }

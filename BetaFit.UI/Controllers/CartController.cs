@@ -6,12 +6,17 @@
 // URL: /Cart
 // =============================================================================
 
+
 using BetaFit.Application.DTOs;
 using BetaFit.Application.Interfaces;
 using BetaFit.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+
+using BetaFit.UI.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BetaFit.UI.Controllers
 {
@@ -44,6 +49,7 @@ namespace BetaFit.UI.Controllers
             CartService.Remove(HttpContext, productId);
             return RedirectToAction(nameof(Index));
         }
+
         private readonly IOrderService _orderService;
         public CartController(IOrderService orderService) => _orderService = orderService; // injete no construtor
 
@@ -71,5 +77,6 @@ namespace BetaFit.UI.Controllers
             TempData["Sucesso"] = "Pedido realizado com sucesso!";
             return RedirectToAction(nameof(Index));
         }
+
     }
 }

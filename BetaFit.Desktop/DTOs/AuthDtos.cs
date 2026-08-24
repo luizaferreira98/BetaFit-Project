@@ -12,7 +12,11 @@ namespace BetaFit.Desktop.DTOs
     /// </summary>
     public class LoginRequestDto
     {
+<<<<<<< HEAD
         public string Login { get; set; } = string.Empty;
+=======
+        public string Email { get; set; } = string.Empty;
+>>>>>>> 9aa9898d3f31f5e28e0f9360943b6a83a794de8c
         public string Password { get; set; } = string.Empty;
     }
 

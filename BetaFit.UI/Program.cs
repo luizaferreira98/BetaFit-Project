@@ -89,9 +89,12 @@ builder.Services.AddScoped<ICategoryService>(sp =>
 builder.Services.AddScoped<IDashboardService>(sp =>
     new HttpDashboardService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
 
+<<<<<<< HEAD
 builder.Services.AddScoped<IOrderService>(sp =>
     new HttpOrderService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
 
+=======
+>>>>>>> 9aa9898d3f31f5e28e0f9360943b6a83a794de8c
 // =====================================================================
 // MVC
 // =====================================================================

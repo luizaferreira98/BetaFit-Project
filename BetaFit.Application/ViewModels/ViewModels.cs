@@ -60,7 +60,11 @@ namespace BetaFit.Application.ViewModels
         public string Description { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public string? ImageUrl { get; set; }
+
         public Gender Gender { get; set; }
+
+        public Enum Enum { get; set; }
+
         public int CategoryId { get; set; }
         public bool IsFeatured { get; set; }
         public bool IsActive { get; set; }
@@ -79,6 +83,7 @@ namespace BetaFit.Application.ViewModels
         public IEnumerable<ProductDto> Products { get; set; } = new List<ProductDto>();
         public IEnumerable<CategoryDto> Categories { get; set; } = new List<CategoryDto>();
         public int? SelectedCategoryId { get; set; }
+
         public Gender? SelectedGender { get; set; }
     }
 
@@ -99,5 +104,8 @@ namespace BetaFit.Application.ViewModels
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal Subtotal { get; set; }
+
+        public Enum? SelectedEnum { get; set; }
+
     }
 }

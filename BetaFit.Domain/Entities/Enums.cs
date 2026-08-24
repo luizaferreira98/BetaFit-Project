@@ -16,6 +16,7 @@ namespace BetaFit.Domain.Enums
         Feminino = 2
     }
 
+
     public enum OrderStatus
     {
         Pendente = 0,
@@ -24,4 +25,5 @@ namespace BetaFit.Domain.Enums
         Entregue = 3,
         Cancelado = 4
     }
+
 }

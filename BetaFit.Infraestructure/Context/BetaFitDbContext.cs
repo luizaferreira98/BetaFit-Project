@@ -57,6 +57,7 @@ namespace BetaFit.Infraestructure.Context
         /// </summary>
         public DbSet<Category> Categories { get; set; }
 
+
         /// <summary>
         /// Tabela de Pedidos no banco de dados.
         /// </summary>
@@ -66,6 +67,7 @@ namespace BetaFit.Infraestructure.Context
         /// Tabela de Itens de Pedido no banco de dados.
         /// </summary>
         public DbSet<OrderItem> OrderItems { get; set; }
+
 
         // =====================================================================
         //  CONCEITO: OnModelCreating (Fluent API)
@@ -82,8 +84,10 @@ namespace BetaFit.Infraestructure.Context
             // Aplica as configurações de cada entidade (definidas em classes separadas)
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new OrderItemConfiguration());
+
         }
     }
 }

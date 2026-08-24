@@ -65,6 +65,7 @@
                     <div class="bf-cart-summary__total"><strong>Total</strong><strong>@total.ToString("C")</strong></div>
                     <div class="bf-cart-summary__items"><span>Itens no carrinho</span><strong>@itemCount</strong></div>
                     <small>Este projeto não possui checkout ou pagamento real.</small>
+<<<<<<< HEAD
 
                     <form asp-controller="Cart" asp-action="Checkout" method="post" style="margin-bottom: 12px;">
                         @Html.AntiForgeryToken()
@@ -72,6 +73,9 @@
                     </form>
 
                     <a class="bf-btn bf-btn--outline bf-btn--wide" asp-controller="Catalog" asp-action="Index">Continuar comprando</a>
+=======
+                    <a class="bf-btn bf-btn--dark bf-btn--wide" asp-controller="Catalog" asp-action="Index">Continuar comprando</a>
+>>>>>>> 9aa9898d3f31f5e28e0f9360943b6a83a794de8c
                 </aside>
             </div>
         }
