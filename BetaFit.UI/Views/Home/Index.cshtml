@@ -1,0 +1,150 @@
+﻿@model HomeViewModel
+@{
+    ViewData["Title"] = "Início";
+    var apiUnavailable = (bool)(ViewData["ApiUnavailable"] ?? false);
+    var heroProduct = Model.FeaturedProducts.FirstOrDefault();
+}
+
+@if (apiUnavailable)
+{
+    <div class="bf-container bf-alert-wrap">
+        <div class="bf-alert" role="alert">
+            <span class="bf-alert__dot"></span>
+            O catálogo está temporariamente indisponível. Inicie a BetaFit.API e atualize a página.
+        </div>
+    </div>
+}
+
+<section class="bf-hero">
+    <div class="bf-hero__texture"></div>
+    <div class="bf-container bf-hero__inner">
+        <div class="bf-hero__copy">
+            <span class="bf-eyebrow">Nova coleção · Training</span>
+            <h1>Vista sua <em>disciplina.</em></h1>
+            <p>Roupas fitness pensadas para quem treina forte e vive intenso. Performance, conforto e identidade em cada peça.</p>
+            <div class="bf-actions">
+                <a class="bf-btn bf-btn--primary" asp-controller="Catalog" asp-action="Index">Ver coleção <span>→</span></a>
+                <a class="bf-text-link" href="#destaques">Explorar destaques <span>↓</span></a>
+            </div>
+        </div>
+
+        <div class="bf-hero__visual @(heroProduct is null ? "bf-hero__visual--empty" : "")">
+            @if (heroProduct is not null && !string.IsNullOrWhiteSpace(heroProduct.ImageUrl))
+            {
+                <div class="bf-hero__image" style="background-image:url('@heroProduct.ImageUrl')"></div>
+                <div class="bf-hero__product-tag">
+                    <span>Destaque</span>
+                    <strong>@heroProduct.Name</strong>
+                    <small>@heroProduct.Price.ToString("C")</small>
+                </div>
+            }
+            else
+            {
+                <div class="bf-hero__monogram">BF</div>
+            }
+        </div>
+    </div>
+    <div class="bf-hero__marquee" aria-hidden="true">
+        <span>TRAIN HARD</span><i>·</i><span>MOVE FORWARD</span><i>·</i><span>BETA FIT</span><i>·</i><span>TRAIN HARD</span>
+    </div>
+</section>
+
+<section class="bf-benefit-strip" aria-label="Benefícios da loja">
+    <div class="bf-container bf-benefit-strip__grid">
+        <div><span class="bf-benefit-strip__icon">01</span><div><strong>Performance</strong><small>Peças para acompanhar seu treino</small></div></div>
+        <div><span class="bf-benefit-strip__icon">02</span><div><strong>Conforto</strong><small>Modelagens feitas para movimento</small></div></div>
+        <div><span class="bf-benefit-strip__icon">03</span><div><strong>Identidade</strong><small>Design com presença e atitude</small></div></div>
+        <div><span class="bf-benefit-strip__icon">04</span><div><strong>Qualidade</strong><small>Detalhes pensados para durar</small></div></div>
+    </div>
+</section>
+
+<section id="destaques" class="bf-section">
+    <div class="bf-container">
+        <div class="bf-section__head">
+            <div>
+                <span class="bf-eyebrow bf-eyebrow--dark">Seleção Beta Fit</span>
+                <h2>Em destaque</h2>
+                <p>As peças que melhor representam a coleção atual.</p>
+            </div>
+            <a class="bf-section-link" asp-controller="Catalog" asp-action="Index">Ver catálogo <span>→</span></a>
+        </div>
+
+        <div class="bf-product-grid">
+            @foreach (var product in Model.FeaturedProducts)
+            {
+                <a class="bf-product-card" asp-controller="Catalog" asp-action="Details" asp-route-id="@product.Id">
+                    <div class="bf-product-card__media">
+                        @if (product.IsFeatured)
+                        {
+                            <span class="bf-product-card__badge">Destaque</span>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="bf-product-card__placeholder">BF</div>
+                        }
+                    </div>
+                    <div class="bf-product-card__body">
+                        <span class="bf-product-card__cat">@product.CategoryName · @product.Gender</span>
+                        <strong>@product.Name</strong>
+                        <span class="bf-product-card__price">@product.Price.ToString("C")</span>
+                    </div>
+                </a>
+            }
+            @if (!Model.FeaturedProducts.Any())
+            {
+                <div class="bf-empty bf-empty--wide"><strong>Nenhum produto em destaque.</strong><span>Os produtos aparecerão aqui quando forem marcados como destaque.</span></div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="bf-section bf-section--dark">
+    <div class="bf-container">
+        <div class="bf-section__head bf-section__head--light">
+            <div>
+                <span class="bf-eyebrow">Explore</span>
+                <h2>Categorias</h2>
+                <p>Encontre a peça certa para o seu treino.</p>
+            </div>
+        </div>
+        <div class="bf-category-grid">
+            @foreach (var category in Model.Categories)
+            {
+                <a class="bf-category-tile" asp-controller="Catalog" asp-action="Index" asp-route-categoryId="@category.Id">
+                    <span class="bf-category-tile__number">@category.Id.ToString("00")</span>
+                    <strong>@category.Name</strong>
+                    <span class="bf-category-tile__arrow">↗</span>
+                </a>
+            }
+        </div>
+    </div>
+</section>
+
+<section id="sobre" class="bf-section bf-section--soft">
+    <div class="bf-container bf-story">
+        <div class="bf-story__intro">
+            <span class="bf-eyebrow bf-eyebrow--dark">Sobre a Beta Fit</span>
+            <h2>Mais que roupa.<br /><em>É consistência.</em></h2>
+        </div>
+        <div class="bf-story__content">
+            <p>Uma estética forte para acompanhar uma rotina ainda mais forte. A Beta Fit une funcionalidade e presença em uma proposta direta: vestir quem decidiu não negociar com a própria disciplina.</p>
+            <div class="bf-story__facts">
+                <span><strong>01</strong>Performance</span>
+                <span><strong>02</strong>Conforto</span>
+                <span><strong>03</strong>Identidade</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bf-cta">
+    <div class="bf-container bf-cta__inner">
+        <span class="bf-eyebrow">Beta Fit</span>
+        <h2>Seu treino pede<br /><em>presença.</em></h2>
+        <a class="bf-btn bf-btn--lime" asp-controller="Catalog" asp-action="Index">Explorar coleção <span>→</span></a>
+    </div>
+</section>

@@ -1,0 +1,26 @@
+﻿@model LoginDto
+@{
+    ViewData["Title"] = "Entrar";
+}
+<section class="bf-auth-page">
+    <div class="bf-auth-visual"><span>BETAFIT</span><strong>DISCIPLINA<br /><em>EM MOVIMENTO.</em></strong></div>
+    <div class="bf-auth-panel">
+        <div class="bf-auth-panel__inner">
+            <a class="bf-back-link" asp-controller="Home" asp-action="Index">← Voltar para a loja</a>
+            <span class="bf-eyebrow bf-eyebrow--dark">Área do cliente</span>
+            <h1>Bem-vindo<br />de volta.</h1>
+            <p class="bf-auth-intro">Entre na sua conta para continuar sua experiência Beta Fit.</p>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="bf-alert bf-alert--error" role="alert">@Html.ValidationSummary(true, "", new { @class = "bf-validation" })</div>
+            }
+            <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" class="bf-form">
+                @Html.AntiForgeryToken()
+                <label>E-mail<input asp-for="Login" type="email" autocomplete="email" placeholder="voce@email.com" required /></label>
+                <label>Senha<input asp-for="Password" type="password" autocomplete="current-password" placeholder="Sua senha" required /></label>
+                <button class="bf-btn bf-btn--dark bf-btn--wide" type="submit">Entrar <span>→</span></button>
+            </form>
+            <p class="bf-auth-switch">Ainda não possui conta? <a asp-controller="Account" asp-action="Register">Criar conta</a></p>
+        </div>
+    </div>
+</section>

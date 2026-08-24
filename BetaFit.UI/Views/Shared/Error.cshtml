@@ -1,0 +1,17 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Erro";
+}
+<section class="bf-simple-page">
+    <div class="bf-simple-page__card">
+        <span class="bf-eyebrow bf-eyebrow--dark">Beta Fit</span>
+        <div class="bf-simple-page__code">500</div>
+        <h1>Algo deu errado.</h1>
+        <p>Não foi possível concluir esta solicitação. Tente novamente.</p>
+        @if (Model.ShowRequestId)
+        {
+            <small class="bf-request-id">Request ID: <code>@Model.RequestId</code></small>
+        }
+        <a class="bf-btn bf-btn--dark" asp-controller="Home" asp-action="Index">Voltar para a Home <span>→</span></a>
+    </div>
+</section>

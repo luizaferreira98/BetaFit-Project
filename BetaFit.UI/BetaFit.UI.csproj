@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Include="Properties\launchSettings.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!--
+      CONCEITO IMPORTANTE: A BetaFit.UI (MVC) NUNCA referencia a Infraestructure
+      nem acessa o banco de dados diretamente. Ela consome exclusivamente a
+      BetaFit.API através de HttpClient, assim como o Desktop.
+      Referenciamos apenas a Application para reaproveitar DTOs, Interfaces
+      e ViewModels, evitando duplicar contratos entre as camadas.
+    -->
+		<ProjectReference Include="..\BetaFit.Application\BetaFit.Application.csproj" />
+	</ItemGroup>
+
+</Project>

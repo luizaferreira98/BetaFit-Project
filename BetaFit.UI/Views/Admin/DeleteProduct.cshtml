@@ -1,0 +1,20 @@
+﻿@model ProductDto
+@{
+    ViewData["Title"] = "Excluir produto";
+}
+<section class="bf-simple-page">
+    <div class="bf-confirm-card">
+        <span class="bf-eyebrow bf-eyebrow--dark">Administração</span>
+        <h1>Excluir produto?</h1>
+        <p>Tem certeza que deseja excluir esta peça? Esta ação não pode ser desfeita.</p>
+        <div class="bf-confirm-product">
+            <div class="bf-confirm-product__media">@if (!string.IsNullOrWhiteSpace(Model.ImageUrl)){<img src="@Model.ImageUrl" alt="@Model.Name" />}else{<div>BF</div>}</div>
+            <div><span>@Model.CategoryName</span><strong>@Model.Name</strong><small>@Model.Price.ToString("C")</small></div>
+        </div>
+        <form asp-controller="Admin" asp-action="DeleteProductConfirmed" asp-route-id="@Model.Id" method="post" class="bf-form-actions">
+            @Html.AntiForgeryToken()
+            <a class="bf-btn bf-btn--ghost" asp-controller="Admin" asp-action="Index">Cancelar</a>
+            <button class="bf-btn bf-btn--danger" type="submit">Confirmar exclusão</button>
+        </form>
+    </div>
+</section>
