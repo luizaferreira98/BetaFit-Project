@@ -1,177 +1,97 @@
-using BetaFit.Desktop.Helpers;
 using BetaFit.Desktop.Services;
 using BetaFit.Desktop.Themes;
 
-namespace BetaFit.Desktop.Forms
+namespace BetaFit.Desktop.Forms;
+
+public sealed class LoginForm : Form
 {
-    /// <summary>
-    /// Tela de login do BetaFit Desktop.
-    ///
-    /// Fluxo:
-    ///   1. Usuário digita e-mail/senha e clica em ENTRAR (ou tecla Enter no campo senha)
-    ///   2. Chama AuthApiService.LoginAsync() → POST /api/auth/login
-    ///   3. Se sucesso: guarda o usuário no SessionManager e fecha com DialogResult.OK
-    ///   4. Se erro: mostra a mensagem em lblErro sem fechar a tela
-    ///
-    /// Uso em Program.cs:
-    ///   using var login = new LoginForm();
-    ///   if (login.ShowDialog() == DialogResult.OK)
-    ///       Application.Run(new Form1());
-    /// </summary>
-    public partial class LoginForm : Form
+    private readonly AuthService _auth = new();
+    private readonly TextBox _email = new();
+    private readonly TextBox _password = new();
+    private readonly Button _login = new();
+    private readonly Label _error = new();
+
+    public LoginForm()
     {
-        private readonly AuthApiService _authService = new();
+        BetaFitTheme.Apply(this);
+        Text = "BETAFIT / ADMIN";
+        ClientSize = new Size(980, 620);
+        MinimumSize = new Size(800, 520);
+        Build();
+    }
 
-        public LoginForm()                     
-        {
-            InitializeComponent();           
-        }
+    private void Build()
+    {
+        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, BackColor = BetaFitTheme.Background };
+        root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 55));
+        root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 45));
+        Controls.Add(root);
 
-        private void LoginForm_Load(object sender, EventArgs e)
-        {
-            txtEmail.Text = "admin@betafit.com";
-            txtSenha.Text = "Admin@123";
-            AplicarComportamentoAdicional();
-            HabilitarArraste(pnlEsquerda);
-        }
+        var branding = new Panel { Dock = DockStyle.Fill, Padding = new Padding(60) };
+        var badge = new Label { Text = "BETA FIT", AutoSize = true, ForeColor = BetaFitTheme.Lime, Font = new Font("Segoe UI", 12, FontStyle.Bold), Location = new Point(60, 100) };
+        var title = new Label { Text = "BETAFIT\nADMIN", AutoSize = true, ForeColor = Color.White, Font = new Font("Segoe UI", 38, FontStyle.Bold), Location = new Point(60, 145) };
+        var subtitle = new Label { Text = "CONTROLE O CATÁLOGO.\nACOMPANHE A OPERAÇÃO.\nGERENCIE SUA PLATAFORMA.", AutoSize = true, ForeColor = BetaFitTheme.Muted, Font = new Font("Segoe UI", 11, FontStyle.Regular), Location = new Point(65, 275) };
+        branding.Controls.AddRange([badge, title, subtitle]);
+        root.Controls.Add(branding, 0, 0);
 
-        /// <summary>
-        /// Configura comportamentos que não fazem parte do "desenho" da tela
-        /// (efeito de foco nos campos, Enter para logar, etc.)
-        /// </summary>
-        private void AplicarComportamentoAdicional()
-        {
-            // Borda do campo fica preta quando o usuário está digitando nele,
-            // e volta pro cinza claro quando perde o foco (mesmo efeito do site).
-            txtEmail.Enter += (s, e) => txtEmail.BorderColor = BetaFitTheme.InputBordaFoco;
-            txtEmail.Leave += (s, e) => txtEmail.BorderColor = BetaFitTheme.InputBorda;
+        var panel = BetaFitTheme.Card();
+        panel.Dock = DockStyle.Fill;
+        panel.Margin = new Padding(30, 90, 55, 90);
+        var inner = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 8 };
+        inner.RowStyles.Add(new RowStyle(SizeType.Absolute, 55));
+        inner.RowStyles.Add(new RowStyle(SizeType.Absolute, 45));
+        inner.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
+        inner.RowStyles.Add(new RowStyle(SizeType.Absolute, 45));
+        inner.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
+        inner.RowStyles.Add(new RowStyle(SizeType.Absolute, 45));
+        inner.RowStyles.Add(new RowStyle(SizeType.Absolute, 45));
+        inner.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        panel.Controls.Add(inner);
 
-            txtSenha.Enter += (s, e) => txtSenha.BorderColor = BetaFitTheme.InputBordaFoco;
-            txtSenha.Leave += (s, e) => txtSenha.BorderColor = BetaFitTheme.InputBorda;
+        var header = new Label { Text = "ENTRAR", ForeColor = Color.White, Font = BetaFitTheme.Title, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft };
+        inner.Controls.Add(header, 0, 0);
+        inner.Controls.Add(new Label { Text = "E-MAIL", ForeColor = BetaFitTheme.Lime, Font = BetaFitTheme.Section, Dock = DockStyle.Fill, TextAlign = ContentAlignment.BottomLeft }, 0, 1);
+        ConfigureInput(_email, "seu@email.com"); inner.Controls.Add(_email, 0, 2);
+        inner.Controls.Add(new Label { Text = "SENHA", ForeColor = BetaFitTheme.Lime, Font = BetaFitTheme.Section, Dock = DockStyle.Fill, TextAlign = ContentAlignment.BottomLeft }, 0, 3);
+        ConfigureInput(_password, "••••••••"); _password.UseSystemPasswordChar = true; inner.Controls.Add(_password, 0, 4);
+        BetaFitTheme.StyleButton(_login); _login.Text = "ENTRAR"; _login.Dock = DockStyle.Top; _login.Click += LoginClicked; inner.Controls.Add(_login, 0, 5);
+        _error.Text = ""; _error.ForeColor = BetaFitTheme.Danger; _error.AutoSize = true; _error.Dock = DockStyle.Top; inner.Controls.Add(_error, 0, 6);
+        panel.Anchor = AnchorStyles.None;
+        root.Controls.Add(panel, 1, 0);
 
-            // Efeito hover do botão primário (fica lima mais claro)
-            btnEntrar.HoverState.FillColor = BetaFitTheme.BotaoPrimarioHover;
+        AcceptButton = _login;
+    }
 
-            // Permite logar apertando Enter depois de digitar a senha
-            txtSenha.KeyDown += TxtSenha_KeyDown;
-            txtEmail.KeyDown += TxtEmail_KeyDown;
-        }
+    private static void ConfigureInput(TextBox box, string placeholder)
+    {
+        box.Dock = DockStyle.Fill;
+        box.PlaceholderText = placeholder;
+        BetaFitTheme.StyleInput(box);
+        box.Margin = new Padding(0, 3, 0, 8);
+    }
 
-        private void TxtEmail_KeyDown(object? sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                e.SuppressKeyPress = true;
-                txtSenha.Focus();
-            }
-        }
+    private async void LoginClicked(object? sender, EventArgs e)
+    {
+        _error.Text = "";
+        if (string.IsNullOrWhiteSpace(_email.Text) || string.IsNullOrWhiteSpace(_password.Text))
+        { _error.Text = "INFORME E-MAIL E SENHA."; return; }
+        SetBusy(true);
+        var result = await _auth.LoginAsync(_email.Text, _password.Text);
+        SetBusy(false);
+        if (!result.Success || result.User is null)
+        { _error.Text = string.IsNullOrWhiteSpace(result.Error) ? "NÃO FOI POSSÍVEL ENTRAR." : result.Error.ToUpperInvariant(); return; }
+        if (!result.User.IsAdmin)
+        { await _auth.LogoutAsync(); _error.Text = "ACESSO RESTRITO A ADMINISTRADORES."; return; }
+        Hide();
+        using var main = new MainForm();
+        main.ShowDialog(this);
+        Close();
+    }
 
-        private async void TxtSenha_KeyDown(object? sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                e.SuppressKeyPress = true;
-                await RealizarLoginAsync();
-            }
-        }
-
-        /// <summary>Alterna entre mostrar/ocultar a senha digitada.</summary>
-        private void chkMostrarSenha_CheckedChanged(object sender, EventArgs e)
-        {
-            txtSenha.UseSystemPasswordChar = !chkMostrarSenha.Checked;
-        }
-
-        private async void btnEntrar_Click(object sender, EventArgs e)
-        {
-            await RealizarLoginAsync();
-        }
-
-        /// <summary>
-        /// Valida os campos, chama a API e trata sucesso/erro.
-        /// </summary>
-        private async Task RealizarLoginAsync()
-        {
-            EsconderErro();
-
-            var email = txtEmail.Text.Trim();
-            var senha = txtSenha.Text;
-
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(senha))
-            {
-                MostrarErro("Preencha e-mail e senha para continuar.");
-                return;
-            }
-
-            DefinirCarregando(true);
-            try
-            {
-                var (sucesso, usuario, erro) = await _authService.LoginAsync(email, senha);
-
-                if (sucesso && usuario != null)
-                {
-                    SessionManager.Instance.SetUser(usuario);
-                    DialogResult = DialogResult.OK;
-                    Close();
-                }
-                else
-                {
-                    MostrarErro(string.IsNullOrWhiteSpace(erro)
-                        ? "E-mail ou senha inválidos."
-                        : erro);
-                }
-            }
-            catch (Exception ex)
-            {
-                MostrarErro($"Não foi possível conectar à API.\n{ex.Message}");
-            }
-            finally
-            {
-                DefinirCarregando(false);
-            }
-        }
-
-        /// <summary>Bloqueia a tela e troca o texto do botão enquanto a requisição roda.</summary>
-        private void DefinirCarregando(bool carregando)
-        {
-            btnEntrar.Enabled = !carregando;
-            btnEntrar.Text = carregando ? "ENTRANDO..." : "ENTRAR";
-            txtEmail.Enabled = !carregando;
-            txtSenha.Enabled = !carregando;
-            UseWaitCursor = carregando;
-        }
-
-        private void MostrarErro(string mensagem)
-        {
-            lblErro.Text = mensagem;
-            lblErro.Visible = true;
-        }
-
-        private void EsconderErro()
-        {
-            lblErro.Visible = false;
-            lblErro.Text = string.Empty;
-        }
-
-        private Point _dragStart;
-        private bool _arrastando;
-
-        private void HabilitarArraste(Control area)
-        {
-            area.MouseDown += (s, e) => { _arrastando = true; _dragStart = e.Location; };
-            area.MouseMove += (s, e) =>
-            {
-                if (_arrastando)
-                {
-                    var p = PointToScreen(e.Location);
-                    Location = new Point(p.X - _dragStart.X, p.Y - _dragStart.Y);
-                }
-            };
-            area.MouseUp += (s, e) => _arrastando = false;
-        }
-
-        private void btnFechar_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
+    private void SetBusy(bool busy)
+    {
+        _login.Enabled = !busy;
+        _login.Text = busy ? "ENTRANDO..." : "ENTRAR";
+        Cursor = busy ? Cursors.WaitCursor : Cursors.Default;
     }
 }

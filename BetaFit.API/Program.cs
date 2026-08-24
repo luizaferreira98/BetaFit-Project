@@ -83,11 +83,8 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
-<<<<<<< HEAD
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
-=======
->>>>>>> 9aa9898d3f31f5e28e0f9360943b6a83a794de8c
 
 // =====================================================================
 // 4. CONTROLLERS

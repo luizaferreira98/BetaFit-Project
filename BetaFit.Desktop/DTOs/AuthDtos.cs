@@ -1,4 +1,4 @@
-Ôªøusing System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,16 +12,13 @@ namespace BetaFit.Desktop.DTOs
     /// </summary>
     public class LoginRequestDto
     {
-<<<<<<< HEAD
         public string Login { get; set; } = string.Empty;
-=======
         public string Email { get; set; } = string.Empty;
->>>>>>> 9aa9898d3f31f5e28e0f9360943b6a83a794de8c
         public string Password { get; set; } = string.Empty;
     }
 
     /// <summary>
-    /// DTO para registrar um novo usu√°rio.
+    /// DTO para registrar um novo usu·rio.
     /// Mapeia o JSON enviado no POST /api/auth/register
     /// </summary>  
     public class RegisterRequestDto
@@ -32,7 +29,7 @@ namespace BetaFit.Desktop.DTOs
     }
 
     /// <summary>
-    /// DTO que representa o usu√°rio autenticado retornado pela API ap√≥s login.
+    /// DTO que representa o usu·rio autenticado retornado pela API apÛs login.
     /// Mapeia o JSON retornando no POST /api/auth/login e GET /api/auth/me
     ///</summary>
 
@@ -43,7 +40,7 @@ namespace BetaFit.Desktop.DTOs
         public List<string> Roles { get; set; } = new();
 
         /// <summary>
-        /// Verifica se o usu√°rio possui a role "Admin" e retorna true ou false.
+        /// Verifica se o usu·rio possui a role "Admin" e retorna true ou false.
         /// usando controle de acesso na interface
         /// </summary>
         public bool IsAdmin => Roles.Contains("Admin");

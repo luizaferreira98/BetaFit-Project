@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BetaFit.Infraestructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Inicial : Migration
+    public partial class Banco1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

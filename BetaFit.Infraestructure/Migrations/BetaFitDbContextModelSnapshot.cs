@@ -55,7 +55,6 @@ namespace BetaFit.Infraestructure.Migrations
                     b.ToTable("Categories");
                 });
 
-
             modelBuilder.Entity("BetaFit.Domain.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -114,7 +113,6 @@ namespace BetaFit.Infraestructure.Migrations
 
                     b.ToTable("OrderItems", (string)null);
                 });
-
 
             modelBuilder.Entity("BetaFit.Domain.Entities.Product", b =>
                 {
@@ -361,7 +359,6 @@ namespace BetaFit.Infraestructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-
             modelBuilder.Entity("BetaFit.Domain.Entities.OrderItem", b =>
                 {
                     b.HasOne("BetaFit.Domain.Entities.Order", "Order")
@@ -380,7 +377,6 @@ namespace BetaFit.Infraestructure.Migrations
 
                     b.Navigation("Product");
                 });
-
 
             modelBuilder.Entity("BetaFit.Domain.Entities.Product", b =>
                 {
@@ -453,9 +449,7 @@ namespace BetaFit.Infraestructure.Migrations
                 {
                     b.Navigation("Items");
                 });
-
- 
-
+#pragma warning restore 612, 618
         }
     }
 }

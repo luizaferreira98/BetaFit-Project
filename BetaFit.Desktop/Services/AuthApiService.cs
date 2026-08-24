@@ -57,11 +57,8 @@ namespace BetaFit.Desktop.Services
         {
             var loginDto = new LoginRequestDto
             {
-<<<<<<< HEAD
                 Login = email,
-=======
                 Email = email,
->>>>>>> 9aa9898d3f31f5e28e0f9360943b6a83a794de8c
                 Password = password
             };
 
