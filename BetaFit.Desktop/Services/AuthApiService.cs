@@ -53,7 +53,7 @@ namespace BetaFit.Desktop.Services
         /// <param name="email">E-mail do usuário</param>
         /// <param name="password">Senha do usuário</param>
         /// <returns>Tupla com sucesso, dados do usuário e mensagem de erro</returns>
-        public async Task<(bool Sucesso, UserResponseDto? User, string ErrorMessage)> LoginAsync(string email, string password)
+        public async Task<(bool Success, UserResponseDto? User, string Error)> LoginAsync(string email, string password)
         {
             var loginDto = new LoginRequestDto
             {
@@ -62,17 +62,17 @@ namespace BetaFit.Desktop.Services
                 Password = password
             };
 
-            var (sucesso, data, error) = await _http.PostAsync<UserResponseDto>(
+            var (success, data, error) = await _http.PostAsync<UserResponseDto>(
                 "/api/auth/login", loginDto);
 
-            return (sucesso, data, error);
+            return (success, data, error);
         }
 
         /// <summary>
         /// Realiza o logout chamando POST /api/auth/logout.
         /// Também limpa os cookies de sessão localmente
         /// </summary>
-        public async Task<(bool Sucesso, string ErrorMessage)> LogoutAsync()
+        public async Task<(bool Success, string Error)> LogoutAsync()
         {
             var result = await _http.PostEmptyAsync("/api/auth/logout");
 
@@ -93,7 +93,7 @@ namespace BetaFit.Desktop.Services
         /// <summary>
         /// Registra um novo usuário via POST /api/auth/register.
         /// </summary>
-        public async Task<(bool Sucesso, string ErrorMessage)> RegisterAsync(
+        public async Task<(bool Success, string Error)> RegisterAsync(
             string email, string password, string confirmPassword)
         {
             var dto = new RegisterRequestDto

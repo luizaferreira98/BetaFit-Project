@@ -46,167 +46,217 @@ namespace BetaFit.Desktop.UserControls
 
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             pnlHero = new Panel();
-            lblHeroEyebrow = new Label();
-            lblHeroTitulo = new Label();
             lblHeroDescricao = new Label();
+            lblHeroTitulo = new Label();
+            lblHeroEyebrow = new Label();
             pnlHeroMarca = new Panel();
             lblHeroMarca = new Label();
             pnlConteudo = new Panel();
-            flpMetricas = new FlowLayoutPanel();
-            pnlListaCabecalho = new Panel();
-            lblListaEyebrow = new Label();
-            lblListaTitulo = new Label();
-            lblListaQuantidade = new Label();
             pnlProdutos = new Panel();
+            pnlListaCabecalho = new Panel();
+            lblListaQuantidade = new Label();
+            lblListaTitulo = new Label();
+            lblListaEyebrow = new Label();
+            flpMetricas = new FlowLayoutPanel();
             pnlEstado = new Panel();
             lblEstado = new Label();
-
-            cardProdutos = CriarCard(out lblProdutosRotulo, out lblProdutosValor, out lblProdutosDetalhe, "01", "PRODUTOS", "TOTAL CADASTRADO");
-            cardCategorias = CriarCard(out lblCategoriasRotulo, out lblCategoriasValor, out lblCategoriasDetalhe, "02", "CATEGORIAS", "DISPONÍVEIS");
-            cardDestaque = CriarCard(out lblDestaqueRotulo, out lblDestaqueValor, out lblDestaqueDetalhe, "03", "EM DESTAQUE", "NA VITRINE");
-            cardAtivos = CriarCard(out lblAtivosRotulo, out lblAtivosValor, out lblAtivosDetalhe, "04", "ATIVOS", "NO CATÁLOGO");
-
             pnlHero.SuspendLayout();
             pnlHeroMarca.SuspendLayout();
             pnlConteudo.SuspendLayout();
-            flpMetricas.SuspendLayout();
             pnlListaCabecalho.SuspendLayout();
             pnlEstado.SuspendLayout();
             SuspendLayout();
-
-            // HERO — linguagem visual da BetaFit UI
-            pnlHero.BackColor = BetaFitTheme.PretoPrimario;
-            pnlHero.Dock = DockStyle.Top;
-            pnlHero.Height = 158;
-            pnlHero.Padding = new Padding(30, 22, 30, 22);
+            // 
+            // pnlHero
+            // 
+            pnlHero.BackColor = Color.FromArgb(11, 11, 11);
             pnlHero.Controls.Add(lblHeroDescricao);
             pnlHero.Controls.Add(lblHeroTitulo);
             pnlHero.Controls.Add(lblHeroEyebrow);
             pnlHero.Controls.Add(pnlHeroMarca);
-
-            lblHeroEyebrow.AutoSize = true;
-            lblHeroEyebrow.Font = BetaFitTheme.FonteRotulo;
-            lblHeroEyebrow.ForeColor = BetaFitTheme.Lima;
-            lblHeroEyebrow.Location = new Point(30, 20);
-            lblHeroEyebrow.Text = "BETAFIT / ADMIN";
-
-            lblHeroTitulo.AutoSize = true;
-            lblHeroTitulo.Font = new Font(BetaFitTheme.FonteBase, 29F, FontStyle.Bold);
-            lblHeroTitulo.ForeColor = BetaFitTheme.Branco;
-            lblHeroTitulo.Location = new Point(27, 48);
-            lblHeroTitulo.Text = "VISÃO GERAL";
-
+            pnlHero.Dock = DockStyle.Top;
+            pnlHero.Location = new Point(0, 0);
+            pnlHero.Name = "pnlHero";
+            pnlHero.Padding = new Padding(30, 22, 30, 22);
+            pnlHero.Size = new Size(1050, 158);
+            pnlHero.TabIndex = 2;
+            // 
+            // lblHeroDescricao
+            // 
             lblHeroDescricao.AutoSize = true;
-            lblHeroDescricao.Font = BetaFitTheme.FonteMedia;
+            lblHeroDescricao.Font = new Font("Segoe UI", 10F);
             lblHeroDescricao.ForeColor = Color.FromArgb(160, 160, 155);
             lblHeroDescricao.Location = new Point(30, 93);
+            lblHeroDescricao.Name = "lblHeroDescricao";
+            lblHeroDescricao.Size = new Size(466, 19);
+            lblHeroDescricao.TabIndex = 0;
             lblHeroDescricao.Text = "ACOMPANHE O CATÁLOGO, OS PRODUTOS E O DESEMPENHO DA LOJA.";
-
+            // 
+            // lblHeroTitulo
+            // 
+            lblHeroTitulo.AutoSize = true;
+            lblHeroTitulo.Font = new Font("Segoe UI", 29F, FontStyle.Bold);
+            lblHeroTitulo.ForeColor = Color.White;
+            lblHeroTitulo.Location = new Point(27, 48);
+            lblHeroTitulo.Name = "lblHeroTitulo";
+            lblHeroTitulo.Size = new Size(271, 52);
+            lblHeroTitulo.TabIndex = 1;
+            lblHeroTitulo.Text = "VISÃO GERAL";
+            // 
+            // lblHeroEyebrow
+            // 
+            lblHeroEyebrow.AutoSize = true;
+            lblHeroEyebrow.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+            lblHeroEyebrow.ForeColor = Color.FromArgb(201, 255, 34);
+            lblHeroEyebrow.Location = new Point(30, 20);
+            lblHeroEyebrow.Name = "lblHeroEyebrow";
+            lblHeroEyebrow.Size = new Size(104, 15);
+            lblHeroEyebrow.TabIndex = 2;
+            lblHeroEyebrow.Text = "BETAFIT / ADMIN";
+            // 
+            // pnlHeroMarca
+            // 
             pnlHeroMarca.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            pnlHeroMarca.BackColor = BetaFitTheme.Lima;
-            pnlHeroMarca.Location = new Point(0, 24);
-            pnlHeroMarca.Size = new Size(150, 92);
+            pnlHeroMarca.BackColor = Color.FromArgb(201, 255, 34);
             pnlHeroMarca.Controls.Add(lblHeroMarca);
-
+            pnlHeroMarca.Location = new Point(850, 24);
+            pnlHeroMarca.Name = "pnlHeroMarca";
+            pnlHeroMarca.Size = new Size(150, 92);
+            pnlHeroMarca.TabIndex = 3;
+            // 
+            // lblHeroMarca
+            // 
             lblHeroMarca.Dock = DockStyle.Fill;
-            lblHeroMarca.Font = new Font(BetaFitTheme.FonteBase, 19F, FontStyle.Bold);
-            lblHeroMarca.ForeColor = BetaFitTheme.PretoPrimario;
+            lblHeroMarca.Font = new Font("Segoe UI", 19F, FontStyle.Bold);
+            lblHeroMarca.ForeColor = Color.FromArgb(11, 11, 11);
+            lblHeroMarca.Location = new Point(0, 0);
+            lblHeroMarca.Name = "lblHeroMarca";
+            lblHeroMarca.Size = new Size(150, 92);
+            lblHeroMarca.TabIndex = 0;
             lblHeroMarca.Text = "BETA\nFIT";
             lblHeroMarca.TextAlign = ContentAlignment.MiddleCenter;
-
-
-            // CONTEÚDO
+            // 
+            // pnlConteudo
+            // 
             pnlConteudo.AutoScroll = true;
-            pnlConteudo.BackColor = BetaFitTheme.Superficie;
-            pnlConteudo.Dock = DockStyle.Fill;
-            pnlConteudo.Padding = new Padding(30, 26, 30, 30);
+            pnlConteudo.BackColor = Color.FromArgb(246, 246, 243);
             pnlConteudo.Controls.Add(pnlProdutos);
             pnlConteudo.Controls.Add(pnlListaCabecalho);
             pnlConteudo.Controls.Add(flpMetricas);
-
-            // MÉTRICAS
-            flpMetricas.Dock = DockStyle.Top;
-            flpMetricas.Height = 145;
-            flpMetricas.WrapContents = false;
-            flpMetricas.FlowDirection = FlowDirection.LeftToRight;
-            flpMetricas.Margin = new Padding(0);
-            flpMetricas.Padding = new Padding(0);
-            flpMetricas.BackColor = BetaFitTheme.Superficie;
-            flpMetricas.Controls.Add(cardProdutos);
-            flpMetricas.Controls.Add(cardCategorias);
-            flpMetricas.Controls.Add(cardDestaque);
-            flpMetricas.Controls.Add(cardAtivos);
-
-            ConfigurarCard(cardProdutos, true);
-            ConfigurarCard(cardCategorias, false);
-            ConfigurarCard(cardDestaque, false);
-            ConfigurarCard(cardAtivos, false);
-
-            // CABEÇALHO DOS PRODUTOS
-            pnlListaCabecalho.Dock = DockStyle.Top;
-            pnlListaCabecalho.Height = 88;
-            pnlListaCabecalho.BackColor = BetaFitTheme.Superficie;
+            pnlConteudo.Dock = DockStyle.Fill;
+            pnlConteudo.Location = new Point(0, 158);
+            pnlConteudo.Name = "pnlConteudo";
+            pnlConteudo.Padding = new Padding(30, 26, 30, 30);
+            pnlConteudo.Size = new Size(1050, 542);
+            pnlConteudo.TabIndex = 1;
+            // 
+            // pnlProdutos
+            // 
+            pnlProdutos.BackColor = Color.White;
+            pnlProdutos.Dock = DockStyle.Top;
+            pnlProdutos.Location = new Point(30, 259);
+            pnlProdutos.Name = "pnlProdutos";
+            pnlProdutos.Padding = new Padding(0, 34, 0, 0);
+            pnlProdutos.Size = new Size(973, 500);
+            pnlProdutos.TabIndex = 0;
+            pnlProdutos.Paint += PnlProdutos_Paint;
+            // 
+            // pnlListaCabecalho
+            // 
+            pnlListaCabecalho.BackColor = Color.FromArgb(246, 246, 243);
             pnlListaCabecalho.Controls.Add(lblListaQuantidade);
             pnlListaCabecalho.Controls.Add(lblListaTitulo);
             pnlListaCabecalho.Controls.Add(lblListaEyebrow);
-
-            lblListaEyebrow.AutoSize = true;
-            lblListaEyebrow.Font = BetaFitTheme.FonteRotulo;
-            lblListaEyebrow.ForeColor = BetaFitTheme.LimaEscuro;
-            lblListaEyebrow.Location = new Point(0, 24);
-            lblListaEyebrow.Text = "CATÁLOGO";
-
-            lblListaTitulo.AutoSize = true;
-            lblListaTitulo.Font = new Font(BetaFitTheme.FonteBase, 21F, FontStyle.Bold);
-            lblListaTitulo.ForeColor = BetaFitTheme.Tinta;
-            lblListaTitulo.Location = new Point(0, 44);
-            lblListaTitulo.Text = "PRODUTOS RECENTES";
-
+            pnlListaCabecalho.Dock = DockStyle.Top;
+            pnlListaCabecalho.Location = new Point(30, 171);
+            pnlListaCabecalho.Name = "pnlListaCabecalho";
+            pnlListaCabecalho.Size = new Size(973, 88);
+            pnlListaCabecalho.TabIndex = 1;
+            // 
+            // lblListaQuantidade
+            // 
             lblListaQuantidade.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblListaQuantidade.AutoSize = true;
-            lblListaQuantidade.Font = BetaFitTheme.FonteRotulo;
-            lblListaQuantidade.ForeColor = BetaFitTheme.TextoMuted;
-            lblListaQuantidade.Location = new Point(0, 47);
+            lblListaQuantidade.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+            lblListaQuantidade.ForeColor = Color.FromArgb(111, 112, 108);
+            lblListaQuantidade.Location = new Point(773, 47);
+            lblListaQuantidade.Name = "lblListaQuantidade";
+            lblListaQuantidade.Size = new Size(57, 15);
+            lblListaQuantidade.TabIndex = 0;
             lblListaQuantidade.Text = "05 ITENS";
-
-            // LISTA — sem editar/excluir, somente visualização
-            pnlProdutos.Dock = DockStyle.Top;
-            pnlProdutos.Height = 500;
-            pnlProdutos.Padding = new Padding(0, 34, 0, 0);
-            pnlProdutos.BackColor = BetaFitTheme.Branco;
-            pnlProdutos.BorderStyle = BorderStyle.None;
-            pnlProdutos.Paint += PnlProdutos_Paint;
-
-            // ESTADO / ERRO
-            pnlEstado.BackColor = BetaFitTheme.Branco;
-            pnlEstado.Dock = DockStyle.Fill;
-            pnlEstado.Visible = false;
-            pnlEstado.Padding = new Padding(30);
+            // 
+            // lblListaTitulo
+            // 
+            lblListaTitulo.AutoSize = true;
+            lblListaTitulo.Font = new Font("Segoe UI", 21F, FontStyle.Bold);
+            lblListaTitulo.ForeColor = Color.FromArgb(17, 17, 17);
+            lblListaTitulo.Location = new Point(0, 44);
+            lblListaTitulo.Name = "lblListaTitulo";
+            lblListaTitulo.Size = new Size(308, 38);
+            lblListaTitulo.TabIndex = 1;
+            lblListaTitulo.Text = "PRODUTOS RECENTES";
+            // 
+            // lblListaEyebrow
+            // 
+            lblListaEyebrow.AutoSize = true;
+            lblListaEyebrow.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+            lblListaEyebrow.ForeColor = Color.FromArgb(155, 201, 0);
+            lblListaEyebrow.Location = new Point(0, 24);
+            lblListaEyebrow.Name = "lblListaEyebrow";
+            lblListaEyebrow.Size = new Size(68, 15);
+            lblListaEyebrow.TabIndex = 2;
+            lblListaEyebrow.Text = "CATÁLOGO";
+            // 
+            // flpMetricas
+            // 
+            flpMetricas.BackColor = Color.FromArgb(246, 246, 243);
+            flpMetricas.Dock = DockStyle.Top;
+            flpMetricas.Location = new Point(30, 26);
+            flpMetricas.Margin = new Padding(0);
+            flpMetricas.Name = "flpMetricas";
+            flpMetricas.Size = new Size(973, 145);
+            flpMetricas.TabIndex = 2;
+            flpMetricas.WrapContents = false;
+            // 
+            // pnlEstado
+            // 
+            pnlEstado.BackColor = Color.White;
             pnlEstado.Controls.Add(lblEstado);
-
+            pnlEstado.Dock = DockStyle.Fill;
+            pnlEstado.Location = new Point(0, 158);
+            pnlEstado.Name = "pnlEstado";
+            pnlEstado.Padding = new Padding(30);
+            pnlEstado.Size = new Size(1050, 542);
+            pnlEstado.TabIndex = 0;
+            pnlEstado.Visible = false;
+            // 
+            // lblEstado
+            // 
             lblEstado.Dock = DockStyle.Fill;
-            lblEstado.Font = BetaFitTheme.FonteSubtitulo;
-            lblEstado.ForeColor = BetaFitTheme.TextoMuted;
+            lblEstado.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            lblEstado.ForeColor = Color.FromArgb(111, 112, 108);
+            lblEstado.Location = new Point(30, 30);
+            lblEstado.Name = "lblEstado";
+            lblEstado.Size = new Size(990, 482);
+            lblEstado.TabIndex = 0;
             lblEstado.TextAlign = ContentAlignment.MiddleCenter;
-
-            // USER CONTROL
+            // 
+            // DashboardUserControl
+            // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = BetaFitTheme.Superficie;
+            BackColor = Color.FromArgb(246, 246, 243);
             Controls.Add(pnlEstado);
             Controls.Add(pnlConteudo);
             Controls.Add(pnlHero);
             Name = "DashboardUserControl";
             Size = new Size(1050, 700);
             Resize += DashboardUserControl_Resize;
-
             pnlHero.ResumeLayout(false);
             pnlHero.PerformLayout();
             pnlHeroMarca.ResumeLayout(false);
             pnlConteudo.ResumeLayout(false);
-            flpMetricas.ResumeLayout(false);
             pnlListaCabecalho.ResumeLayout(false);
             pnlListaCabecalho.PerformLayout();
             pnlEstado.ResumeLayout(false);

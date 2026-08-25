@@ -3,38 +3,51 @@ using BetaFit.Desktop.Themes;
 
 namespace BetaFit.Desktop.Forms;
 
-public sealed class LoginForm : Form
+public partial class LoginForm : Form
 {
-    private readonly AuthService _auth = new();
-    private readonly TextBox _email = new();
-    private readonly TextBox _password = new();
-    private readonly Button _login = new();
-    private readonly Label _error = new();
+    private  AuthApiService _auth = new();
+    private TextBox _email = new();
+    private  TextBox _password = new();
+    private  Button _login = new();
+    private  Label _error = new();
+
 
     public LoginForm()
     {
-        BetaFitTheme.Apply(this);
+        // Apply minimal theming using BetaFitTheme palette
         Text = "BETAFIT / ADMIN";
         ClientSize = new Size(980, 620);
         MinimumSize = new Size(800, 520);
         Build();
     }
+    private void LoginForm_Load(object sender, EventArgs e)
+    {
+        //Guard: não executa em tempo de design
+        if (DesignMode) return;
 
+        _auth = new AuthApiService();
+
+        lblVersao.Text = $"Versão {AppConfig.Version} | ©️ {DateTime.Now.Year} SENAC-SMP";
+        lblApi.Text = $"API: {AppConfig.ApiBaseUrl}";
+
+        txtEmail.Text = "admin@betafit.com";
+        txtSenha.Text = "Admin@123";
+    }
     private void Build()
     {
-        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, BackColor = BetaFitTheme.Background };
+        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, BackColor = BetaFitTheme.Superficie };
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 55));
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 45));
         Controls.Add(root);
 
         var branding = new Panel { Dock = DockStyle.Fill, Padding = new Padding(60) };
-        var badge = new Label { Text = "BETA FIT", AutoSize = true, ForeColor = BetaFitTheme.Lime, Font = new Font("Segoe UI", 12, FontStyle.Bold), Location = new Point(60, 100) };
+        var badge = new Label { Text = "BETA FIT", AutoSize = true, ForeColor = BetaFitTheme.Lima, Font = new Font("Segoe UI", 12, FontStyle.Bold), Location = new Point(60, 100) };
         var title = new Label { Text = "BETAFIT\nADMIN", AutoSize = true, ForeColor = Color.White, Font = new Font("Segoe UI", 38, FontStyle.Bold), Location = new Point(60, 145) };
-        var subtitle = new Label { Text = "CONTROLE O CATÁLOGO.\nACOMPANHE A OPERAÇÃO.\nGERENCIE SUA PLATAFORMA.", AutoSize = true, ForeColor = BetaFitTheme.Muted, Font = new Font("Segoe UI", 11, FontStyle.Regular), Location = new Point(65, 275) };
+        var subtitle = new Label { Text = "CONTROLE O CATÁLOGO.\nACOMPANHE A OPERAÇÃO.\nGERENCIE SUA PLATAFORMA.", AutoSize = true, ForeColor = BetaFitTheme.TextoMuted, Font = new Font("Segoe UI", 11, FontStyle.Regular), Location = new Point(65, 275) };
         branding.Controls.AddRange([badge, title, subtitle]);
         root.Controls.Add(branding, 0, 0);
 
-        var panel = BetaFitTheme.Card();
+        var panel = new Panel { BackColor = BetaFitTheme.Branco };
         panel.Dock = DockStyle.Fill;
         panel.Margin = new Padding(30, 90, 55, 90);
         var inner = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 8 };
@@ -48,14 +61,14 @@ public sealed class LoginForm : Form
         inner.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         panel.Controls.Add(inner);
 
-        var header = new Label { Text = "ENTRAR", ForeColor = Color.White, Font = BetaFitTheme.Title, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft };
+        var header = new Label { Text = "ENTRAR", ForeColor = Color.White, Font = new Font("Segoe UI", 20, FontStyle.Bold), Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft };
         inner.Controls.Add(header, 0, 0);
-        inner.Controls.Add(new Label { Text = "E-MAIL", ForeColor = BetaFitTheme.Lime, Font = BetaFitTheme.Section, Dock = DockStyle.Fill, TextAlign = ContentAlignment.BottomLeft }, 0, 1);
+        inner.Controls.Add(new Label { Text = "E-MAIL", ForeColor = BetaFitTheme.Lima, Font = new Font("Segoe UI", 9, FontStyle.Bold), Dock = DockStyle.Fill, TextAlign = ContentAlignment.BottomLeft }, 0, 1);
         ConfigureInput(_email, "seu@email.com"); inner.Controls.Add(_email, 0, 2);
-        inner.Controls.Add(new Label { Text = "SENHA", ForeColor = BetaFitTheme.Lime, Font = BetaFitTheme.Section, Dock = DockStyle.Fill, TextAlign = ContentAlignment.BottomLeft }, 0, 3);
+        inner.Controls.Add(new Label { Text = "SENHA", ForeColor = BetaFitTheme.Lima, Font = new Font("Segoe UI", 9, FontStyle.Bold), Dock = DockStyle.Fill, TextAlign = ContentAlignment.BottomLeft }, 0, 3);
         ConfigureInput(_password, "••••••••"); _password.UseSystemPasswordChar = true; inner.Controls.Add(_password, 0, 4);
-        BetaFitTheme.StyleButton(_login); _login.Text = "ENTRAR"; _login.Dock = DockStyle.Top; _login.Click += LoginClicked; inner.Controls.Add(_login, 0, 5);
-        _error.Text = ""; _error.ForeColor = BetaFitTheme.Danger; _error.AutoSize = true; _error.Dock = DockStyle.Top; inner.Controls.Add(_error, 0, 6);
+        _login.Text = "ENTRAR"; _login.Dock = DockStyle.Top; _login.Click += LoginClicked; _login.BackColor = BetaFitTheme.Lima; _login.ForeColor = Color.Black; _login.FlatStyle = FlatStyle.Flat; inner.Controls.Add(_login, 0, 5);
+        _error.Text = ""; _error.ForeColor = BetaFitTheme.Perigo; _error.AutoSize = true; _error.Dock = DockStyle.Top; inner.Controls.Add(_error, 0, 6);
         panel.Anchor = AnchorStyles.None;
         root.Controls.Add(panel, 1, 0);
 
@@ -66,7 +79,9 @@ public sealed class LoginForm : Form
     {
         box.Dock = DockStyle.Fill;
         box.PlaceholderText = placeholder;
-        BetaFitTheme.StyleInput(box);
+        // Basic input styling
+        box.BorderStyle = BorderStyle.FixedSingle;
+        box.BackColor = Color.White;
         box.Margin = new Padding(0, 3, 0, 8);
     }
 

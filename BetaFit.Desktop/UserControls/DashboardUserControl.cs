@@ -76,7 +76,7 @@ namespace BetaFit.Desktop.UserControls
             lblCategoriasValor.Text = dashboard.TotalCategories.ToString("00");
             lblDestaqueValor.Text = dashboard.FeaturedProducts.ToString("00");
             lblAtivosValor.Text = dashboard.ActiveProducts.ToString("00");
-            lblListaQuantidade.Text = $"{dashboard.RecentProducts?.Count ?? 0:00} ITENS";
+            //lblListaQuantidade.Text = $"{dashboard.RecentProducts?.Count ?? 0:00} ITENS";
         }
 
         private void PreencherProdutos(IEnumerable<DashboardProductDto> produtos)

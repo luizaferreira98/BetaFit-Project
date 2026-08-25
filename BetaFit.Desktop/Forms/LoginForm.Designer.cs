@@ -151,7 +151,7 @@ namespace BetaFit.Desktop.Forms
             btnFechar.Size = new Size(28, 28);
             btnFechar.TabIndex = 1;
             btnFechar.Text = "X";
-            btnFechar.Click += btnFechar_Click;
+            //btnFechar.Click += btnFechar_Click;
             // 
             // pnlCard
             // 
@@ -186,7 +186,7 @@ namespace BetaFit.Desktop.Forms
             btnEntrar.Size = new Size(360, 46);
             btnEntrar.TabIndex = 8;
             btnEntrar.Text = "ENTRAR";
-            btnEntrar.Click += btnEntrar_Click;
+            //btnEntrar.Click += btnEntrar_Click;
             // 
             // lblErro
             // 
@@ -209,8 +209,8 @@ namespace BetaFit.Desktop.Forms
             chkMostrarSenha.TabIndex = 6;
             chkMostrarSenha.Text = "Mostrar senha";
             chkMostrarSenha.UseVisualStyleBackColor = true;
-            chkMostrarSenha.CheckedChanged += chkMostrarSenha_CheckedChanged;
-            // 
+            //chkMostrarSenha.CheckedChanged += chkMostrarSenha_CheckedChanged;
+            //// 
             // txtSenha
             // 
             txtSenha.BorderColor = Color.FromArgb(222, 222, 217);
