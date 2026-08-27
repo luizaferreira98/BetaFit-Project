@@ -150,6 +150,7 @@ namespace BetaFit.Desktop.UserControls
             pnlConteudo.Padding = new Padding(30, 26, 30, 30);
             pnlConteudo.Size = new Size(1050, 542);
             pnlConteudo.TabIndex = 1;
+            
             // 
             // pnlProdutos
             // 
@@ -161,6 +162,7 @@ namespace BetaFit.Desktop.UserControls
             pnlProdutos.Size = new Size(973, 500);
             pnlProdutos.TabIndex = 0;
             pnlProdutos.Paint += PnlProdutos_Paint;
+            
             // 
             // pnlListaCabecalho
             // 
@@ -173,6 +175,7 @@ namespace BetaFit.Desktop.UserControls
             pnlListaCabecalho.Name = "pnlListaCabecalho";
             pnlListaCabecalho.Size = new Size(973, 88);
             pnlListaCabecalho.TabIndex = 1;
+            
             // 
             // lblListaQuantidade
             // 
@@ -185,6 +188,7 @@ namespace BetaFit.Desktop.UserControls
             lblListaQuantidade.Size = new Size(57, 15);
             lblListaQuantidade.TabIndex = 0;
             lblListaQuantidade.Text = "05 ITENS";
+            
             // 
             // lblListaTitulo
             // 
@@ -196,6 +200,7 @@ namespace BetaFit.Desktop.UserControls
             lblListaTitulo.Size = new Size(308, 38);
             lblListaTitulo.TabIndex = 1;
             lblListaTitulo.Text = "PRODUTOS RECENTES";
+            
             // 
             // lblListaEyebrow
             // 
@@ -207,6 +212,7 @@ namespace BetaFit.Desktop.UserControls
             lblListaEyebrow.Size = new Size(68, 15);
             lblListaEyebrow.TabIndex = 2;
             lblListaEyebrow.Text = "CATÁLOGO";
+            
             // 
             // flpMetricas
             // 
@@ -218,6 +224,52 @@ namespace BetaFit.Desktop.UserControls
             flpMetricas.Size = new Size(973, 145);
             flpMetricas.TabIndex = 2;
             flpMetricas.WrapContents = false;
+
+            // 
+            // Cards de métricas
+            // 
+
+            cardProdutos = CriarCard(
+                out lblProdutosRotulo,
+                out lblProdutosValor,
+                out lblProdutosDetalhe,
+                "01",
+                "PRODUTOS",
+                "TOTAL DE PRODUTOS CADASTRADOS");
+
+            cardCategorias = CriarCard(
+                out lblCategoriasRotulo,
+                out lblCategoriasValor,
+                out lblCategoriasDetalhe,
+                "02",
+                "CATEGORIAS",
+                "TOTAL DE CATEGORIAS");
+
+            cardDestaque = CriarCard(
+                out lblDestaqueRotulo,
+                out lblDestaqueValor,
+                out lblDestaqueDetalhe,
+                "03",
+                "DESTAQUES",
+                "PRODUTOS EM DESTAQUE");
+
+            cardAtivos = CriarCard(
+                out lblAtivosRotulo,
+                out lblAtivosValor,
+                out lblAtivosDetalhe,
+                "04",
+                "ATIVOS",
+                "PRODUTOS ATIVOS");
+
+            ConfigurarCard(cardProdutos, false);
+            ConfigurarCard(cardCategorias, false);
+            ConfigurarCard(cardDestaque, true);
+            ConfigurarCard(cardAtivos, false);
+
+            flpMetricas.Controls.Add(cardProdutos);
+            flpMetricas.Controls.Add(cardCategorias);
+            flpMetricas.Controls.Add(cardDestaque);
+            flpMetricas.Controls.Add(cardAtivos);
             // 
             // pnlEstado
             // 

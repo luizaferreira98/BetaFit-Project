@@ -1,103 +1,133 @@
-﻿using BetaFit.Desktop.Helpers;
+// =============================================================================
+// BetaFit.Desktop - Forms/MainForm.cs
+// =============================================================================
+//  CONCEITO: Shell principal da aplicação (sidebar + área de conteúdo)
+//
+// Todo o layout (sidebar, botões de navegação, área de conteúdo) é definido
+// em MainForm.Designer.cs. Esta classe cuida apenas da navegação entre os
+// módulos (UserControls) e do logout.
+// =============================================================================
+
+using BetaFit.Desktop.Helpers;
 using BetaFit.Desktop.Services;
 using BetaFit.Desktop.Themes;
 using BetaFit.Desktop.UserControls;
-using Guna.UI2.WinForms;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace BetaFit.Desktop.Forms
 {
     public partial class MainForm : Form
     {
-        private AuthApiService _authService = null;
-        private UserControl? _controleAtual;
-        private Guna2Button? _botaoAtivo;
+        private readonly AuthApiService _authService = new();
+        private UserControl? _telaAtual;
+        private Button? _botaoAtivo;
 
         public MainForm()
         {
             InitializeComponent();
+            Text = $"BetaFit Desktop - {AppConfig.Version}";
         }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
-            //Guard: não executa em tempo de design
             if (DesignMode) return;
-                      
-            //Instancia o serviço
-            _authService = new AuthApiService();
 
-            // Atualiza o título com a versão
-            this.Text = $"Beta Fit Desktop - {AppConfig.Version}";
+            pnlConteudo.BackColor = BetaFitTheme.Superficie;
+            AplicarEstiloBotaoNav(btnDashboard);
+            AplicarEstiloBotaoNav(btnProdutos);
+            AplicarEstiloBotaoNav(btnCategorias);
+            AplicarEstiloBotaoNav(btnPedidos);
+            AplicarEstiloBotaoSair(btnSair);
 
-            NavegarParaDashboard();
-        }
-        private void NavegarParaDashboard()
-        {
             Navegar(new DashboardUserControl(), btnDashboard);
         }
 
-        private void Navegar(UserControl controle, Guna2Button? botao = null)
-        {
-            //Remove o UserControl anterior
-            if (_controleAtual != null)
-            {
-                pnlConteudo.Controls.Remove(_controleAtual);
-                _controleAtual.Dispose();
-                _controleAtual = null;
-            }
+        // =====================================================================
+        // NAVEGAÇÃO
+        // =====================================================================
 
-           
+        private void btnDashboard_Click(object sender, EventArgs e)
+            => Navegar(new DashboardUserControl(), btnDashboard);
 
-            AtualizarBotaoAtivo(botao);
-        }
-        private void AtualizarBotaoAtivo(Guna2Button? botao)
+        private void btnProdutos_Click(object sender, EventArgs e)
+            => Navegar(new ProductsUserControl(), btnProdutos);
+
+        private void btnCategorias_Click(object sender, EventArgs e)
+            => Navegar(new CategoriesUserControl(), btnCategorias);
+
+        private void btnPedidos_Click(object sender, EventArgs e)
+            => Navegar(new OrdersUserControl(), btnPedidos);
+
+        private void Navegar(UserControl proximaTela, Button botao)
         {
-            //Desativa o botão anterior
+            _telaAtual?.Dispose();
+            pnlConteudo.Controls.Clear();
+
+            proximaTela.Dock = DockStyle.Fill;
+            pnlConteudo.Controls.Add(proximaTela);
+            _telaAtual = proximaTela;
+
             if (_botaoAtivo != null)
             {
-                _botaoAtivo.FillColor = Color.Transparent;
-                _botaoAtivo.ForeColor = Color.Black;
-
-                _botaoAtivo = botao;
-                if (_botaoAtivo != null)
-                {
-                    _botaoAtivo.FillColor = Color.FromArgb(0, 120, 215);
-                    _botaoAtivo.ForeColor = Color.White;
-                    _botaoAtivo.CustomBorderColor = BetaFitTheme.BotaoEscuroFundo;
-                }
+                _botaoAtivo.BackColor = Color.Transparent;
+                _botaoAtivo.ForeColor = Color.White;
             }
+
+            _botaoAtivo = botao;
+            _botaoAtivo.BackColor = BetaFitTheme.PretoSecundario;
+            _botaoAtivo.ForeColor = BetaFitTheme.Lima;
         }
-        private async void btnLogout_Click(object sender, EventArgs e)
+
+        // =====================================================================
+        // LOGOUT
+        // =====================================================================
+
+        private async void btnSair_Click(object sender, EventArgs e)
         {
-            var resposta = MessageBox.Show(
+            var confirmacao = MessageBox.Show(
                 "Deseja realmente sair do sistema?",
-                "Confirmar Logout",
+                "BetaFit",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
 
-            if (resposta != DialogResult.Yes) return;
+            if (confirmacao != DialogResult.Yes) return;
 
-            try
-            {
-                await _authService.LogoutAsync();
-            }
-            catch
-            {
-                // Mesmo se a API falhar, limpa a sessão local
-            }
+            try { await _authService.LogoutAsync(); }
+            catch { /* segue com o logout local mesmo se a API falhar */ }
             finally
             {
                 SessionManager.Instance.Clear();
-                this.Close();
+                Close();
             }
         }
 
+        // =====================================================================
+        // ESTILO
+        // =====================================================================
+
+        private static void AplicarEstiloBotaoNav(Button botao)
+        {
+            botao.FlatAppearance.BorderSize = 0;
+            botao.BackColor = Color.Transparent;
+            botao.Cursor = Cursors.Hand;
+            botao.MouseEnter += (_, _) =>
+            {
+                if (botao.BackColor != BetaFitTheme.PretoSecundario)
+                    botao.BackColor = BetaFitTheme.PretoSecundario;
+            };
+            botao.MouseLeave += (_, _) =>
+            {
+                if (botao.ForeColor != BetaFitTheme.Lima)
+                    botao.BackColor = Color.Transparent;
+            };
+        }
+
+        private static void AplicarEstiloBotaoSair(Button botao)
+        {
+            botao.FlatAppearance.BorderSize = 0;
+            botao.BackColor = Color.Transparent;
+            botao.Cursor = Cursors.Hand;
+            botao.MouseEnter += (_, _) => botao.BackColor = BetaFitTheme.Perigo;
+            botao.MouseLeave += (_, _) => botao.BackColor = Color.Transparent;
+        }
     }
 }
