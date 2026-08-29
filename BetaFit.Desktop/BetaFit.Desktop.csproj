@@ -6,16 +6,14 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>d56c1dfc-775f-4154-a826-b1332b8d7e56</UserSecretsId>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Forms\" />
-    <Folder Include="UserControls\" />
-  </ItemGroup>
 
   <ItemGroup>
 
     <PackageReference Include="Guna.UI2.WinForms" Version="2.0.4.8" />
+
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
