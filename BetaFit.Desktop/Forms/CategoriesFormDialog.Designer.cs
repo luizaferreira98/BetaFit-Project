@@ -106,6 +106,7 @@
             btnFecharNovaCategoria.Size = new Size(40, 28);
             btnFecharNovaCategoria.TabIndex = 6;
             btnFecharNovaCategoria.Text = "X";
+            btnFecharNovaCategoria.Click += btnFecharNovaCategoria_Click;
             // 
             // btnCancelarCategoria
             // 
@@ -127,6 +128,7 @@
             btnCancelarCategoria.Size = new Size(161, 45);
             btnCancelarCategoria.TabIndex = 22;
             btnCancelarCategoria.Text = "CANCELAR";
+            btnCancelarCategoria.Click += btnCancelarCategoria_Click;
             // 
             // btnSalvarCategoria
             // 
@@ -146,6 +148,7 @@
             btnSalvarCategoria.Size = new Size(157, 45);
             btnSalvarCategoria.TabIndex = 23;
             btnSalvarCategoria.Text = "💾 SALVAR";
+            btnSalvarCategoria.Click += btnSalvarCategoria_Click;
             // 
             // CategoriesFormDialog
             // 
@@ -162,6 +165,7 @@
             FormBorderStyle = FormBorderStyle.None;
             Name = "CategoriesFormDialog";
             Text = "CategoriesFormDialog";
+            Load += CategoriesFormDialog_Load;
             ResumeLayout(false);
             PerformLayout();
         }

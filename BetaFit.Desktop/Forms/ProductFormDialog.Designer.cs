@@ -47,9 +47,7 @@
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges17 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges18 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges19 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges20 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges21 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            lblTituloNovoProduto = new Guna.UI2.WinForms.Guna2HtmlLabel();
+            lblTituloFromProduto = new Guna.UI2.WinForms.Guna2HtmlLabel();
             guna2HtmlLabel1 = new Guna.UI2.WinForms.Guna2HtmlLabel();
             btnFecharNovoProduto = new Guna.UI2.WinForms.Guna2CircleButton();
             lblNomeProduto = new Guna.UI2.WinForms.Guna2HtmlLabel();
@@ -64,24 +62,22 @@
             cboCategoriaProduto = new Guna.UI2.WinForms.Guna2ComboBox();
             cboGenero = new Guna.UI2.WinForms.Guna2ComboBox();
             lblGeneroProduto = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            swEmDestaque = new Guna.UI2.WinForms.Guna2ToggleSwitch();
-            lblEmDestaque = new Guna.UI2.WinForms.Guna2HtmlLabel();
             lblAtivo = new Guna.UI2.WinForms.Guna2HtmlLabel();
             swAtivo = new Guna.UI2.WinForms.Guna2ToggleSwitch();
             btnSalvarProduto = new Guna.UI2.WinForms.Guna2Button();
             btnCancelarProduto = new Guna.UI2.WinForms.Guna2Button();
             SuspendLayout();
             // 
-            // lblTituloNovoProduto
+            // lblTituloFromProduto
             // 
-            lblTituloNovoProduto.BackColor = Color.Transparent;
-            lblTituloNovoProduto.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblTituloNovoProduto.ForeColor = SystemColors.ControlLightLight;
-            lblTituloNovoProduto.Location = new Point(15, 15);
-            lblTituloNovoProduto.Name = "lblTituloNovoProduto";
-            lblTituloNovoProduto.Size = new Size(166, 34);
-            lblTituloNovoProduto.TabIndex = 0;
-            lblTituloNovoProduto.Text = "Novo Produto";
+            lblTituloFromProduto.BackColor = Color.Transparent;
+            lblTituloFromProduto.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblTituloFromProduto.ForeColor = SystemColors.ControlLightLight;
+            lblTituloFromProduto.Location = new Point(15, 15);
+            lblTituloFromProduto.Name = "lblTituloFromProduto";
+            lblTituloFromProduto.Size = new Size(166, 34);
+            lblTituloFromProduto.TabIndex = 0;
+            lblTituloFromProduto.Text = "Novo Produto";
             // 
             // guna2HtmlLabel1
             // 
@@ -136,6 +132,7 @@
             txtNomeProduto.FillColor = Color.DimGray;
             txtNomeProduto.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
             txtNomeProduto.Font = new Font("Segoe UI", 9F);
+            txtNomeProduto.ForeColor = Color.White;
             txtNomeProduto.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
             txtNomeProduto.Location = new Point(15, 90);
             txtNomeProduto.Name = "txtNomeProduto";
@@ -160,6 +157,7 @@
             txtDescricaoProduto.FillColor = Color.DimGray;
             txtDescricaoProduto.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
             txtDescricaoProduto.Font = new Font("Segoe UI", 9F);
+            txtDescricaoProduto.ForeColor = Color.White;
             txtDescricaoProduto.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
             txtDescricaoProduto.Location = new Point(15, 166);
             txtDescricaoProduto.Name = "txtDescricaoProduto";
@@ -196,6 +194,7 @@
             txtPrecoProduto.FillColor = Color.DimGray;
             txtPrecoProduto.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
             txtPrecoProduto.Font = new Font("Segoe UI", 9F);
+            txtPrecoProduto.ForeColor = Color.White;
             txtPrecoProduto.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
             txtPrecoProduto.Location = new Point(15, 323);
             txtPrecoProduto.Name = "txtPrecoProduto";
@@ -231,6 +230,7 @@
             txtUrlImagemProduto.FillColor = Color.DimGray;
             txtUrlImagemProduto.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
             txtUrlImagemProduto.Font = new Font("Segoe UI", 9F);
+            txtUrlImagemProduto.ForeColor = Color.White;
             txtUrlImagemProduto.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
             txtUrlImagemProduto.Location = new Point(182, 323);
             txtUrlImagemProduto.Name = "txtUrlImagemProduto";
@@ -310,40 +310,12 @@
             lblGeneroProduto.TabIndex = 14;
             lblGeneroProduto.Text = "GENÊRO";
             // 
-            // swEmDestaque
-            // 
-            swEmDestaque.CheckedState.BorderColor = Color.FromArgb(94, 148, 255);
-            swEmDestaque.CheckedState.FillColor = Color.FromArgb(94, 148, 255);
-            swEmDestaque.CheckedState.InnerBorderColor = Color.White;
-            swEmDestaque.CheckedState.InnerColor = Color.White;
-            swEmDestaque.CustomizableEdges = customizableEdges14;
-            swEmDestaque.Location = new Point(15, 446);
-            swEmDestaque.Name = "swEmDestaque";
-            swEmDestaque.ShadowDecoration.CustomizableEdges = customizableEdges15;
-            swEmDestaque.Size = new Size(35, 20);
-            swEmDestaque.TabIndex = 16;
-            swEmDestaque.UncheckedState.BorderColor = Color.FromArgb(125, 137, 149);
-            swEmDestaque.UncheckedState.FillColor = Color.FromArgb(125, 137, 149);
-            swEmDestaque.UncheckedState.InnerBorderColor = Color.White;
-            swEmDestaque.UncheckedState.InnerColor = Color.White;
-            // 
-            // lblEmDestaque
-            // 
-            lblEmDestaque.BackColor = Color.Transparent;
-            lblEmDestaque.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblEmDestaque.ForeColor = SystemColors.ButtonFace;
-            lblEmDestaque.Location = new Point(56, 448);
-            lblEmDestaque.Name = "lblEmDestaque";
-            lblEmDestaque.Size = new Size(84, 17);
-            lblEmDestaque.TabIndex = 17;
-            lblEmDestaque.Text = "EM DESTAQUE";
-            // 
             // lblAtivo
             // 
             lblAtivo.BackColor = Color.Transparent;
             lblAtivo.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblAtivo.ForeColor = SystemColors.ButtonFace;
-            lblAtivo.Location = new Point(244, 450);
+            lblAtivo.Location = new Point(57, 450);
             lblAtivo.Name = "lblAtivo";
             lblAtivo.Size = new Size(39, 17);
             lblAtivo.TabIndex = 19;
@@ -351,14 +323,14 @@
             // 
             // swAtivo
             // 
-            swAtivo.CheckedState.BorderColor = Color.FromArgb(94, 148, 255);
-            swAtivo.CheckedState.FillColor = Color.FromArgb(94, 148, 255);
-            swAtivo.CheckedState.InnerBorderColor = Color.White;
+            swAtivo.CheckedState.BorderColor = Color.GreenYellow;
+            swAtivo.CheckedState.FillColor = Color.GreenYellow;
+            swAtivo.CheckedState.InnerBorderColor = Color.Black;
             swAtivo.CheckedState.InnerColor = Color.White;
-            swAtivo.CustomizableEdges = customizableEdges16;
-            swAtivo.Location = new Point(204, 448);
+            swAtivo.CustomizableEdges = customizableEdges14;
+            swAtivo.Location = new Point(17, 448);
             swAtivo.Name = "swAtivo";
-            swAtivo.ShadowDecoration.CustomizableEdges = customizableEdges17;
+            swAtivo.ShadowDecoration.CustomizableEdges = customizableEdges15;
             swAtivo.Size = new Size(35, 20);
             swAtivo.TabIndex = 18;
             swAtivo.UncheckedState.BorderColor = Color.FromArgb(125, 137, 149);
@@ -370,7 +342,7 @@
             // 
             btnSalvarProduto.BorderRadius = 5;
             btnSalvarProduto.Cursor = Cursors.Hand;
-            btnSalvarProduto.CustomizableEdges = customizableEdges18;
+            btnSalvarProduto.CustomizableEdges = customizableEdges16;
             btnSalvarProduto.DisabledState.BorderColor = Color.DarkGray;
             btnSalvarProduto.DisabledState.CustomBorderColor = Color.DarkGray;
             btnSalvarProduto.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
@@ -380,10 +352,11 @@
             btnSalvarProduto.ForeColor = Color.Black;
             btnSalvarProduto.Location = new Point(208, 490);
             btnSalvarProduto.Name = "btnSalvarProduto";
-            btnSalvarProduto.ShadowDecoration.CustomizableEdges = customizableEdges19;
+            btnSalvarProduto.ShadowDecoration.CustomizableEdges = customizableEdges17;
             btnSalvarProduto.Size = new Size(189, 45);
             btnSalvarProduto.TabIndex = 20;
             btnSalvarProduto.Text = "💾 SALVAR PRODUTO";
+            btnSalvarProduto.Click += btnSalvarProduto_Click;
             // 
             // btnCancelarProduto
             // 
@@ -391,7 +364,7 @@
             btnCancelarProduto.BorderRadius = 5;
             btnCancelarProduto.BorderThickness = 1;
             btnCancelarProduto.Cursor = Cursors.Hand;
-            btnCancelarProduto.CustomizableEdges = customizableEdges20;
+            btnCancelarProduto.CustomizableEdges = customizableEdges18;
             btnCancelarProduto.DisabledState.BorderColor = Color.DarkGray;
             btnCancelarProduto.DisabledState.CustomBorderColor = Color.DarkGray;
             btnCancelarProduto.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
@@ -401,10 +374,11 @@
             btnCancelarProduto.ForeColor = Color.White;
             btnCancelarProduto.Location = new Point(8, 490);
             btnCancelarProduto.Name = "btnCancelarProduto";
-            btnCancelarProduto.ShadowDecoration.CustomizableEdges = customizableEdges21;
+            btnCancelarProduto.ShadowDecoration.CustomizableEdges = customizableEdges19;
             btnCancelarProduto.Size = new Size(189, 45);
             btnCancelarProduto.TabIndex = 21;
             btnCancelarProduto.Text = "CANCELAR";
+            btnCancelarProduto.Click += btnCancelarProduto_Click;
             // 
             // ProductFormDialog
             // 
@@ -416,8 +390,6 @@
             Controls.Add(btnSalvarProduto);
             Controls.Add(lblAtivo);
             Controls.Add(swAtivo);
-            Controls.Add(lblEmDestaque);
-            Controls.Add(swEmDestaque);
             Controls.Add(cboGenero);
             Controls.Add(lblGeneroProduto);
             Controls.Add(cboCategoriaProduto);
@@ -432,17 +404,18 @@
             Controls.Add(lblNomeProduto);
             Controls.Add(btnFecharNovoProduto);
             Controls.Add(guna2HtmlLabel1);
-            Controls.Add(lblTituloNovoProduto);
+            Controls.Add(lblTituloFromProduto);
             FormBorderStyle = FormBorderStyle.None;
             Name = "ProductFormDialog";
             Text = "ProductFormDialog";
+            Load += ProductFormDialog_Load;
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private Guna.UI2.WinForms.Guna2HtmlLabel lblTituloNovoProduto;
+        private Guna.UI2.WinForms.Guna2HtmlLabel lblTituloFromProduto;
         private Guna.UI2.WinForms.Guna2HtmlLabel guna2HtmlLabel1;
         private Guna.UI2.WinForms.Guna2CircleButton btnFecharNovoProduto;
         private Guna.UI2.WinForms.Guna2HtmlLabel lblNomeProduto;
@@ -457,8 +430,6 @@
         private Guna.UI2.WinForms.Guna2ComboBox cboCategoriaProduto;
         private Guna.UI2.WinForms.Guna2ComboBox cboGenero;
         private Guna.UI2.WinForms.Guna2HtmlLabel lblGeneroProduto;
-        private Guna.UI2.WinForms.Guna2ToggleSwitch swEmDestaque;
-        private Guna.UI2.WinForms.Guna2HtmlLabel lblEmDestaque;
         private Guna.UI2.WinForms.Guna2HtmlLabel lblAtivo;
         private Guna.UI2.WinForms.Guna2ToggleSwitch swAtivo;
         private Guna.UI2.WinForms.Guna2Button btnSalvarProduto;

@@ -41,8 +41,6 @@ namespace BetaFit.Application.Services
             var category = new Category
             {
                 Name = dto.Name,
-                Description = dto.Description,
-                ImageUrl = dto.ImageUrl,
                 IsActive = true
             };
 
@@ -56,8 +54,6 @@ namespace BetaFit.Application.Services
             if (category == null) return null;
 
             category.Name = dto.Name;
-            category.Description = dto.Description;
-            category.ImageUrl = dto.ImageUrl;
             category.IsActive = dto.IsActive;
 
             await _categoryRepository.UpdateAsync(category);
@@ -92,10 +88,9 @@ namespace BetaFit.Application.Services
             {
                 Id = category.Id,
                 Name = category.Name,
-                Description = category.Description,
-                ImageUrl = category.ImageUrl,
                 IsActive = category.IsActive,
-                ProductCount = category.Products?.Count ?? 0
+                ProductCount = category.Products?.Count ?? 0,
+                CreatedAt = category.CreatedAt
             };
         }
     }

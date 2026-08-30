@@ -7,7 +7,14 @@
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public int GameCount { get; set; }
+        public bool IsActive { get; set; }
+
+        /// <summary>
+        /// Quantidade de produtos nesta categoria.
+        /// Útil para mostrar no dashboard e na listagem.
+        /// </summary>
+        public int ProductCount { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 
     /// <summary>
@@ -16,6 +23,7 @@
     public class CreateCategoriaDto
     {
         public string Name { get; set; } = string.Empty;
+        public bool IsActive { get; set; }
     }
 
     /// <summary>
@@ -24,6 +32,7 @@
     public class UpdateCategoriaDto
     {
         public string Name { get; set; } = string.Empty;
+        public bool IsActive { get; set; }
     }
 
 

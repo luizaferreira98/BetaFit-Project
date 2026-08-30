@@ -92,7 +92,7 @@ namespace BetaFit.UI.Controllers
             }
 
             // Loga o usuário automaticamente logo após o cadastro
-            var signedIn = await SignInWithApiAsync(new LoginDto { Login = dto.Email, Password = dto.Password });
+            var signedIn = await SignInWithApiAsync(new LoginDto { Email = dto.Email, Password = dto.Password });
             if (!signedIn)
                 return RedirectToAction(nameof(Login));
 

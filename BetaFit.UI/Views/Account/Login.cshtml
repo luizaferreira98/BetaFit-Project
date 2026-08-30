@@ -16,7 +16,7 @@
             }
             <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" class="bf-form">
                 @Html.AntiForgeryToken()
-                <label>E-mail<input asp-for="Login" type="email" autocomplete="email" placeholder="voce@email.com" required /></label>
+                <label>E-mail<input asp-for="Email" type="email" autocomplete="email" placeholder="voce@email.com" required /></label>
                 <label>Senha<input asp-for="Password" type="password" autocomplete="current-password" placeholder="Sua senha" required /></label>
                 <button class="bf-btn bf-btn--dark bf-btn--wide" type="submit">Entrar <span>→</span></button>
             </form>

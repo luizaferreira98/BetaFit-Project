@@ -75,15 +75,15 @@ namespace BetaFit.API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromBody] LoginDto dto)
         {
-            // O campo "Login" do DTO representa o e-mail/usuário do Identity
+            // O campo "Email" do DTO representa o e-mail do Identity
             var result = await _signInManager.PasswordSignInAsync(
-                dto.Login, dto.Password, isPersistent: false, lockoutOnFailure: false);
+                dto.Email, dto.Password, isPersistent: false, lockoutOnFailure: false);
 
             if (!result.Succeeded)
                 return Unauthorized(new { message = "Login ou senha inválidos." });
 
             // Busca o usuário para retornar seus dados
-            var user = await _userManager.FindByEmailAsync(dto.Login);
+            var user = await _userManager.FindByEmailAsync(dto.Email);
             var roles = await _userManager.GetRolesAsync(user!);
 
             return Ok(new UserDto

@@ -17,6 +17,9 @@ namespace BetaFit.Desktop.Forms
 {
     public partial class MainForm : Form
     {
+        //=================================================
+        // SERVIÇOS (Inicilizados no Load)
+        //=================================================
         // UserControl atualmente exibido no painel de conteudo (pnlConteudo)
         private UserControl? _controleAtual;
 
@@ -112,6 +115,7 @@ namespace BetaFit.Desktop.Forms
             }
         }
 
+        //Botão de Logout
         private async void btnLogout_Click(object sender, EventArgs e)
         {
             //Mensagem para ver se o usuario deseja realmente sair do sistema
@@ -138,6 +142,8 @@ namespace BetaFit.Desktop.Forms
             }
         }
 
+
+        // Botoes para ir para outras paginas
         private void btnDashBoard_Click(object sender, EventArgs e) => Navegar(new DashboardUserControl(), btnDashBoard);
         private void btnProdutos_Click(object sender, EventArgs e) => Navegar(new ProdutosUserControl(), btnProdutos);
         private void btnCategorias_Click(object sender, EventArgs e) => Navegar(new CategoriasUserControl(), btnCategorias);

@@ -311,7 +311,6 @@
         private Guna.UI2.WinForms.Guna2HtmlLabel lblVersao;
         private Guna.UI2.WinForms.Guna2HtmlLabel lblErro;
         private Guna.UI2.WinForms.Guna2HtmlLabel lblApi;
-        private Guna.UI2.WinForms.Guna2HtmlLabel lblStatus;
         private Guna.UI2.WinForms.Guna2HtmlLabel lblCarregando;
         private Guna.UI2.WinForms.Guna2DragControl guna2DragControl1;
         private Guna.UI2.WinForms.Guna2DragControl guna2DragControl2;
