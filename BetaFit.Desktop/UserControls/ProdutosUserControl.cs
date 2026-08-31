@@ -20,7 +20,7 @@ namespace BetaFit.Desktop.UserControls
         //=================================================
         // SERVIÇOS (Inicilizados no Load)
         //=================================================
-        private ProductsApiService _productsApiService = null;
+        private ProductsApiService _productsApiService = null!;
         private CategoriesApiService _categoriesApiService = null!; // Se nao tiver nenhuma categoria ele avisa
 
         //=================================================
@@ -50,7 +50,7 @@ namespace BetaFit.Desktop.UserControls
             _categoriesApiService = new CategoriesApiService();
 
             //Aplica o tema no DataGridView
-            //BetaFitThemes.AplicarEstiloGrid(gridGames); nao sei se tem ou nao mais vou deixar aqui!!!
+            BetaFit.Desktop.Themes.BetaFitTheme.AplicarEstiloGrid(gridProdutos);
 
             ConfigurarPermissoes();
             await CarregarDadosAsync();

@@ -35,6 +35,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Windows.Forms;
+using Guna.UI2.WinForms;
 
 namespace BetaFit.Desktop.Themes
 {
@@ -262,6 +263,16 @@ namespace BetaFit.Desktop.Themes
         /// <summary>
         /// Aplica o estilo BetaFit a um DataGridView: cabeçalho preto,
         /// linhas alternadas, seleção em tom de lima.
+        ///
+        /// IMPORTANTE sobre Guna2DataGridView:
+        ///   O Guna2DataGridView NÃO pinta a partir de DefaultCellStyle /
+        ///   ColumnHeadersDefaultCellStyle — ele usa seu próprio objeto
+        ///   "ThemeStyle" (ThemeStyle.HeaderStyle, ThemeStyle.RowsStyle,
+        ///   ThemeStyle.AlternatingRowsStyle), que tem prioridade sobre o
+        ///   estilo "cru" do WinForms. Por isso, se o grid for um
+        ///   Guna2DataGridView, aplicamos os dois (o estilo base, para
+        ///   qualquer DataGridView comum, e o ThemeStyle, que é o que
+        ///   realmente aparece na tela nesse caso).
         /// </summary>
         public static void AplicarEstiloGrid(DataGridView grid)
         {
@@ -306,6 +317,31 @@ namespace BetaFit.Desktop.Themes
             grid.AllowUserToAddRows = false;
             grid.AllowUserToDeleteRows = false;
             grid.AllowUserToResizeRows = false;
+
+            // ── Guna2DataGridView: aplica também no ThemeStyle ────────────────
+            // (é o que o Guna realmente usa para pintar; sem isso, o grid
+            // continua com as cores default geradas pelo Designer.)
+            if (grid is Guna2DataGridView guna)
+            {
+                guna.ThemeStyle.BackColor = Superficie;
+                guna.ThemeStyle.GridColor = Linha;
+
+                guna.ThemeStyle.HeaderStyle.BackColor = GridCabecalhoFundo;
+                guna.ThemeStyle.HeaderStyle.ForeColor = GridCabecalhoTexto;
+                guna.ThemeStyle.HeaderStyle.Font = FonteRotulo;
+                guna.ThemeStyle.HeaderStyle.Height = 42;
+
+                guna.ThemeStyle.RowsStyle.BackColor = GridLinhaPar;
+                guna.ThemeStyle.RowsStyle.ForeColor = GridTextoPrincipal;
+                guna.ThemeStyle.RowsStyle.Font = FonteNormal;
+                guna.ThemeStyle.RowsStyle.Height = 38;
+                guna.ThemeStyle.RowsStyle.SelectionBackColor = GridLinhaSelecionada;
+                guna.ThemeStyle.RowsStyle.SelectionForeColor = Tinta;
+
+                guna.ThemeStyle.AlternatingRowsStyle.BackColor = GridLinhaImpar;
+                guna.ThemeStyle.AlternatingRowsStyle.ForeColor = GridTextoPrincipal;
+                guna.ThemeStyle.AlternatingRowsStyle.Font = FonteNormal;
+            }
         }
 
         /// <summary>
@@ -332,6 +368,52 @@ namespace BetaFit.Desktop.Themes
             lbl.TextAlign = ContentAlignment.MiddleCenter;
             lbl.AutoSize = false;
             lbl.Padding = new Padding(6, 2, 6, 2);
+        }
+
+        // =====================================================================
+        // STATUS DE PEDIDO (badge dentro de célula do grid)
+        // =====================================================================
+
+        /// <summary>
+        /// Cores (fundo, texto) para cada status possível de um Pedido.
+        /// Precisa bater com o enum OrderStatus do BetaFit.Domain
+        /// (ver PedidosUserControl.StatusDisponiveis).
+        /// </summary>
+        public static (Color Fundo, Color Texto) CorStatusPedido(string status) => status switch
+        {
+            "Pendente" => (NeutroFundo, NeutroTexto),
+            "EmPreparacao" => (AvisoFundo, AvisoTexto),
+            "Pronto" => (InfoFundo, InfoTexto),
+            "Entregue" => (SucessoFundo, SucessoTexto),
+            "Cancelado" => (PerigoFundo, PerigoTexto),
+            _ => (NeutroFundo, NeutroTexto)
+        };
+
+        /// <summary>
+        /// Liga a pintura em "badge" (fundo colorido + texto colorido,
+        /// caixa alta, negrito) para uma coluna de status dentro de um
+        /// DataGridView/Guna2DataGridView. Chame uma vez, normalmente logo
+        /// após AplicarEstiloGrid, passando o nome da coluna a colorir.
+        ///
+        /// Uso: BetaFitTheme.AplicarBadgeStatusNoGrid(gridPedidos, "colStatus");
+        /// </summary>
+        public static void AplicarBadgeStatusNoGrid(DataGridView grid, string nomeColuna)
+        {
+            grid.CellFormatting += (sender, e) =>
+            {
+                if (grid.Columns[e.ColumnIndex]?.Name != nomeColuna) return;
+                if (e.Value == null || e.CellStyle == null) return;
+
+                var status = e.Value.ToString() ?? "";
+                var (fundo, texto) = CorStatusPedido(status);
+
+                e.CellStyle.BackColor = fundo;
+                e.CellStyle.ForeColor = texto;
+                e.CellStyle.SelectionBackColor = fundo;
+                e.CellStyle.SelectionForeColor = texto;
+                e.CellStyle.Font = FonteRotulo;
+                e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            };
         }
     }
 }

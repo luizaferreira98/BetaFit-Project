@@ -46,7 +46,7 @@
             btnAtualizarStatusPedido = new Guna.UI2.WinForms.Guna2Button();
             cboStatusPedido = new Guna.UI2.WinForms.Guna2ComboBox();
             lblNovoStatus = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            gridProdutos = new Guna.UI2.WinForms.Guna2DataGridView();
+            gridPedidos = new Guna.UI2.WinForms.Guna2DataGridView();
             colId = new DataGridViewTextBoxColumn();
             colCliente = new DataGridViewTextBoxColumn();
             colData = new DataGridViewTextBoxColumn();
@@ -54,7 +54,7 @@
             colItens = new DataGridViewTextBoxColumn();
             colStatus = new DataGridViewTextBoxColumn();
             guna2Panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)gridProdutos).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)gridPedidos).BeginInit();
             SuspendLayout();
             // 
             // lblTituloPedidos
@@ -164,11 +164,11 @@
             lblNovoStatus.TabIndex = 0;
             lblNovoStatus.Text = "NOVO STATUS:";
             // 
-            // gridProdutos
+            // gridPedidos
             // 
             dataGridViewCellStyle4.BackColor = Color.White;
-            gridProdutos.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
-            gridProdutos.BackgroundColor = Color.DimGray;
+            gridPedidos.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
+            gridPedidos.BackgroundColor = Color.DimGray;
             dataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle5.BackColor = Color.DimGray;
             dataGridViewCellStyle5.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
@@ -176,10 +176,10 @@
             dataGridViewCellStyle5.SelectionBackColor = SystemColors.Highlight;
             dataGridViewCellStyle5.SelectionForeColor = SystemColors.HighlightText;
             dataGridViewCellStyle5.WrapMode = DataGridViewTriState.True;
-            gridProdutos.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
-            gridProdutos.ColumnHeadersHeight = 17;
-            gridProdutos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
-            gridProdutos.Columns.AddRange(new DataGridViewColumn[] { colId, colCliente, colData, colTotal, colItens, colStatus });
+            gridPedidos.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            gridPedidos.ColumnHeadersHeight = 17;
+            gridPedidos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
+            gridPedidos.Columns.AddRange(new DataGridViewColumn[] { colId, colCliente, colData, colTotal, colItens, colStatus });
             dataGridViewCellStyle6.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle6.BackColor = Color.White;
             dataGridViewCellStyle6.Font = new Font("Segoe UI", 9F);
@@ -187,24 +187,24 @@
             dataGridViewCellStyle6.SelectionBackColor = Color.FromArgb(231, 229, 255);
             dataGridViewCellStyle6.SelectionForeColor = Color.FromArgb(71, 69, 94);
             dataGridViewCellStyle6.WrapMode = DataGridViewTriState.False;
-            gridProdutos.DefaultCellStyle = dataGridViewCellStyle6;
-            gridProdutos.GridColor = Color.Silver;
-            gridProdutos.Location = new Point(15, 159);
-            gridProdutos.MultiSelect = false;
-            gridProdutos.Name = "gridProdutos";
-            gridProdutos.RowHeadersVisible = false;
-            gridProdutos.Size = new Size(645, 295);
-            gridProdutos.TabIndex = 12;
-            gridProdutos.ThemeStyle.AlternatingRowsStyle.BackColor = Color.White;
-            gridProdutos.ThemeStyle.BackColor = Color.DimGray;
-            gridProdutos.ThemeStyle.GridColor = Color.Silver;
-            gridProdutos.ThemeStyle.HeaderStyle.BackColor = Color.DimGray;
-            gridProdutos.ThemeStyle.HeaderStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            gridProdutos.ThemeStyle.HeaderStyle.Height = 17;
-            gridProdutos.ThemeStyle.RowsStyle.Font = new Font("Segoe UI", 9F);
-            gridProdutos.ThemeStyle.RowsStyle.Height = 25;
-            gridProdutos.SelectionChanged += gridProdutos_SelectionChanged;
-            gridProdutos.CellDoubleClick += gridProdutos_CellDoubleClick;
+            gridPedidos.DefaultCellStyle = dataGridViewCellStyle6;
+            gridPedidos.GridColor = Color.Silver;
+            gridPedidos.Location = new Point(15, 159);
+            gridPedidos.MultiSelect = false;
+            gridPedidos.Name = "gridPedidos";
+            gridPedidos.RowHeadersVisible = false;
+            gridPedidos.Size = new Size(645, 295);
+            gridPedidos.TabIndex = 12;
+            gridPedidos.ThemeStyle.AlternatingRowsStyle.BackColor = Color.White;
+            gridPedidos.ThemeStyle.BackColor = Color.DimGray;
+            gridPedidos.ThemeStyle.GridColor = Color.Silver;
+            gridPedidos.ThemeStyle.HeaderStyle.BackColor = Color.DimGray;
+            gridPedidos.ThemeStyle.HeaderStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            gridPedidos.ThemeStyle.HeaderStyle.Height = 17;
+            gridPedidos.ThemeStyle.RowsStyle.Font = new Font("Segoe UI", 9F);
+            gridPedidos.ThemeStyle.RowsStyle.Height = 25;
+            gridPedidos.SelectionChanged += gridPedidos_SelectionChanged;
+            gridPedidos.CellDoubleClick += gridPedidos_CellDoubleClick;
             // 
             // colId
             // 
@@ -247,7 +247,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(64, 64, 64);
-            Controls.Add(gridProdutos);
+            Controls.Add(gridPedidos);
             Controls.Add(guna2Panel1);
             Controls.Add(btnAtualizarPedidos);
             Controls.Add(lblDescricaoPedidos);
@@ -257,7 +257,7 @@
             Load += PedidosUserControl_Load;
             guna2Panel1.ResumeLayout(false);
             guna2Panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)gridProdutos).EndInit();
+            ((System.ComponentModel.ISupportInitialize)gridPedidos).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -271,7 +271,7 @@
         private Guna.UI2.WinForms.Guna2HtmlLabel lblNovoStatus;
         private Guna.UI2.WinForms.Guna2Button btnAtualizarStatusPedido;
         private Guna.UI2.WinForms.Guna2ComboBox cboStatusPedido;
-        private Guna.UI2.WinForms.Guna2DataGridView gridProdutos;
+        private Guna.UI2.WinForms.Guna2DataGridView gridPedidos;
         private DataGridViewTextBoxColumn colId;
         private DataGridViewTextBoxColumn colCliente;
         private DataGridViewTextBoxColumn colData;

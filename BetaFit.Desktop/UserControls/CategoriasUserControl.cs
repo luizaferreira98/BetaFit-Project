@@ -20,7 +20,7 @@ namespace BetaFit.Desktop.UserControls
         //=================================================
         // SERVIÇOS (Inicilizados no Load)
         //=================================================
-        private CategoriesApiService _categoriesService = null;
+        private CategoriesApiService _categoriesService = null!;
 
         //=================================================
         // DADOS
@@ -47,7 +47,7 @@ namespace BetaFit.Desktop.UserControls
             _categoriesService = new CategoriesApiService();
 
             //Aplica o tema no DataGridView
-            //BetaFitThemes.AplicarEstiloGrid(gridGames); nao sei se tem ou nao mais vou deixar aqui!!!
+            BetaFit.Desktop.Themes.BetaFitTheme.AplicarEstiloGrid(gridCategorias);
 
             //Configurar permissões
             ConfigurarPermissoes();

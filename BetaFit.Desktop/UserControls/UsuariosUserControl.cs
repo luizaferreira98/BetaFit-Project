@@ -47,6 +47,9 @@ namespace BetaFit.Desktop.UserControls
 
                 ConfigurarPermissoes();
 
+                // Aplica o tema BetaFit ao grid (preto/lima, ver Themes/BetaFitTheme.cs)
+                BetaFit.Desktop.Themes.BetaFitTheme.AplicarEstiloGrid(gridUsuarios);
+
                 gridUsuarios.SelectionMode =
                     DataGridViewSelectionMode.FullRowSelect;
 
@@ -129,7 +132,7 @@ namespace BetaFit.Desktop.UserControls
             using var form = new UsersFormDialog(_perfis, null);
             if (form.ShowDialog() == DialogResult.OK && form.CreateDto != null)
             {
-                var (success, _, error) = await _usersService.CreateAsync(form.CreateDto);
+                var (success, _, error) = await _usersService!.CreateAsync(form.CreateDto);
                 if (success)
                 {
                     MessageBox.Show("✅ Game criado com sucesso!",

@@ -50,6 +50,12 @@ namespace BetaFit.Desktop.UserControls
 
             _ordersApiService = new OrdersApiService();
 
+            // Aplica o tema BetaFit ao grid (preto/lima, ver Themes/BetaFitTheme.cs)
+            BetaFit.Desktop.Themes.BetaFitTheme.AplicarEstiloGrid(gridPedidos);
+
+            // Colore a coluna Status como badge (Pendente/EmPreparacao/Pronto/Entregue/Cancelado)
+            BetaFit.Desktop.Themes.BetaFitTheme.AplicarBadgeStatusNoGrid(gridPedidos, nameof(colStatus));
+
             cboStatusPedido.Items.Clear();
             cboStatusPedido.Items.AddRange(StatusDisponiveis);
 
@@ -80,11 +86,11 @@ namespace BetaFit.Desktop.UserControls
         //=================================================
         private void PopularGrid(List<OrderResponseDto> pedidos)
         {
-            gridProdutos.Rows.Clear();
+            gridPedidos.Rows.Clear();
 
             foreach (var pedido in pedidos.OrderByDescending(p => p.CreatedAt))
             {
-                gridProdutos.Rows.Add(
+                gridPedidos.Rows.Add(
                     pedido.Id,
                     pedido.UserId,
                     pedido.CreatedAt.ToString("dd/MM/yyyy HH:mm"),
@@ -100,8 +106,8 @@ namespace BetaFit.Desktop.UserControls
         //=================================================
         private OrderResponseDto? ObterPedidoSelecionado()
         {
-            if (gridProdutos.SelectedRows.Count == 0) return null;
-            var row = gridProdutos.SelectedRows[0];
+            if (gridPedidos.SelectedRows.Count == 0) return null;
+            var row = gridPedidos.SelectedRows[0];
             var id = Convert.ToInt32(row.Cells["colId"].Value);
             return _todosPedidos.FirstOrDefault(p => p.Id == id);
         }
@@ -109,7 +115,7 @@ namespace BetaFit.Desktop.UserControls
         //=================================================
         // AO SELECIONAR UM PEDIDO, PRÉ-SELECIONA O STATUS ATUAL NO COMBO
         //=================================================
-        private void gridProdutos_SelectionChanged(object sender, EventArgs e)
+        private void gridPedidos_SelectionChanged(object sender, EventArgs e)
         {
             var pedido = ObterPedidoSelecionado();
             if (pedido == null) return;
@@ -121,7 +127,7 @@ namespace BetaFit.Desktop.UserControls
         //=================================================
         // DUPLO CLIQUE NA LINHA -> MOSTRA OS ITENS DO PEDIDO
         //=================================================
-        private void gridProdutos_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void gridPedidos_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
 
