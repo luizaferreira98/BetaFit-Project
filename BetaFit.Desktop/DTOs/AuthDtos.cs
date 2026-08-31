@@ -26,22 +26,4 @@ namespace BetaFit.Desktop.DTOs
         public string Password { get; set; } = string.Empty;
         public string ConfirmPassword { get; set; } = string.Empty;
     }
-
-    /// <summary>
-    /// DTO que representa o usuário autenticado retornado pela API após login.
-    /// Mapeia o JSON retornando no POST /api/auth/login e GET /api/auth/me
-    ///</summary>
-
-    public class UserResponseDto
-    {
-        public string Id { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public List<string> Roles { get; set; } = new();
-
-        /// <summary>
-        /// Verifica se o usuário possui a role "Admin" e retorna true ou false.
-        /// usando controle de acesso na interface
-        /// </summary>
-        public bool IsAdmin => Roles.Contains("Admin");
-    }
 }

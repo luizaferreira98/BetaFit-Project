@@ -18,11 +18,15 @@ public class DashboardResponseDto
 }
 
 // Alias for historical Portuguese naming used in some services
-public class UsuarioResponseDto
+public class UsersResponseDto
 {
     public string Id { get; set; } = string.Empty;
     public string UserName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public List<string> Roles { get; set; } = new();
     public bool Ativo { get; set; } = true;
+
+    public bool IsAdmin =>
+        Roles.Any(r =>
+            string.Equals(r, "Admin", StringComparison.OrdinalIgnoreCase));
 }

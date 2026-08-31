@@ -44,27 +44,27 @@ namespace BetaFit.Desktop.Services
         /// Lista todos os usuários via GET /api/users.
         /// Endpoint a ser implementado na API (UsersController).
         /// </summary>
-        public async Task<List<UserResponseDto>> GetAllAsync()
+        public async Task<List<UsersResponseDto>> GetAllAsync()
         {
             try
             {
-                var usuarios = await _http.GetAsync<List<UserResponseDto>>("/api/usuarios");
-                return usuarios ?? new List<UserResponseDto>();
+                var usuarios = await _http.GetAsync<List<UsersResponseDto>>("/api/usuarios");
+                return usuarios ?? new List<UsersResponseDto>();
             }
             catch
             {
                 // Retorna lista vazia se o endpoint ainda não existir
-                return new List<UserResponseDto>();
+                return new List<UsersResponseDto>();
             }
         }
 
         /// <summary>
         /// Cria um novo usuário via POST /api/users.
         /// </summary>
-        public async Task<(bool Success, UserResponseDto? Usuario, string ErrorMessage)>
-            CreateAsync(CreateUsuarioDto dto)
+        public async Task<(bool Success, UsersResponseDto? Usuario, string ErrorMessage)>
+            CreateAsync(CreateUsersDto dto)
         {
-            return await _http.PostAsync<UserResponseDto>("/api/usuarios", dto);
+            return await _http.PostAsync<UsersResponseDto>("/api/usuarios", dto);
         }
 
         /// <summary>
@@ -96,10 +96,10 @@ namespace BetaFit.Desktop.Services
             return (success, error);
         }
 
-        public async Task<(bool Success, UserResponseDto? Usuario, string ErrorMessage)>
-                UpdateAsync(string id, UpdateUsuarioDto dto)
+        public async Task<(bool Success, UsersResponseDto? Usuario, string ErrorMessage)>
+                UpdateAsync(string id, UpdateUsersDto dto)
         {
-            return await _http.PutAsync<UserResponseDto>($"/api/usuarios/{id}", dto);
+            return await _http.PutAsync<UsersResponseDto>($"/api/usuarios/{id}", dto);
         }
     }
 }

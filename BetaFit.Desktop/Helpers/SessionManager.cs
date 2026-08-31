@@ -25,7 +25,7 @@ namespace BetaFit.Desktop.Helpers
         ///Dados do usuário atualmente autenticado
         ///é null quando nenhum usuário está logado
         /// </summary>
-        public UserResponseDto? CurrentUser { get; private set; }
+        public UsersResponseDto? CurrentUser { get; private set; }
 
         ///<summary>
         ///indica se tem algum usuário autenticado na sessão
@@ -43,7 +43,7 @@ namespace BetaFit.Desktop.Helpers
         /// Chamado após o login bem-sucediso na API.
         /// <param name="user">Dados do usuário retornados pela API</param>
         /// </summary>
-        public void SetUser(UserResponseDto user)
+        public void SetUser(UsersResponseDto user)
         {
             CurrentUser = user;
         }

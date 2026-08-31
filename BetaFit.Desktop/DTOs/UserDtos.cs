@@ -1,6 +1,6 @@
 namespace BetaFit.Desktop.DTOs;
 
-public sealed class UsuarioDto
+public sealed class UsuariosResponseDto
 {
     public string Id { get; set; } = string.Empty;
     public string UserName { get; set; } = string.Empty;
@@ -14,7 +14,7 @@ public sealed class UsuarioDto
     public bool Ativo { get; set; } = true;
 }
 
-public sealed class CreateUsuarioDto
+public sealed class CreateUsersDto
 {
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
@@ -22,7 +22,7 @@ public sealed class CreateUsuarioDto
     public string Role { get; set; } = "Usuario";
 }
 
-public sealed class UpdateUsuarioDto
+public sealed class UpdateUsersDto
 {
     public string Email { get; set; } = string.Empty;
     public string? Password { get; set; }

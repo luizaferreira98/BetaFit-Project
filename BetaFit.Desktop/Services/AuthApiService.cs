@@ -53,7 +53,7 @@ namespace BetaFit.Desktop.Services
         /// <param name="email">E-mail do usuário</param>
         /// <param name="password">Senha do usuário</param>
         /// <returns>Tupla com sucesso, dados do usuário e mensagem de erro</returns>
-        public async Task<(bool Success, UserResponseDto? User, string ErrorMessage)>
+        public async Task<(bool Success, UsersResponseDto? User, string ErrorMessage)>
             LoginAsync(string email, string password)
         {
             // Cria o objeto de requisição (DTO de login)
@@ -64,7 +64,7 @@ namespace BetaFit.Desktop.Services
             };
 
             // Envia para POST /api/auth/login
-            var (success, data, error) = await _http.PostAsync<UserResponseDto>(
+            var (success, data, error) = await _http.PostAsync<UsersResponseDto>(
                 "/api/auth/login", loginDto);
 
             return (success, data, error);
@@ -87,9 +87,9 @@ namespace BetaFit.Desktop.Services
         /// Busca os dados do usuário autenticado via GET /api/auth/me.
         /// Útil para verificar se a sessão ainda está ativa
         /// </summary>
-        public async Task<UserResponseDto?> GetCurrentUserAsync()
+        public async Task<UsersResponseDto?> GetCurrentUserAsync()
         {
-            return await _http.GetAsync<UserResponseDto>("/api/auth/me");
+            return await _http.GetAsync<UsersResponseDto>("/api/auth/me");
         }
 
         /// <summary>

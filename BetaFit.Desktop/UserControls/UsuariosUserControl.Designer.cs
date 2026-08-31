@@ -36,11 +36,8 @@
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges4 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges5 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges6 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges25 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges26 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges17 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges18 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges11 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges12 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges9 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
@@ -49,50 +46,35 @@
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges16 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges13 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges14 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges19 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges20 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges17 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges18 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges23 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges24 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges21 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges22 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
             lblTituloPedidos = new Guna.UI2.WinForms.Guna2HtmlLabel();
             lblDescricaoPedidos = new Guna.UI2.WinForms.Guna2HtmlLabel();
             pnlBotoesUsuarios = new Guna.UI2.WinForms.Guna2Panel();
             btnExcluirUsuario = new Guna.UI2.WinForms.Guna2Button();
             btnEditarUsuario = new Guna.UI2.WinForms.Guna2Button();
             btnNovoUsuario = new Guna.UI2.WinForms.Guna2Button();
-            guna2DataGridView1 = new Guna.UI2.WinForms.Guna2DataGridView();
             guna2Panel1 = new Guna.UI2.WinForms.Guna2Panel();
             guna2HtmlLabel9 = new Guna.UI2.WinForms.Guna2HtmlLabel();
             guna2Panel8 = new Guna.UI2.WinForms.Guna2Panel();
             guna2Panel9 = new Guna.UI2.WinForms.Guna2Panel();
             lblAdmins = new Guna.UI2.WinForms.Guna2HtmlLabel();
             guna2HtmlLabel8 = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            guna2Panel6 = new Guna.UI2.WinForms.Guna2Panel();
-            guna2Panel7 = new Guna.UI2.WinForms.Guna2Panel();
-            lblUsuariosInativos = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            guna2HtmlLabel6 = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            guna2Panel4 = new Guna.UI2.WinForms.Guna2Panel();
-            guna2Panel5 = new Guna.UI2.WinForms.Guna2Panel();
-            lblUsuariosAtivos = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            guna2HtmlLabel4 = new Guna.UI2.WinForms.Guna2HtmlLabel();
             guna2Panel2 = new Guna.UI2.WinForms.Guna2Panel();
             guna2Panel3 = new Guna.UI2.WinForms.Guna2Panel();
             lblValorUsuarios = new Guna.UI2.WinForms.Guna2HtmlLabel();
             guna2HtmlLabel1 = new Guna.UI2.WinForms.Guna2HtmlLabel();
+            gridUsuarios = new Guna.UI2.WinForms.Guna2DataGridView();
             colId = new DataGridViewTextBoxColumn();
-            colName = new DataGridViewTextBoxColumn();
+            colUserName = new DataGridViewTextBoxColumn();
             colEmail = new DataGridViewTextBoxColumn();
-            colPhone = new DataGridViewTextBoxColumn();
+            colPhoneNumber = new DataGridViewTextBoxColumn();
             pnlBotoesUsuarios.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)guna2DataGridView1).BeginInit();
             guna2Panel1.SuspendLayout();
             guna2Panel8.SuspendLayout();
-            guna2Panel6.SuspendLayout();
-            guna2Panel4.SuspendLayout();
             guna2Panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)gridUsuarios).BeginInit();
             SuspendLayout();
             // 
             // lblTituloPedidos
@@ -191,54 +173,18 @@
             btnNovoUsuario.Size = new Size(148, 45);
             btnNovoUsuario.TabIndex = 10;
             btnNovoUsuario.Text = "+ NOVA USUÁRIO";
-            // 
-            // guna2DataGridView1
-            // 
-            dataGridViewCellStyle1.BackColor = Color.White;
-            guna2DataGridView1.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = Color.FromArgb(100, 88, 255);
-            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
-            dataGridViewCellStyle2.ForeColor = Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
-            guna2DataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
-            guna2DataGridView1.ColumnHeadersHeight = 4;
-            guna2DataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
-            guna2DataGridView1.Columns.AddRange(new DataGridViewColumn[] { colId, colName, colEmail, colPhone });
-            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = Color.White;
-            dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F);
-            dataGridViewCellStyle3.ForeColor = Color.FromArgb(71, 69, 94);
-            dataGridViewCellStyle3.SelectionBackColor = Color.FromArgb(231, 229, 255);
-            dataGridViewCellStyle3.SelectionForeColor = Color.FromArgb(71, 69, 94);
-            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
-            guna2DataGridView1.DefaultCellStyle = dataGridViewCellStyle3;
-            guna2DataGridView1.GridColor = Color.FromArgb(231, 229, 255);
-            guna2DataGridView1.Location = new Point(18, 159);
-            guna2DataGridView1.Name = "guna2DataGridView1";
-            guna2DataGridView1.RowHeadersVisible = false;
-            guna2DataGridView1.Size = new Size(648, 209);
-            guna2DataGridView1.TabIndex = 12;
-            guna2DataGridView1.ThemeStyle.AlternatingRowsStyle.BackColor = Color.White;
-            guna2DataGridView1.ThemeStyle.HeaderStyle.Font = new Font("Segoe UI", 9F);
-            guna2DataGridView1.ThemeStyle.HeaderStyle.Height = 4;
-            guna2DataGridView1.ThemeStyle.RowsStyle.Font = new Font("Segoe UI", 9F);
-            guna2DataGridView1.ThemeStyle.RowsStyle.Height = 25;
+            btnNovoUsuario.Click += btnNovoUsuario_Click;
             // 
             // guna2Panel1
             // 
             guna2Panel1.BackColor = Color.FromArgb(64, 64, 64);
             guna2Panel1.Controls.Add(guna2HtmlLabel9);
             guna2Panel1.Controls.Add(guna2Panel8);
-            guna2Panel1.Controls.Add(guna2Panel6);
-            guna2Panel1.Controls.Add(guna2Panel4);
             guna2Panel1.Controls.Add(guna2Panel2);
-            guna2Panel1.CustomizableEdges = customizableEdges25;
+            guna2Panel1.CustomizableEdges = customizableEdges17;
             guna2Panel1.Location = new Point(18, 374);
             guna2Panel1.Name = "guna2Panel1";
-            guna2Panel1.ShadowDecoration.CustomizableEdges = customizableEdges26;
+            guna2Panel1.ShadowDecoration.CustomizableEdges = customizableEdges18;
             guna2Panel1.Size = new Size(648, 92);
             guna2Panel1.TabIndex = 13;
             // 
@@ -259,7 +205,7 @@
             guna2Panel8.Controls.Add(lblAdmins);
             guna2Panel8.Controls.Add(guna2HtmlLabel8);
             guna2Panel8.CustomizableEdges = customizableEdges11;
-            guna2Panel8.Location = new Point(380, 31);
+            guna2Panel8.Location = new Point(128, 31);
             guna2Panel8.Name = "guna2Panel8";
             guna2Panel8.ShadowDecoration.CustomizableEdges = customizableEdges12;
             guna2Panel8.Size = new Size(126, 53);
@@ -297,113 +243,25 @@
             guna2HtmlLabel8.TabIndex = 0;
             guna2HtmlLabel8.Text = "Administradores";
             // 
-            // guna2Panel6
-            // 
-            guna2Panel6.Controls.Add(guna2Panel7);
-            guna2Panel6.Controls.Add(lblUsuariosInativos);
-            guna2Panel6.Controls.Add(guna2HtmlLabel6);
-            guna2Panel6.CustomizableEdges = customizableEdges15;
-            guna2Panel6.Location = new Point(248, 31);
-            guna2Panel6.Name = "guna2Panel6";
-            guna2Panel6.ShadowDecoration.CustomizableEdges = customizableEdges16;
-            guna2Panel6.Size = new Size(126, 53);
-            guna2Panel6.TabIndex = 17;
-            // 
-            // guna2Panel7
-            // 
-            guna2Panel7.BackColor = SystemColors.ControlDark;
-            guna2Panel7.CustomizableEdges = customizableEdges13;
-            guna2Panel7.Location = new Point(0, 0);
-            guna2Panel7.Name = "guna2Panel7";
-            guna2Panel7.ShadowDecoration.CustomizableEdges = customizableEdges14;
-            guna2Panel7.Size = new Size(20, 53);
-            guna2Panel7.TabIndex = 15;
-            // 
-            // lblUsuariosInativos
-            // 
-            lblUsuariosInativos.BackColor = Color.Transparent;
-            lblUsuariosInativos.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblUsuariosInativos.ForeColor = Color.White;
-            lblUsuariosInativos.Location = new Point(26, 3);
-            lblUsuariosInativos.Name = "lblUsuariosInativos";
-            lblUsuariosInativos.Size = new Size(14, 27);
-            lblUsuariosInativos.TabIndex = 1;
-            lblUsuariosInativos.Text = "0";
-            // 
-            // guna2HtmlLabel6
-            // 
-            guna2HtmlLabel6.BackColor = Color.Transparent;
-            guna2HtmlLabel6.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            guna2HtmlLabel6.ForeColor = Color.LightGray;
-            guna2HtmlLabel6.Location = new Point(25, 29);
-            guna2HtmlLabel6.Name = "guna2HtmlLabel6";
-            guna2HtmlLabel6.Size = new Size(96, 17);
-            guna2HtmlLabel6.TabIndex = 0;
-            guna2HtmlLabel6.Text = " Usuários inativos";
-            // 
-            // guna2Panel4
-            // 
-            guna2Panel4.Controls.Add(guna2Panel5);
-            guna2Panel4.Controls.Add(lblUsuariosAtivos);
-            guna2Panel4.Controls.Add(guna2HtmlLabel4);
-            guna2Panel4.CustomizableEdges = customizableEdges19;
-            guna2Panel4.Location = new Point(128, 31);
-            guna2Panel4.Name = "guna2Panel4";
-            guna2Panel4.ShadowDecoration.CustomizableEdges = customizableEdges20;
-            guna2Panel4.Size = new Size(114, 53);
-            guna2Panel4.TabIndex = 16;
-            // 
-            // guna2Panel5
-            // 
-            guna2Panel5.BackColor = Color.OliveDrab;
-            guna2Panel5.CustomizableEdges = customizableEdges17;
-            guna2Panel5.Location = new Point(0, 0);
-            guna2Panel5.Name = "guna2Panel5";
-            guna2Panel5.ShadowDecoration.CustomizableEdges = customizableEdges18;
-            guna2Panel5.Size = new Size(20, 53);
-            guna2Panel5.TabIndex = 15;
-            // 
-            // lblUsuariosAtivos
-            // 
-            lblUsuariosAtivos.BackColor = Color.Transparent;
-            lblUsuariosAtivos.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblUsuariosAtivos.ForeColor = Color.White;
-            lblUsuariosAtivos.Location = new Point(26, 3);
-            lblUsuariosAtivos.Name = "lblUsuariosAtivos";
-            lblUsuariosAtivos.Size = new Size(14, 27);
-            lblUsuariosAtivos.TabIndex = 1;
-            lblUsuariosAtivos.Text = "0";
-            // 
-            // guna2HtmlLabel4
-            // 
-            guna2HtmlLabel4.BackColor = Color.Transparent;
-            guna2HtmlLabel4.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            guna2HtmlLabel4.ForeColor = Color.LightGray;
-            guna2HtmlLabel4.Location = new Point(25, 29);
-            guna2HtmlLabel4.Name = "guna2HtmlLabel4";
-            guna2HtmlLabel4.Size = new Size(86, 17);
-            guna2HtmlLabel4.TabIndex = 0;
-            guna2HtmlLabel4.Text = " Usuários ativos";
-            // 
             // guna2Panel2
             // 
             guna2Panel2.Controls.Add(guna2Panel3);
             guna2Panel2.Controls.Add(lblValorUsuarios);
             guna2Panel2.Controls.Add(guna2HtmlLabel1);
-            guna2Panel2.CustomizableEdges = customizableEdges23;
+            guna2Panel2.CustomizableEdges = customizableEdges15;
             guna2Panel2.Location = new Point(8, 31);
             guna2Panel2.Name = "guna2Panel2";
-            guna2Panel2.ShadowDecoration.CustomizableEdges = customizableEdges24;
+            guna2Panel2.ShadowDecoration.CustomizableEdges = customizableEdges16;
             guna2Panel2.Size = new Size(114, 53);
             guna2Panel2.TabIndex = 14;
             // 
             // guna2Panel3
             // 
             guna2Panel3.BackColor = Color.GreenYellow;
-            guna2Panel3.CustomizableEdges = customizableEdges21;
+            guna2Panel3.CustomizableEdges = customizableEdges13;
             guna2Panel3.Location = new Point(0, 0);
             guna2Panel3.Name = "guna2Panel3";
-            guna2Panel3.ShadowDecoration.CustomizableEdges = customizableEdges22;
+            guna2Panel3.ShadowDecoration.CustomizableEdges = customizableEdges14;
             guna2Panel3.Size = new Size(20, 53);
             guna2Panel3.TabIndex = 15;
             // 
@@ -429,50 +287,82 @@
             guna2HtmlLabel1.TabIndex = 0;
             guna2HtmlLabel1.Text = "Total Usuários";
             // 
+            // gridUsuarios
+            // 
+            dataGridViewCellStyle1.BackColor = Color.White;
+            gridUsuarios.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = Color.FromArgb(100, 88, 255);
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle2.ForeColor = Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
+            gridUsuarios.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            gridUsuarios.ColumnHeadersHeight = 17;
+            gridUsuarios.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
+            gridUsuarios.Columns.AddRange(new DataGridViewColumn[] { colId, colUserName, colEmail, colPhoneNumber });
+            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = Color.White;
+            dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle3.ForeColor = Color.FromArgb(71, 69, 94);
+            dataGridViewCellStyle3.SelectionBackColor = Color.FromArgb(231, 229, 255);
+            dataGridViewCellStyle3.SelectionForeColor = Color.FromArgb(71, 69, 94);
+            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
+            gridUsuarios.DefaultCellStyle = dataGridViewCellStyle3;
+            gridUsuarios.GridColor = Color.FromArgb(231, 229, 255);
+            gridUsuarios.Location = new Point(20, 159);
+            gridUsuarios.Name = "gridUsuarios";
+            gridUsuarios.RowHeadersVisible = false;
+            gridUsuarios.Size = new Size(646, 209);
+            gridUsuarios.TabIndex = 14;
+            gridUsuarios.ThemeStyle.AlternatingRowsStyle.BackColor = Color.White;
+            gridUsuarios.ThemeStyle.HeaderStyle.Font = new Font("Segoe UI", 9F);
+            gridUsuarios.ThemeStyle.HeaderStyle.Height = 17;
+            gridUsuarios.ThemeStyle.RowsStyle.Font = new Font("Segoe UI", 9F);
+            gridUsuarios.ThemeStyle.RowsStyle.Height = 25;
+            // 
             // colId
             // 
             colId.HeaderText = "ID";
             colId.Name = "colId";
             // 
-            // colName
+            // colUserName
             // 
-            colName.HeaderText = "NOME";
-            colName.Name = "colName";
+            colUserName.HeaderText = "NOME";
+            colUserName.Name = "colUserName";
             // 
             // colEmail
             // 
-            colEmail.HeaderText = "EMAIL";
+            colEmail.HeaderText = "Email";
             colEmail.Name = "colEmail";
             // 
-            // colPhone
+            // colPhoneNumber
             // 
-            colPhone.HeaderText = "TELEFONE";
-            colPhone.Name = "colPhone";
+            colPhoneNumber.HeaderText = "TELEFONE";
+            colPhoneNumber.Name = "colPhoneNumber";
             // 
             // UsuariosUserControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(64, 64, 64);
+            Controls.Add(gridUsuarios);
             Controls.Add(guna2Panel1);
-            Controls.Add(guna2DataGridView1);
             Controls.Add(pnlBotoesUsuarios);
             Controls.Add(lblDescricaoPedidos);
             Controls.Add(lblTituloPedidos);
             Name = "UsuariosUserControl";
             Size = new Size(677, 474);
+            Load += UsuariosUserControl_Load;
             pnlBotoesUsuarios.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)guna2DataGridView1).EndInit();
             guna2Panel1.ResumeLayout(false);
             guna2Panel1.PerformLayout();
             guna2Panel8.ResumeLayout(false);
             guna2Panel8.PerformLayout();
-            guna2Panel6.ResumeLayout(false);
-            guna2Panel6.PerformLayout();
-            guna2Panel4.ResumeLayout(false);
-            guna2Panel4.PerformLayout();
             guna2Panel2.ResumeLayout(false);
             guna2Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)gridUsuarios).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -485,7 +375,6 @@
         private Guna.UI2.WinForms.Guna2Button btnExcluirUsuario;
         private Guna.UI2.WinForms.Guna2Button btnEditarUsuario;
         private Guna.UI2.WinForms.Guna2Button btnNovoUsuario;
-        private Guna.UI2.WinForms.Guna2DataGridView guna2DataGridView1;
         private Guna.UI2.WinForms.Guna2Panel guna2Panel1;
         private Guna.UI2.WinForms.Guna2Panel guna2Panel2;
         private Guna.UI2.WinForms.Guna2HtmlLabel lblValorUsuarios;
@@ -495,18 +384,11 @@
         private Guna.UI2.WinForms.Guna2Panel guna2Panel9;
         private Guna.UI2.WinForms.Guna2HtmlLabel lblAdmins;
         private Guna.UI2.WinForms.Guna2HtmlLabel guna2HtmlLabel8;
-        private Guna.UI2.WinForms.Guna2Panel guna2Panel6;
-        private Guna.UI2.WinForms.Guna2Panel guna2Panel7;
-        private Guna.UI2.WinForms.Guna2HtmlLabel lblUsuariosInativos;
-        private Guna.UI2.WinForms.Guna2HtmlLabel guna2HtmlLabel6;
-        private Guna.UI2.WinForms.Guna2Panel guna2Panel4;
-        private Guna.UI2.WinForms.Guna2Panel guna2Panel5;
-        private Guna.UI2.WinForms.Guna2HtmlLabel lblUsuariosAtivos;
-        private Guna.UI2.WinForms.Guna2HtmlLabel guna2HtmlLabel4;
         private Guna.UI2.WinForms.Guna2Panel guna2Panel3;
+        private Guna.UI2.WinForms.Guna2DataGridView gridUsuarios;
         private DataGridViewTextBoxColumn colId;
-        private DataGridViewTextBoxColumn colName;
+        private DataGridViewTextBoxColumn colUserName;
         private DataGridViewTextBoxColumn colEmail;
-        private DataGridViewTextBoxColumn colPhone;
+        private DataGridViewTextBoxColumn colPhoneNumber;
     }
 }
