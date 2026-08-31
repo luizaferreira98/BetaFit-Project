@@ -227,7 +227,7 @@ namespace BetaFit.Desktop.Helpers
                     return (true, data, string.Empty);
                 }
 
-                var error = TryExtractErrorMessage(responseBody);
+                var error = TryExtractErrorMessage(responseBody, response.StatusCode);
                 return (false, default, error);
             }
             catch (Exception ex)
@@ -257,7 +257,41 @@ namespace BetaFit.Desktop.Helpers
                     return (true, data, string.Empty);
                 }
 
-                var error = TryExtractErrorMessage(responseBody);
+                var error = TryExtractErrorMessage(responseBody, response.StatusCode);
+                return (false, default, error);
+            }
+            catch (Exception ex)
+            {
+                var friendly = CategorizeConnectionError(ex, endpoint);
+                return (false, default, friendly);
+            }
+        }
+
+        /// <summary>
+        /// Realiza uma requisição PATCH (atualização parcial) e retorna T.
+        /// Uso: var (ok, _, err) = await http.PatchAsync&lt;object&gt;($"/api/orders/{id}/status", "Entregue");
+        /// </summary>
+        public async Task<(bool Success, T? Data, string ErrorMessage)> PatchAsync<T>(
+            string endpoint, object body)
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(body);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _client.PatchAsync(endpoint, content);
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // PATCH pode retornar 204 No Content (corpo vazio)
+                    var data = string.IsNullOrWhiteSpace(responseBody)
+                        ? default
+                        : JsonSerializer.Deserialize<T>(responseBody, _jsonOptions);
+                    return (true, data, string.Empty);
+                }
+
+                var error = TryExtractErrorMessage(responseBody, response.StatusCode);
                 return (false, default, error);
             }
             catch (Exception ex)
@@ -280,7 +314,7 @@ namespace BetaFit.Desktop.Helpers
                     return (true, string.Empty);
 
                 var body = await response.Content.ReadAsStringAsync();
-                return (false, TryExtractErrorMessage(body));
+                return (false, TryExtractErrorMessage(body, response.StatusCode));
             }
             catch (Exception ex)
             {
@@ -302,7 +336,7 @@ namespace BetaFit.Desktop.Helpers
                     return (true, string.Empty);
 
                 var body = await response.Content.ReadAsStringAsync();
-                return (false, TryExtractErrorMessage(body));
+                return (false, TryExtractErrorMessage(body, response.StatusCode));
             }
             catch (Exception ex)
             {
@@ -333,7 +367,7 @@ namespace BetaFit.Desktop.Helpers
         /// Tenta extrair a mensagem de erro de um corpo JSON de resposta da API.
         /// A API retorna: { "message": "..." }
         /// </summary>
-        private string TryExtractErrorMessage(string json)
+        private string TryExtractErrorMessage(string json, HttpStatusCode? statusCode = null)
         {
             try
             {
@@ -345,7 +379,14 @@ namespace BetaFit.Desktop.Helpers
             }
             catch { }
 
-            return string.IsNullOrEmpty(json) ? "Erro desconhecido." : json;
+            if (!string.IsNullOrEmpty(json))
+                return json;
+
+            // Corpo vazio: mostra ao menos o status HTTP para facilitar o diagnóstico
+            // (ex: 401 = sessão não autenticada, 403 = sem permissão, 404 = rota errada).
+            return statusCode.HasValue
+                ? $"Erro desconhecido (HTTP {(int)statusCode.Value} {statusCode.Value})."
+                : "Erro desconhecido.";
         }
 
         /// <summary>

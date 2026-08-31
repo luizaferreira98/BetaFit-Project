@@ -16,7 +16,7 @@ namespace BetaFit.Desktop.Services
 
         public async Task<(bool Success, string ErrorMessage)> UpdateStatusAsync(int id, string status)
         {
-            var (success, _, error) = await _http.PutAsync<object>($"/api/orders/{id}/status", status);
+            var (success, _, error) = await _http.PatchAsync<object>($"/api/orders/{id}/status", status);
             return (success, error);
         }
     }

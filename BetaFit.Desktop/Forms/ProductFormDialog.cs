@@ -178,7 +178,7 @@ namespace BetaFit.Desktop.Forms
             var categoriaIdx = cboCategoriaProduto.SelectedIndex - 1;
             var categoriaId = _categorias[categoriaIdx].Id;
 
-            string generoTexto = cboGenero.SelectedItem.ToString()!;
+            string generoTexto = cboGenero?.SelectedItem?.ToString()!;
             Enum.TryParse<BetaFit.Domain.Enums.Gender>(generoTexto, out var generoEnum);
 
             // 3. Montagem do DTO

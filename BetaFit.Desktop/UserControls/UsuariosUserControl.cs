@@ -23,6 +23,8 @@ namespace BetaFit.Desktop.UserControls
         //=================================================
         private List<UsersResponseDto> _todosUsuarios = new();
 
+        private List<string> _perfis = new();
+
         //=================================================
         // CONSTRUTOR
         //=================================================
@@ -124,10 +126,10 @@ namespace BetaFit.Desktop.UserControls
         //=================================================
         private async void btnNovoUsuario_Click(object sender, EventArgs e)
         {
-            using var form = new UsersFormDialog(_todosUsuarios, null);
-            if (form.ShowDialog() == DialogResult.OK && form.GameDto != null)
+            using var form = new UsersFormDialog(_perfis, null);
+            if (form.ShowDialog() == DialogResult.OK && form.CreateDto != null)
             {
-                var (success, _, error) = await _usersService.CreateAsync(form.GameDto);
+                var (success, _, error) = await _usersService.CreateAsync(form.CreateDto);
                 if (success)
                 {
                     MessageBox.Show("✅ Game criado com sucesso!",
