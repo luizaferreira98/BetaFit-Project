@@ -199,6 +199,8 @@ namespace BetaFit.Infraestructure.Migrations
                     Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    ImageUrlsJson = table.Column<string>(type: "nvarchar(max)", maxLength: 8000, nullable: false),
+                    AvailableSizesJson = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     Gender = table.Column<int>(type: "int", nullable: false),
                     IsFeatured = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),

@@ -279,54 +279,19 @@
     }
 
     // ---------------------------------------------------------------------
-    // Live product image preview
+    // Live product image preview (supports multiple files)
     // ---------------------------------------------------------------------
     document.querySelectorAll("[data-image-preview-input]").forEach((input) => {
-        const previewId = input.getAttribute("data-image-preview-input");
-        const preview = previewId ? document.getElementById(previewId) : null;
-        if (!preview || !(input instanceof HTMLInputElement)) return;
-
-        const image = preview.querySelector(".bf-image-upload-preview__image");
-        const placeholder = preview.querySelector(".bf-image-upload-preview__placeholder");
-        const meta = preview.querySelector(".bf-image-upload-preview__meta");
-        const name = preview.querySelector(".bf-image-upload-preview__name");
-        const size = preview.querySelector(".bf-image-upload-preview__size");
-        let objectUrl = null;
-
-        input.addEventListener("change", () => {
-            const file = input.files && input.files[0];
-            if (!file) return;
-
-            const allowed = ["image/jpeg", "image/png", "image/webp"];
-            if (!allowed.includes(file.type)) {
-                input.value = "";
-                preview.classList.remove("is-ready");
-                if (image) image.hidden = true;
-                if (meta) meta.hidden = true;
-                if (placeholder) placeholder.hidden = false;
-                return;
-            }
-
-            if (objectUrl) URL.revokeObjectURL(objectUrl);
-            objectUrl = URL.createObjectURL(file);
-
-            if (image) {
-                image.src = objectUrl;
-                image.hidden = false;
-            }
-            if (placeholder) placeholder.hidden = true;
-            if (meta) meta.hidden = false;
-            if (name) name.textContent = file.name;
-            if (size) size.textContent = formatFileSize(file.size);
-            preview.classList.add("is-ready");
+        const previewId=input.getAttribute("data-image-preview-input"); const preview=previewId?document.getElementById(previewId):null;
+        if(!preview || !(input instanceof HTMLInputElement)) return;
+        const grid=preview.querySelector(".bf-image-upload-preview__grid");
+        input.addEventListener("change",()=>{
+            if(!grid) return; grid.innerHTML=""; const files=Array.from(input.files||[]);
+            const allowed=["image/jpeg","image/png","image/webp"];
+            files.forEach(file=>{if(!allowed.includes(file.type))return; const url=URL.createObjectURL(file); const item=document.createElement("div"); item.className="bf-image-preview-thumb"; item.innerHTML=`<img src="${url}" alt="Pré-visualização" /><span>${file.name}</span>`; grid.appendChild(item);});
+            preview.classList.toggle("is-ready", grid.children.length>0); const placeholder=preview.querySelector(".bf-image-upload-preview__placeholder"); if(placeholder)placeholder.hidden=grid.children.length>0;
         });
     });
-
-    function formatFileSize(bytes) {
-        if (bytes < 1024) return `${bytes} B`;
-        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-    }
 
     // ---------------------------------------------------------------------
     // Keep the logout confirmation from being replaced by the page transition.
@@ -338,27 +303,19 @@
     });
 })();
 
-// Beta Fit - quantity controls. The form remains the source of truth so
-// the existing server/session cart behavior is preserved.
-document.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-quantity-minus], [data-quantity-plus]');
-    if (!button) return;
-    const control = button.closest('[data-quantity-control]');
-    const input = control?.querySelector('.bf-quantity-input');
-    if (!input) return;
-    const min = Number(input.min || 1);
-    const max = Number(input.max || 99);
-    const current = Number(input.value || min);
-    input.value = String(Math.min(max, Math.max(min, current + (button.hasAttribute('data-quantity-plus') ? 1 : -1))));
-    input.dispatchEvent(new Event('change', { bubbles: true }));
-});
 
-document.addEventListener('input', (event) => {
-    const input = event.target.closest('.bf-quantity-input');
-    if (!input) return;
-    const min = Number(input.min || 1);
-    const max = Number(input.max || 99);
-    let value = Number(input.value);
-    if (!Number.isFinite(value)) return;
-    input.value = String(Math.min(max, Math.max(min, Math.floor(value))));
+// Quantity controls work on both product and cart forms.
+document.addEventListener("click", (event) => {
+    const button=event.target.closest("[data-quantity-minus],[data-quantity-plus]"); if(!button)return;
+    const control=button.closest("[data-quantity-control]"); const input=control?.querySelector(".bf-quantity-input"); if(!input)return;
+    const min=Number(input.min||1), max=Number(input.max||99), current=Number(input.value||min);
+    input.value=String(Math.min(max,Math.max(min,current+(button.hasAttribute("data-quantity-plus")?1:-1))));
+    const form=control.closest("form"); if(form && control.dataset.autoSubmit==="true") window.setTimeout(()=>form.requestSubmit(),80);
 });
+document.addEventListener("input",(event)=>{
+    const input=event.target.closest(".bf-quantity-input"); if(!input)return; const min=Number(input.min||1),max=Number(input.max||99); let v=Number(input.value); if(Number.isFinite(v))input.value=String(Math.min(max,Math.max(min,Math.floor(v))));
+});
+// Brazilian phone mask with a hard 11-digit limit.
+document.querySelectorAll("[data-phone-mask]").forEach(input=>input.addEventListener("input",()=>{let d=input.value.replace(/\D/g,"").slice(0,11); if(d.length<=10)input.value=d.replace(/(\d{2})(\d{4})(\d{0,4})/,"($1) $2-$3").replace(/-$/,''); else input.value=d.replace(/(\d{2})(\d{5})(\d{0,4})/,"($1) $2-$3").replace(/-$/,'');}));
+// Product gallery.
+document.querySelectorAll("[data-gallery-image]").forEach(button=>button.addEventListener("click",()=>{const main=document.getElementById("bf-main-product-image");if(main)main.src=button.dataset.galleryImage||"";}));

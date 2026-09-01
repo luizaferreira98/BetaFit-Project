@@ -56,6 +56,7 @@ namespace BetaFit.UI.Controllers
         }
 
         public IActionResult Privacy() => View();
+        public IActionResult Terms() => View();
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

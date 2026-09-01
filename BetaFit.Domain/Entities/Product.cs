@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BetaFit.Domain - Entidade Product
 // =============================================================================
 // Esta classe representa a entidade principal do sistema: um produto (Product).
@@ -45,6 +45,12 @@ namespace BetaFit.Domain.Entities
         /// URL da imagem do produto.
         /// </summary>
         public string? ImageUrl { get; set; }
+
+        /// <summary>Lista de imagens adicionais armazenada como JSON.</summary>
+        public string ImageUrlsJson { get; set; } = "[]";
+
+        /// <summary>Tamanhos disponíveis armazenados como JSON.</summary>
+        public string AvailableSizesJson { get; set; } = "[\"P\",\"M\",\"G\",\"GG\"]";
 
         /// <summary>
         /// Público-alvo do produto.

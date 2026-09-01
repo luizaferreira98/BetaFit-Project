@@ -1,4 +1,4 @@
-﻿using BetaFit.Application.DTOs;
+using BetaFit.Application.DTOs;
 using BetaFit.Application.Interfaces;
 using BetaFit.Domain.Entities;
 using BetaFit.Domain.Enums;
@@ -161,7 +161,7 @@ namespace BetaFit.Application.Services
                 var orderItem = new OrderItem
                 {
                     ProductId = product.Id,
-                    ProductName = product.Name,
+                    ProductName = string.IsNullOrWhiteSpace(itemDto.Size) ? product.Name : $"{product.Name} · Tamanho {itemDto.Size}",
                     UnitPrice = product.Price,
                     Quantity = itemDto.Quantity
                 };

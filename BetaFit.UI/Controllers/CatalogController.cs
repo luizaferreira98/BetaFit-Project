@@ -136,7 +136,7 @@ namespace BetaFit.UI.Controllers
         [HttpPost("Catalog/AddToCart")]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddToCart(int id, int quantity = 1)
+        public async Task<IActionResult> AddToCart(int id, int quantity = 1, string? size = null)
         {
             quantity = Math.Clamp(quantity, 1, 99);
 
@@ -146,7 +146,7 @@ namespace BetaFit.UI.Controllers
                 if (product is null || !product.IsActive)
                     return NotFound();
 
-                CartService.Add(HttpContext, product, quantity);
+                CartService.Add(HttpContext, product, quantity, size);
                 return RedirectToAction("Index", "Cart");
             }
             catch (HttpRequestException)

@@ -43,6 +43,7 @@
                 @if (isAuthenticated)
                 {
                     <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Orders" ? "is-active" : "")" asp-controller="Orders" asp-action="MyOrders">Meus Pedidos</a>
+                    <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Favorites" ? "is-active" : "")" asp-controller="Favorites" asp-action="Index">Favoritos</a>
                 }
                 <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Cart" ? "is-active" : "")" asp-controller="Cart" asp-action="Index">Carrinho</a>
             </nav>
@@ -50,10 +51,10 @@
             <div class="bf-header__actions">
                 @if (isAuthenticated)
                 {
-                    <span class="bf-user-chip" title="Usuário conectado">
-                        <span class="bf-user-chip__icon" aria-hidden="true">@((userName ?? "U").Substring(0, 1).ToUpper())</span>
-                        <span class="bf-user-chip__name">@userName</span>
-                    </span>
+                    <a class="bf-user-chip" title="Meu perfil" asp-controller="Account" asp-action="Profile">
+                        <span class="bf-user-chip__icon" aria-hidden="true">@((User.FindFirst("FullName")?.Value ?? userName ?? "U").Substring(0, 1).ToUpper())</span>
+                        <span class="bf-user-chip__name">@(User.FindFirst("FullName")?.Value ?? userName)</span>
+                    </a>
                     <form class="bf-logout-form" asp-controller="Account" asp-action="Logout" method="post" onsubmit="return confirm('Tem certeza que deseja sair da sua conta?');">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="bf-icon-link bf-icon-button" title="Sair" aria-label="Sair">
@@ -95,6 +96,7 @@
                     <h4>Institucional</h4>
                     <ul>
                         <li><a asp-controller="Home" asp-action="Privacy">Privacidade</a></li>
+                        <li><a asp-controller="Home" asp-action="Terms">Termos de uso</a></li>
                         <li><a asp-controller="Home" asp-action="Index" asp-fragment="sobre">Sobre a Beta Fit</a></li>
                     </ul>
                 </div>

@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BetaFit.Infraestructure - Configuração da entidade Product (Fluent API)
 // =============================================================================
 //  CONCEITO: IEntityTypeConfiguration<T>
@@ -36,6 +36,12 @@ namespace BetaFit.Infraestructure.Configurations
 
             builder.Property(p => p.ImageUrl)
                 .HasMaxLength(500);
+
+            builder.Property(p => p.ImageUrlsJson)
+                .HasMaxLength(8000);
+
+            builder.Property(p => p.AvailableSizesJson)
+                .HasMaxLength(1000);
 
             // Preço com precisão decimal explícita (evita warning do EF Core)
             builder.Property(p => p.Price)

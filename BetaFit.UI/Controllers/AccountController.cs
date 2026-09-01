@@ -116,8 +116,40 @@ namespace BetaFit.UI.Controllers
             // Limpá-lo no logout evita que outra pessoa usando o mesmo navegador
             // veja itens deixados pela conta anterior.
             CartService.Clear(HttpContext);
+            FavoriteService.Clear(HttpContext);
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet("Profile")]
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        public async Task<IActionResult> Profile()
+        {
+            var response = await _apiClient.GetAsync("api/profile");
+            if (!response.IsSuccessStatusCode) return RedirectToAction(nameof(Login));
+            var profile = await response.Content.ReadFromJsonAsync<UserDto>();
+            ViewData["Title"]="Meu perfil";
+            return View("Profile", profile);
+        }
+
+        [HttpPost("Profile"), ValidateAntiForgeryToken]
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        public async Task<IActionResult> Profile(UpdateProfileDto dto)
+        {
+            ViewData["Title"]="Meu perfil";
+            if (!ModelState.IsValid) return View("Profile", dto);
+            var response=await _apiClient.PutAsJsonAsync("api/profile",dto);
+            if(!response.IsSuccessStatusCode){var error=await response.Content.ReadFromJsonAsync<ApiErrorDto>();ModelState.AddModelError(string.Empty,error?.Message??"Não foi possível atualizar o perfil.");return View("Profile",dto);}
+            var updated=await response.Content.ReadFromJsonAsync<UserDto>();
+            if(updated!=null)
+            {
+                if (!string.IsNullOrWhiteSpace(dto.NewPassword))
+                    await SignInWithApiAsync(new LoginDto { Email = updated.Email, Password = dto.NewPassword });
+                else
+                    await RefreshLocalIdentityAsync(updated);
+            }
+            TempData["Sucesso"]="Perfil atualizado com sucesso.";
+            return RedirectToAction(nameof(Profile));
         }
 
         [HttpGet("AccessDenied")]
@@ -158,6 +190,8 @@ namespace BetaFit.UI.Controllers
                 new(ClaimTypes.Email, userDto.Email),
                 new("ApiCookie", apiCookieString)
             };
+            if (!string.IsNullOrWhiteSpace(userDto.FullName))
+                claims.Add(new Claim("FullName", userDto.FullName));
 
             foreach (var role in userDto.Roles)
             {
@@ -168,5 +202,15 @@ namespace BetaFit.UI.Controllers
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
             return true;
         }
+        private async Task RefreshLocalIdentityAsync(UserDto user)
+        {
+            var claims=new List<Claim>{new(ClaimTypes.NameIdentifier,user.Id),new(ClaimTypes.Name,user.Email),new(ClaimTypes.Email,user.Email)};
+            if(!string.IsNullOrWhiteSpace(user.FullName))claims.Add(new Claim("FullName",user.FullName));
+            claims.AddRange(User.Claims.Where(c=>c.Type==ClaimTypes.Role || c.Type=="ApiCookie"));
+            var identity=new ClaimsIdentity(claims,CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,new ClaimsPrincipal(identity));
+        }
+
+        private sealed class ApiErrorDto { public string Message { get; set; } = string.Empty; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +18,8 @@ namespace BetaFit.Desktop.DTOs
         public string Description { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public string? ImageUrl { get; set; }
+        public List<string> ImageUrls { get; set; } = new();
+        public List<string> AvailableSizes { get; set; } = new();
         public Gender Gender { get; set; }
         public int CategoryId { get; set; }
 
@@ -43,6 +45,8 @@ namespace BetaFit.Desktop.DTOs
         public string Description { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public string? ImageUrl { get; set; }
+        public List<string> ImageUrls { get; set; } = new();
+        public List<string> AvailableSizes { get; set; } = new();
         public Gender Gender { get; set; }
         public int CategoryId { get; set; }
         public bool IsFeatured { get; set; }
@@ -57,6 +61,8 @@ namespace BetaFit.Desktop.DTOs
         public string Description { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public string? ImageUrl { get; set; }
+        public List<string> ImageUrls { get; set; } = new();
+        public List<string> AvailableSizes { get; set; } = new();
         public Gender Gender { get; set; }
         public int CategoryId { get; set; }
         public bool IsFeatured { get; set; }

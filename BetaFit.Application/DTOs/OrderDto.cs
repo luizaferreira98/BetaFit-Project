@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +23,7 @@ namespace BetaFit.Application.DTOs
         public string ProductName { get; set; } = string.Empty;
         public decimal UnitPrice { get; set; }
         public int Quantity { get; set; }
+        public string? Size { get; set; }
         public decimal Subtotal { get; set; }
         public string? ImageUrl { get; set; }
     }
@@ -36,5 +37,6 @@ namespace BetaFit.Application.DTOs
     {
         public int ProductId { get; set; }
         public int Quantity { get; set; }
+        public string? Size { get; set; }
     }
 }

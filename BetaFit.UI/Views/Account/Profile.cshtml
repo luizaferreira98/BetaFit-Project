@@ -1,0 +1,13 @@
+@model UserDto
+@using BetaFit.Application.DTOs
+@{ ViewData["Title"]="Meu perfil"; var birth=Model?.BirthDate?.ToString("yyyy-MM-dd"); }
+<section class="bf-page-hero bf-page-hero--compact"><div class="bf-container bf-page-hero__inner"><div><span class="bf-eyebrow bf-eyebrow--dark">Área do cliente</span><h1>Meu perfil</h1><p>Consulte e atualize seus dados pessoais e de acesso.</p></div></div></section>
+<section class="bf-section bf-section--catalog"><div class="bf-container bf-profile-page">
+@if(TempData["Sucesso"] is string ok){<div class="bf-alert" role="status">@ok</div>}
+@if(!ViewData.ModelState.IsValid){<div class="bf-alert bf-alert--error" role="alert">@Html.ValidationSummary(true,"",new{@class="bf-validation"})</div>}
+<form asp-controller="Account" asp-action="Profile" method="post" class="bf-form bf-form--admin">@Html.AntiForgeryToken()
+<div class="bf-profile-heading"><div class="bf-user-avatar">@((Model?.FullName??Model?.Email??"U").Substring(0,1).ToUpper())</div><div><span class="bf-eyebrow bf-eyebrow--dark">Dados pessoais</span><h2>@(Model?.FullName ?? "Seu perfil")</h2></div></div>
+<div class="bf-form-grid"><label>Nome completo<input name="FullName" value="@Model?.FullName" maxlength="120" required /></label><label>E-mail<input name="Email" type="email" value="@Model?.Email" maxlength="256" required /></label><label>Telefone<input name="PhoneNumber" type="tel" value="@Model?.PhoneNumber" maxlength="15" inputmode="tel" data-phone-mask required /></label><label>Data de nascimento<input name="BirthDate" type="date" value="@birth" required /></label></div>
+<div class="bf-profile-divider"><span>Alterar senha</span><small>Deixe os campos vazios se não quiser trocar.</small></div>
+<div class="bf-form-grid"><label>Senha atual<input name="CurrentPassword" type="password" autocomplete="current-password" /></label><label>Nova senha<input name="NewPassword" type="password" minlength="6" autocomplete="new-password" /></label><label>Confirmar nova senha<input name="ConfirmNewPassword" type="password" minlength="6" autocomplete="new-password" /></label></div>
+<div class="bf-form-actions"><a class="bf-btn bf-btn--ghost" asp-controller="Home" asp-action="Index">Cancelar</a><button class="bf-btn bf-btn--dark" type="submit">Salvar alterações <span>→</span></button></div></form></div></section>

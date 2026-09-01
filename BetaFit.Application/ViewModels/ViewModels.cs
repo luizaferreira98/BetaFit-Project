@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BetaFit.Application - ViewModels
 // =============================================================================
 //  CONCEITO IMPORTANTE: ViewModels
@@ -60,6 +60,9 @@ namespace BetaFit.Application.ViewModels
         public string Description { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public string? ImageUrl { get; set; }
+        public List<string> ImageUrls { get; set; } = new();
+        public List<string> KeepImageUrls { get; set; } = new();
+        public List<string> AvailableSizes { get; set; } = new();
 
         public Gender Gender { get; set; }
 

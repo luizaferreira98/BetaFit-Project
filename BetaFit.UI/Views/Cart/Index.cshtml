@@ -1,80 +1,9 @@
-﻿@model List<CartItem>
-@{
-    ViewData["Title"] = "Carrinho";
-    var total = (decimal)(ViewData["Total"] ?? 0m);
-    var itemCount = (int)(ViewData["ItemCount"] ?? 0);
-}
-<section class="bf-page-hero bf-page-hero--compact">
-    <div class="bf-container bf-page-hero__inner">
-        <div><span class="bf-eyebrow bf-eyebrow--dark">Sua seleção</span><h1>Seu carrinho</h1><p>Revise os produtos que você selecionou.</p></div>
-    </div>
-</section>
-
-<section class="bf-section bf-section--catalog">
-    <div class="bf-container">
-        @if (!Model.Any())
-        {
-            <div class="bf-empty bf-empty--cart">
-                <div class="bf-empty__icon">□</div>
-                <strong>Seu carrinho está vazio</strong>
-                <span>Escolha uma peça no catálogo para começar sua seleção.</span>
-                <a class="bf-btn bf-btn--dark" asp-controller="Catalog" asp-action="Index">Ver catálogo <span>→</span></a>
-            </div>
-        }
-        else
-        {
-            <div class="bf-cart-layout">
-                <div class="bf-cart-list">
-                    @foreach (var item in Model)
-                    {
-                        <article class="bf-cart-item">
-                            <div class="bf-cart-item__media">
-                                @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                                {
-                                    <img src="@item.ImageUrl" alt="@item.Name" />
-                                }
-                                else
-                                {
-                                    <div>BF</div>
-                                }
-                            </div>
-                            <div class="bf-cart-item__info"><span>Produto</span><strong>@item.Name</strong><small>@item.Price.ToString("C") por unidade</small>
-                                <form class="bf-cart-quantity-form" asp-controller="Cart" asp-action="UpdateQuantity" method="post">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="productId" value="@item.ProductId" />
-                                    <label for="qty-@item.ProductId">Quantidade</label>
-                                    <div class="bf-quantity-control bf-quantity-control--cart">
-                                        <button type="button" class="bf-quantity-btn" data-quantity-minus aria-label="Diminuir quantidade">−</button>
-                                        <input id="qty-@item.ProductId" class="bf-quantity-input" type="number" name="quantity" value="@item.Quantity" min="1" max="99" inputmode="numeric" />
-                                        <button type="button" class="bf-quantity-btn" data-quantity-plus aria-label="Aumentar quantidade">+</button>
-                                    </div>
-                                    <button type="submit" class="bf-quantity-save">Atualizar</button>
-                                </form>
-                            </div>
-                            <strong class="bf-cart-item__subtotal">@((item.Price * item.Quantity).ToString("C"))</strong>
-                            <form class="bf-cart-remove-form" asp-controller="Cart" asp-action="Remove" method="post">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="productId" value="@item.ProductId" />
-                                <button class="bf-cart-item__remove" type="submit">Remover</button>
-                            </form>
-                        </article>
-                    }
-                </div>
-                <aside class="bf-cart-summary">
-                    <span>Resumo</span>
-                    <div class="bf-cart-summary__total"><strong>Total</strong><strong>@total.ToString("C")</strong></div>
-                    <div class="bf-cart-summary__items"><span>Itens no carrinho</span><strong>@itemCount</strong></div>
-                    <small>Este projeto não possui checkout ou pagamento real.</small>
-
-                    <form asp-controller="Cart" asp-action="Checkout" method="post" style="margin-bottom: 12px;">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="bf-btn bf-btn--dark bf-btn--wide">Finalizar pedido</button>
-                    </form>
-
-                    <a class="bf-btn bf-btn--outline bf-btn--wide" asp-controller="Catalog" asp-action="Index">Continuar comprando</a>
-                    <a class="bf-btn bf-btn--dark bf-btn--wide" asp-controller="Catalog" asp-action="Index">Continuar comprando</a>
-                </aside>
-            </div>
-        }
-    </div>
-</section>
+@model List<CartItem>
+@{ ViewData["Title"]="Carrinho"; var total=(decimal)(ViewData["Total"]??0m); var itemCount=(int)(ViewData["ItemCount"]??0); }
+<section class="bf-page-hero bf-page-hero--compact"><div class="bf-container bf-page-hero__inner"><div><span class="bf-eyebrow bf-eyebrow--dark">Sua seleção</span><h1>Seu carrinho</h1><p>Revise os produtos que você selecionou.</p></div></div></section>
+<section class="bf-section bf-section--catalog"><div class="bf-container">
+@if(TempData["Sucesso"] is string ok){<div class="bf-alert" role="status">@ok</div>}
+@if(!Model.Any()){<div class="bf-empty bf-empty--cart"><div class="bf-empty__icon">□</div><strong>Seu carrinho está vazio</strong><span>Escolha uma peça no catálogo para começar sua seleção.</span><a class="bf-btn bf-btn--dark" asp-controller="Catalog" asp-action="Index">Ver catálogo <span>→</span></a></div>} else {
+<div class="bf-cart-layout"><div class="bf-cart-list">@foreach(var item in Model){<article class="bf-cart-item"><div class="bf-cart-item__media">@if(!string.IsNullOrWhiteSpace(item.ImageUrl)){<img src="@item.ImageUrl" alt="@item.Name" />}else{<div>BF</div>}</div><div class="bf-cart-item__info"><span>Produto</span><strong>@item.Name</strong>@if(!string.IsNullOrWhiteSpace(item.Size)){<small>Tamanho: <b>@item.Size</b></small>}<small>@item.Price.ToString("C") por unidade</small><form class="bf-cart-quantity-form" asp-controller="Cart" asp-action="UpdateQuantity" method="post">@Html.AntiForgeryToken()<input type="hidden" name="productId" value="@item.ProductId" /><input type="hidden" name="size" value="@item.Size" /><label for="qty-@item.ProductId-@item.Size">Quantidade</label><div class="bf-quantity-control bf-quantity-control--cart" data-quantity-control data-auto-submit="true"><button type="button" class="bf-quantity-btn" data-quantity-minus aria-label="Diminuir quantidade">−</button><input id="qty-@item.ProductId-@item.Size" class="bf-quantity-input" type="number" name="quantity" value="@item.Quantity" min="1" max="99" inputmode="numeric" /><button type="button" class="bf-quantity-btn" data-quantity-plus aria-label="Aumentar quantidade">+</button></div></form></div><strong class="bf-cart-item__subtotal">@((item.Price*item.Quantity).ToString("C"))</strong><form class="bf-cart-remove-form" asp-controller="Cart" asp-action="Remove" method="post">@Html.AntiForgeryToken()<input type="hidden" name="productId" value="@item.ProductId" /><input type="hidden" name="size" value="@item.Size" /><button class="bf-cart-item__remove" type="submit">Remover</button></form></article>}</div>
+<aside class="bf-cart-summary"><span>Resumo</span><div class="bf-cart-summary__total"><strong>Total</strong><strong>@total.ToString("C")</strong></div><div class="bf-cart-summary__items"><span>Itens no carrinho</span><strong>@itemCount</strong></div><small>Este projeto não possui checkout ou pagamento real.</small><form asp-controller="Cart" asp-action="Checkout" method="post">@Html.AntiForgeryToken()<button type="submit" class="bf-btn bf-btn--dark bf-btn--wide">Finalizar pedido</button></form><a class="bf-btn bf-btn--outline bf-btn--wide" asp-controller="Catalog" asp-action="Index">Continuar comprando</a></aside></div> }
+</div></section>

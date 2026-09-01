@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 
 // BetaFit.Application - ProductService
 
@@ -29,6 +29,7 @@ using BetaFit.Application.Interfaces;
 using BetaFit.Domain.Entities;
 
 using BetaFit.Domain.Interfaces;
+using System.Text.Json;
 
 namespace BetaFit.Application.Services
 
@@ -160,7 +161,11 @@ namespace BetaFit.Application.Services
 
                 Price = dto.Price,
 
-                ImageUrl = dto.ImageUrl,
+                ImageUrl = dto.ImageUrl ?? dto.ImageUrls.FirstOrDefault(),
+
+                ImageUrlsJson = JsonSerializer.Serialize((dto.ImageUrls.Any() ? dto.ImageUrls : (dto.ImageUrl is null ? new List<string>() : new List<string> { dto.ImageUrl })).Distinct()),
+
+                AvailableSizesJson = JsonSerializer.Serialize(dto.AvailableSizes.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()),
 
                 Gender = dto.Gender,
 
@@ -210,7 +215,10 @@ namespace BetaFit.Application.Services
 
             product.Price = dto.Price;
 
-            product.ImageUrl = dto.ImageUrl;
+            product.ImageUrl = dto.ImageUrl ?? dto.ImageUrls.FirstOrDefault();
+            var updateImages = dto.ImageUrls.Any() ? dto.ImageUrls : (dto.ImageUrl is null ? new List<string>() : new List<string> { dto.ImageUrl });
+            product.ImageUrlsJson = JsonSerializer.Serialize(updateImages.Distinct().ToList());
+            product.AvailableSizesJson = JsonSerializer.Serialize(dto.AvailableSizes.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList());
 
             product.Gender = dto.Gender;
 
@@ -276,6 +284,17 @@ namespace BetaFit.Application.Services
 
         // =====================================================================
 
+        private static List<string> DeserializeList(string? json, params string[] fallback)
+        {
+            try
+            {
+                var values = JsonSerializer.Deserialize<List<string>>(json ?? "[]") ?? new();
+                if (values.Count > 0) return values;
+            }
+            catch (JsonException) { }
+            return fallback.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
         private static ProductDto MapToDto(Product product)
 
         {
@@ -293,6 +312,8 @@ namespace BetaFit.Application.Services
                 Price = product.Price,
 
                 ImageUrl = product.ImageUrl,
+                ImageUrls = DeserializeList(product.ImageUrlsJson, product.ImageUrl),
+                AvailableSizes = DeserializeList(product.AvailableSizesJson, "P", "M", "G", "GG"),
 
                 Gender = product.Gender,
 
