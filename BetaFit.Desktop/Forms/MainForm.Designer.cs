@@ -97,7 +97,7 @@
             btnPerfil.ShadowDecoration.CustomizableEdges = customizableEdges2;
             btnPerfil.Size = new Size(165, 32);
             btnPerfil.TabIndex = 7;
-            btnPerfil.Text = "👤 Meu Perfil";
+            btnPerfil.Text = "👤 MEU PERFIL";
             btnPerfil.TextAlign = HorizontalAlignment.Left;
             btnPerfil.Click += btnPerfil_Click;
             // 
@@ -119,7 +119,7 @@
             btnUsuarios.ShadowDecoration.CustomizableEdges = customizableEdges4;
             btnUsuarios.Size = new Size(165, 32);
             btnUsuarios.TabIndex = 6;
-            btnUsuarios.Text = "👥 Usuarios";
+            btnUsuarios.Text = "👥 USUÁRIOS";
             btnUsuarios.TextAlign = HorizontalAlignment.Left;
             btnUsuarios.Click += btnUsuarios_Click;
             // 

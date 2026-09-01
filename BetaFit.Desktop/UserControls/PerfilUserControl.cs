@@ -16,5 +16,7 @@ namespace BetaFit.Desktop.UserControls
         {
             InitializeComponent();
         }
+
+
     }
 }

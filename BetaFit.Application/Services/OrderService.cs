@@ -3,6 +3,7 @@ using BetaFit.Application.Interfaces;
 using BetaFit.Domain.Entities;
 using BetaFit.Domain.Enums;
 using BetaFit.Domain.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace BetaFit.Application.Services
 {
@@ -10,60 +11,92 @@ namespace BetaFit.Application.Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IProductRepository _productRepository;
+        private readonly UserManager<IdentityUser> _userManager;    
 
         public OrderService(
             IOrderRepository orderRepository,
-            IProductRepository productRepository)
+            IProductRepository productRepository,
+            UserManager<IdentityUser> userManager)
         {
             _orderRepository = orderRepository;
             _productRepository = productRepository;
+            _userManager = userManager;
         }
 
         public async Task<List<OrderDto>> GetAllAsync()
         {
             var orders = await _orderRepository.GetAllAsync();
 
-            return orders.Select(order => new OrderDto
+            var result = new List<OrderDto>();
+
+            foreach (var order in orders)
             {
-                Id = order.Id,
-                UserId = order.UserId,
-                CreatedAt = order.CreatedAt,
-                Total = order.Total,
-                Status = order.Status.ToString(),
-
-                Items = order.Items.Select(item => new OrderItemDto
+                var itemDtos = new List<OrderItemDto>();
+                foreach (var item in order.Items)
                 {
-                    ProductId = item.ProductId,
-                    ProductName = item.ProductName,
-                    UnitPrice = item.UnitPrice,
-                    Quantity = item.Quantity,
-                    Subtotal = item.UnitPrice * item.Quantity
-                }).ToList()
+                    var product = await _productRepository.GetByIdAsync(item.ProductId);
+                    itemDtos.Add(new OrderItemDto
+                    {
+                        ProductId = item.ProductId,
+                        ProductName = item.ProductName,
+                        UnitPrice = item.UnitPrice,
+                        Quantity = item.Quantity,
+                        Subtotal = item.UnitPrice * item.Quantity,
+                        ImageUrl = product?.ImageUrl
+                    });
+                }
 
-            }).ToList();
+                result.Add(new OrderDto
+                {
+                    Id = order.Id,
+                    UserId = order.UserId,
+                    UserName = await ObterNomeUsuarioAsync(order.UserId),
+                    CreatedAt = order.CreatedAt,
+                    Total = order.Total,
+                    Status = order.Status.ToString(),
+                    Items = itemDtos
+                });
+            }
+
+            return result;
         }
 
         public async Task<IEnumerable<OrderDto>> GetByUserIdAsync(string userId)
         {
             var orders = await _orderRepository.GetByUserIdAsync(userId);
+            var nomeUsuario = await ObterNomeUsuarioAsync(userId);
 
-            return orders.Select(order => new OrderDto
+            var result = new List<OrderDto>();
+            foreach (var order in orders)
             {
-                Id = order.Id,
-                UserId = order.UserId,
-                CreatedAt = order.CreatedAt,
-                Total = order.Total,
-                Status = order.Status.ToString(),
-
-                Items = order.Items.Select(item => new OrderItemDto
+                var itemDtos = new List<OrderItemDto>();
+                foreach (var item in order.Items)
                 {
-                    ProductId = item.ProductId,
-                    ProductName = item.ProductName,
-                    UnitPrice = item.UnitPrice,
-                    Quantity = item.Quantity,
-                    Subtotal = item.UnitPrice * item.Quantity
-                }).ToList()
-            }).ToList();
+                    var product = await _productRepository.GetByIdAsync(item.ProductId);
+                    itemDtos.Add(new OrderItemDto
+                    {
+                        ProductId = item.ProductId,
+                        ProductName = item.ProductName,
+                        UnitPrice = item.UnitPrice,
+                        Quantity = item.Quantity,
+                        Subtotal = item.UnitPrice * item.Quantity,
+                        ImageUrl = product?.ImageUrl
+                    });
+                }
+
+                result.Add(new OrderDto
+                {
+                    Id = order.Id,
+                    UserId = order.UserId,
+                    UserName = nomeUsuario,
+                    CreatedAt = order.CreatedAt,
+                    Total = order.Total,
+                    Status = order.Status.ToString(),
+                    Items = itemDtos
+                });
+            }
+
+            return result;
         }
 
         public async Task<OrderDto?> GetByIdAsync(int id)
@@ -73,22 +106,30 @@ namespace BetaFit.Application.Services
             if (order == null)
                 return null;
 
-            return new OrderDto
+            var itemDtos = new List<OrderItemDto>();
+            foreach (var item in order.Items)
             {
-                Id = order.Id,
-                UserId = order.UserId,
-                CreatedAt = order.CreatedAt,
-                Total = order.Total,
-                Status = order.Status.ToString(),
-
-                Items = order.Items.Select(item => new OrderItemDto
+                var product = await _productRepository.GetByIdAsync(item.ProductId);
+                itemDtos.Add(new OrderItemDto
                 {
                     ProductId = item.ProductId,
                     ProductName = item.ProductName,
                     UnitPrice = item.UnitPrice,
                     Quantity = item.Quantity,
-                    Subtotal = item.UnitPrice * item.Quantity
-                }).ToList()
+                    Subtotal = item.UnitPrice * item.Quantity,
+                    ImageUrl = product?.ImageUrl
+                });
+            }
+
+            return new OrderDto
+            {
+                Id = order.Id,
+                UserId = order.UserId,
+                UserName = await ObterNomeUsuarioAsync(order.UserId),
+                CreatedAt = order.CreatedAt,
+                Total = order.Total,
+                Status = order.Status.ToString(),
+                Items = itemDtos
             };
         }
 
@@ -138,6 +179,7 @@ namespace BetaFit.Application.Services
             {
                 Id = order.Id,
                 UserId = order.UserId,
+                UserName = await ObterNomeUsuarioAsync(order.UserId),
                 CreatedAt = order.CreatedAt,
                 Total = order.Total,
                 Status = order.Status.ToString(),
@@ -173,6 +215,12 @@ namespace BetaFit.Application.Services
             await _orderRepository.UpdateStatusAsync(id, newStatus);
 
             return true;
+        }
+
+        private async Task<string> ObterNomeUsuarioAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            return user?.UserName ?? userId;
         }
     }
 }

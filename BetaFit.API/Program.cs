@@ -122,6 +122,9 @@ builder.Services.AddCors(options =>
     });
 });
 
+// SignalR
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // =====================================================================
@@ -146,6 +149,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// SignalR endpoints
+app.MapHub<BetaFit.API.Hubs.OrderHub>("/hubs/orders");
 
 // =====================================================================
 // SEED DATA — Popula o banco com dados iniciais

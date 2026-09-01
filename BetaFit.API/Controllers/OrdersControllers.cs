@@ -12,8 +12,14 @@ namespace BetaFit.API.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly Microsoft.AspNetCore.SignalR.IHubContext<BetaFit.API.Hubs.OrderHub> _hubContext;
 
-        public OrdersController(IOrderService orderService) => _orderService = orderService;
+        public OrdersController(IOrderService orderService,
+            Microsoft.AspNetCore.SignalR.IHubContext<BetaFit.API.Hubs.OrderHub> hubContext)
+        {
+            _orderService = orderService;
+            _hubContext = hubContext;
+        }
 
         // GET /api/orders -> usado pelo Desktop (Admin vê todos)
         [HttpGet]
@@ -57,7 +63,23 @@ namespace BetaFit.API.Controllers
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] string status)
         {
             var ok = await _orderService.UpdateStatusAsync(id, status);
-            return ok ? NoContent() : BadRequest(new { message = "Status inválido." });
+
+            if (!ok)
+                return BadRequest(new { message = "Status inválido." });
+
+            // Se o status for Entregue, notifica o usuário via SignalR
+            if (string.Equals(status, "Entregue", StringComparison.OrdinalIgnoreCase))
+            {
+                var order = await _orderService.GetByIdAsync(id);
+                if (order != null)
+                {
+                    // Envia notificação para o usuário dono do pedido
+                    await _hubContext.Clients.User(order.UserId)
+                        .SendCoreAsync("OrderFinalized", new object[] { new { orderId = order.Id } }, default);
+                }
+            }
+
+            return NoContent();
         }
     }
 }

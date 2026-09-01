@@ -40,6 +40,10 @@
                 {
                     <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" ? "is-active" : "")" asp-controller="Admin" asp-action="Index">Administração</a>
                 }
+                @if (isAuthenticated)
+                {
+                    <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Orders" ? "is-active" : "")" asp-controller="Orders" asp-action="MyOrders">Meus Pedidos</a>
+                }
                 <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Cart" ? "is-active" : "")" asp-controller="Cart" asp-action="Index">Carrinho</a>
             </nav>
 
@@ -109,6 +113,30 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    @if (isAuthenticated)
+    {
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js" integrity="" crossorigin="anonymous"></script>
+        <script>
+            (function() {
+                try {
+                    const connection = new signalR.HubConnectionBuilder()
+                        .withUrl('/hubs/orders')
+                        .withAutomaticReconnect()
+                        .build();
+
+                    connection.on('OrderFinalized', function(payload) {
+                        // payload contém { orderId }
+                        alert('✅ Seu pedido foi finalizado. Você será redirecionado para Meus Pedidos.');
+                        window.location.href = '/Orders/MyOrders';
+                    });
+
+                    connection.start().catch(err => console.error('SignalR:', err.toString()));
+                } catch (ex) {
+                    console.error(ex);
+                }
+            })();
+        </script>
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

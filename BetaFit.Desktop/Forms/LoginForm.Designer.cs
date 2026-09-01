@@ -140,9 +140,9 @@
             // 
             lblVersao.BackColor = Color.Transparent;
             lblVersao.ForeColor = SystemColors.ControlDark;
-            lblVersao.Location = new Point(118, 423);
+            lblVersao.Location = new Point(112, 423);
             lblVersao.Name = "lblVersao";
-            lblVersao.Size = new Size(129, 17);
+            lblVersao.Size = new Size(130, 17);
             lblVersao.TabIndex = 11;
             lblVersao.Text = "Versão: 1.0.0 | ©️ BetaFIT";
             lblVersao.TextAlignment = ContentAlignment.TopCenter;
@@ -151,7 +151,7 @@
             // 
             lblErro.BackColor = Color.Transparent;
             lblErro.ForeColor = Color.Maroon;
-            lblErro.Location = new Point(27, 402);
+            lblErro.Location = new Point(19, 398);
             lblErro.Name = "lblErro";
             lblErro.Size = new Size(24, 17);
             lblErro.TabIndex = 10;
@@ -163,7 +163,7 @@
             // 
             lblApi.BackColor = Color.Transparent;
             lblApi.ForeColor = SystemColors.ControlDark;
-            lblApi.Location = new Point(29, 388);
+            lblApi.Location = new Point(19, 381);
             lblApi.Name = "lblApi";
             lblApi.Size = new Size(36, 17);
             lblApi.TabIndex = 9;
@@ -186,9 +186,9 @@
             btnFechar.DisabledState.CustomBorderColor = Color.DarkGray;
             btnFechar.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
             btnFechar.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            btnFechar.FillColor = Color.Red;
+            btnFechar.FillColor = Color.White;
             btnFechar.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnFechar.ForeColor = Color.White;
+            btnFechar.ForeColor = Color.Black;
             btnFechar.Location = new Point(314, 14);
             btnFechar.Name = "btnFechar";
             btnFechar.ShadowDecoration.CustomizableEdges = customizableEdges3;

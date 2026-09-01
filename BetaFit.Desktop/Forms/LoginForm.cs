@@ -38,7 +38,7 @@ namespace BetaFit.Desktop.Forms
             _authService = new AuthApiService(); //Criando um objeto apartir da classe AuthApiService
 
 
-            lblVersao.Text = $"Versão {AppConfig.Version} | ©️ {DateTime.Now.Year} SENAC-SMP";
+            lblVersao.Text = $"Versão {AppConfig.Version} | ©️ {DateTime.Now.Year} BETAFIT";
             lblApi.Text = $"API: {AppConfig.ApiBaseUrl}";
 
             txtEmail.Text = "admin@betafit.com";
@@ -104,8 +104,8 @@ namespace BetaFit.Desktop.Forms
                     using var mainform = new MainForm();
                     mainform.ShowDialog();
 
-                    // quando o MainForm fechar. fecha o LoginForm também
-                    this.Close();
+                    // quando o MainForm fechar. fecha o LoginForm aparece
+                    this.Show();
                 }
                 else
                 {

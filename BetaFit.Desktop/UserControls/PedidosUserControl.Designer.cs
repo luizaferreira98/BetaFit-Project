@@ -214,7 +214,7 @@
             // 
             // colCliente
             // 
-            colCliente.HeaderText = "Cliente (UserId)";
+            colCliente.HeaderText = "Cliente";
             colCliente.Name = "colCliente";
             colCliente.ReadOnly = true;
             // 

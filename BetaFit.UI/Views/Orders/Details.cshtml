@@ -1,0 +1,59 @@
+@model BetaFit.Application.DTOs.OrderDto
+@{
+    ViewData["Title"] = $"Pedido #{Model.Id}";
+}
+
+<section class="bf-section">
+    <div class="bf-container">
+        <a class="bf-back-link" asp-controller="Orders" asp-action="MyOrders">← Voltar para Meus Pedidos</a>
+        <div class="bf-order-detail">
+            <div class="bf-order-meta mb-3">
+                <h1>Pedido #@Model.Id</h1>
+                <div class="text-muted">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm") · Total: <strong>@Model.Total.ToString("C")</strong></div>
+                <div class="mt-2">Status: <span class="badge bg-secondary">@Model.Status</span></div>
+            </div>
+
+            <h3>Itens</h3>
+
+            @if (!Model.Items.Any())
+            {
+                <div class="bf-empty"><strong>Nenhum item encontrado neste pedido.</strong></div>
+            }
+            else
+            {
+                <div class="row">
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="col-md-6 mb-4">
+                            <div class="bf-product-card card h-100">
+                                <div class="row g-0">
+                                    <div class="col-4 bf-product-card__media p-2">
+                                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                        {
+                                            <img src="@item.ImageUrl" alt="@item.ProductName" class="img-fluid" />
+                                        }
+                                        else
+                                        {
+                                            <div class="bf-product-card__placeholder">BF</div>
+                                        }
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="card-body d-flex flex-column">
+                                            <strong>@item.ProductName</strong>
+                                            <div class="text-muted mt-1">Qtd: @item.Quantity</div>
+                                            <div class="mt-2">Preço unit.: @item.UnitPrice.ToString("C")</div>
+                                            <div class="mt-1">Subtotal: <strong>@item.Subtotal.ToString("C")</strong></div>
+                                            <div class="mt-auto"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            <a class="bf-btn bf-btn--dark btn" asp-controller="Orders" asp-action="MyOrders">Voltar</a>
+        </div>
+    </div>
+</section>

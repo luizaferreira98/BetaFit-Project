@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -28,6 +29,19 @@ namespace BetaFit.Desktop.UserControls
         //=================================================
         private List<ProductResponseDto> _todosProdutos = new();
         private List<CategoriaResponseDto> _categorias = new();
+
+        //=================================================
+        // FOTO NO GRID (thumbnail da coluna colFoto)
+        //=================================================
+        // Cliente HTTP dedicado só pra baixar as imagens (timeout curto:
+        // se a URL estiver quebrada/lenta não pode travar a UI)
+        private static readonly HttpClient _httpImagens = new() { Timeout = TimeSpan.FromSeconds(5) };
+
+        // Cache em memória: evita rebaixar a mesma imagem toda vez que o grid recarrega
+        private static readonly Dictionary<string, Image> _cacheImagens = new();
+
+        // Placeholder exibido quando o produto não tem ImageUrl ou o download falha
+        private static readonly Image _imagemPlaceholder = CriarPlaceholder();
 
         //=================================================
         // CONSTRUTOR
@@ -52,8 +66,83 @@ namespace BetaFit.Desktop.UserControls
             //Aplica o tema no DataGridView
             BetaFit.Desktop.Themes.BetaFitTheme.AplicarEstiloGrid(gridProdutos);
 
+            ConfigurarFotoNoGrid();
             ConfigurarPermissoes();
             await CarregarDadosAsync();
+        }
+
+        //=================================================
+        // CONFIGURA A COLUNA DE FOTO NO GRID (thumbnail do produto)
+        //=================================================
+        private void ConfigurarFotoNoGrid()
+        {
+            // Evita duplicar a coluna se o Load rodar mais de uma vez
+            if (gridProdutos.Columns.Contains("colFoto")) return;
+
+            var colFoto = new DataGridViewImageColumn
+            {
+                Name = "colFoto",
+                HeaderText = "",
+                Width = 56,
+                MinimumWidth = 56,
+                ImageLayout = DataGridViewImageCellLayout.Zoom,
+                Resizable = DataGridViewTriState.False,
+                SortMode = DataGridViewColumnSortMode.NotSortable,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    NullValue = _imagemPlaceholder,
+                    Padding = new Padding(2)
+                }
+            };
+
+            gridProdutos.Columns.Insert(0, colFoto);
+            gridProdutos.RowTemplate.Height = 60;
+            gridProdutos.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+        }
+
+        //=================================================
+        // BAIXA (OU PEGA DO CACHE) A IMAGEM DE UM PRODUTO
+        //=================================================
+        private async Task<Image> ObterImagemProdutoAsync(string? imageUrl)
+        {
+            if (string.IsNullOrWhiteSpace(imageUrl))
+                return _imagemPlaceholder;
+
+            if (_cacheImagens.TryGetValue(imageUrl, out var cacheada))
+                return cacheada;
+
+            try
+            {
+                var bytes = await _httpImagens.GetByteArrayAsync(imageUrl);
+                using var ms = new System.IO.MemoryStream(bytes);
+                var imagem = Image.FromStream(ms);
+                _cacheImagens[imageUrl] = imagem;
+                return imagem;
+            }
+            catch
+            {
+                // URL quebrada, 404, timeout, arquivo não é imagem, etc.
+                return _imagemPlaceholder;
+            }
+        }
+
+        //=================================================
+        // PLACEHOLDER (usado quando não há foto ou o download falha)
+        //=================================================
+        private static Image CriarPlaceholder()
+        {
+            var bmp = new Bitmap(48, 48);
+            using var g = Graphics.FromImage(bmp);
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            g.Clear(Color.FromArgb(238, 238, 234)); // bf-surface-2
+            using var caneta = new Pen(Color.FromArgb(222, 222, 217), 1.5f); // bf-line
+            g.DrawRectangle(caneta, 4, 4, 39, 39);
+            using var fonte = new Font("Segoe UI", 18f, FontStyle.Bold);
+            using var pincel = new SolidBrush(Color.FromArgb(111, 112, 108)); // bf-muted
+            var texto = "📦";
+            var tam = g.MeasureString(texto, fonte);
+            g.DrawString(texto, fonte, pincel, (48 - tam.Width) / 2, (48 - tam.Height) / 2);
+            return bmp;
         }
 
         //=================================================
@@ -80,14 +169,8 @@ namespace BetaFit.Desktop.UserControls
                 _categorias = await _categoriesApiService.GetAllAsync();
                 //Carrega produtos
                 _todosProdutos = await _productsApiService.GetAllAsync();
-                //Preenche o DataGridView com os produtos
-                foreach (var produto in _todosProdutos)
-                {
-                    var categoria = _categorias.FirstOrDefault(c => c.Id == produto.CategoryId);
-                    string nomeCategoria = categoria != null ? categoria.Name : "Categoria não encontrada";
-                    gridProdutos.Rows.Add(produto.Id, produto.Name, nomeCategoria, produto.Price.ToString("C"), produto.Gender, produto.IsFeatured, produto.CreatedAt);
-                }
-
+                //Preenche o DataGridView com os produtos (via PopularGrid, já com foto)
+                PopularGrid(_todosProdutos);
             }
             catch (Exception ex)
             {
@@ -109,7 +192,10 @@ namespace BetaFit.Desktop.UserControls
                 var categoria = _categorias.FirstOrDefault(c => c.Id == p.CategoryId);
                 string nomeCategoria = categoria?.Name ?? "Sem Categoria";
 
-                gridProdutos.Rows.Add(
+                // colFoto entra vazia (placeholder) e é preenchida em segundo plano
+                // assim que a imagem termina de baixar — não trava o preenchimento do grid
+                int idxLinha = gridProdutos.Rows.Add(
+                    _imagemPlaceholder,
                     p.Id,
                     p.Name,
                     nomeCategoria,
@@ -118,7 +204,23 @@ namespace BetaFit.Desktop.UserControls
                     p.IsFeatured ? "Ativo" : "Inativo",
                     p.CreatedAt.ToString("dd/MM/yyyy HH:mm")
                 );
+
+                _ = CarregarFotoLinhaAsync(idxLinha, p.ImageUrl);
             }
+        }
+
+        //=================================================
+        // CARREGA A FOTO DE UMA LINHA ESPECÍFICA (EM SEGUNDO PLANO)
+        //=================================================
+        private async Task CarregarFotoLinhaAsync(int indiceLinha, string? imageUrl)
+        {
+            var imagem = await ObterImagemProdutoAsync(imageUrl);
+
+            // A linha pode ter sido removida (filtro/refresh) enquanto a imagem baixava
+            if (indiceLinha < 0 || indiceLinha >= gridProdutos.Rows.Count) return;
+            if (gridProdutos.IsDisposed) return;
+
+            gridProdutos.Rows[indiceLinha].Cells["colFoto"].Value = imagem;
         }
 
         //=================================================

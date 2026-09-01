@@ -1,4 +1,5 @@
 ﻿using BetaFit.Desktop.DTOs;
+using BetaFit.Desktop.Forms;
 using BetaFit.Desktop.Helpers;
 using BetaFit.Desktop.Services;
 using System;
@@ -92,7 +93,7 @@ namespace BetaFit.Desktop.UserControls
             {
                 gridPedidos.Rows.Add(
                     pedido.Id,
-                    pedido.UserId,
+                    pedido.UserName,
                     pedido.CreatedAt.ToString("dd/MM/yyyy HH:mm"),
                     pedido.Total.ToString("C"),
                     pedido.Items.Count,
@@ -125,7 +126,7 @@ namespace BetaFit.Desktop.UserControls
         }
 
         //=================================================
-        // DUPLO CLIQUE NA LINHA -> MOSTRA OS ITENS DO PEDIDO
+        // DUPLO CLIQUE NA LINHA -> ABRE O POPUP DE DETALHES DO PEDIDO
         //=================================================
         private void gridPedidos_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -134,29 +135,8 @@ namespace BetaFit.Desktop.UserControls
             var pedido = ObterPedidoSelecionado();
             if (pedido == null) return;
 
-            if (pedido.Items.Count == 0)
-            {
-                MessageBox.Show("Este pedido não possui itens.", $"Pedido #{pedido.Id}",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            var sb = new StringBuilder();
-            sb.AppendLine($"Cliente: {pedido.UserId}");
-            sb.AppendLine($"Status: {pedido.Status}");
-            sb.AppendLine();
-
-            foreach (var item in pedido.Items)
-            {
-                sb.AppendLine($"{item.Quantity}x {item.ProductName} — " +
-                               $"{item.UnitPrice:C} = {item.Subtotal:C}");
-            }
-
-            sb.AppendLine();
-            sb.AppendLine($"TOTAL: {pedido.Total:C}");
-
-            MessageBox.Show(sb.ToString(), $"Itens do Pedido #{pedido.Id}",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            using var dialog = new OrderDetailsFormDialog(pedido);
+            dialog.ShowDialog(this.FindForm());
         }
 
         //=================================================

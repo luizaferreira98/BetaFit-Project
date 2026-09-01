@@ -18,6 +18,8 @@ namespace BetaFit.Desktop.UserControls
         private CategoriesApiService _categoriesApiService = null;
         private ProductsApiService _productsApiService = null!; //Caso nao tenha nada ele nao vai dar erro, por isso o null! (null-forgiving operator)
         private UsersApiService _usersApiService = null;
+        private OrdersApiService _ordersApiService = null!;
+        private List<BetaFit.Desktop.DTOs.OrderResponseDto> _todosPedidos = new();
 
 
         public DashboardUserControl()
@@ -35,6 +37,11 @@ namespace BetaFit.Desktop.UserControls
             _categoriesApiService = new CategoriesApiService();
             _productsApiService = new ProductsApiService();
             _usersApiService = new UsersApiService();
+            _ordersApiService = new OrdersApiService();
+
+            // Aplica estilo ao grid de últimos pedidos
+            BetaFit.Desktop.Themes.BetaFitTheme.AplicarEstiloGrid(gridUltimosPedidos);
+            BetaFit.Desktop.Themes.BetaFitTheme.AplicarBadgeStatusNoGrid(gridUltimosPedidos, nameof(colStatusUP));
 
             //Carrega os dados do Dashboard
             await CarregarDadosAsync();
@@ -51,10 +58,19 @@ namespace BetaFit.Desktop.UserControls
                 var categorias = await _categoriesApiService.GetAllAsync();
                 var produtos = await _productsApiService.GetAllAsync();
                 var usuarios = await _usersApiService.GetAllAsync();
+                // Carrega pedidos recentes
+                _todosPedidos = await _ordersApiService.GetAllAsync();
                 // Atualiza os labels com os contadores
                 lblValorCategorias.Text = categorias.Count.ToString();
                 lblValorProdutos.Text = produtos.Count.ToString();
                 lblValorClientes.Text = usuarios.Count.ToString();
+
+                // Atualiza card de FINALIZADOS (apenas pedidos com status "Entregue")
+                var finalizados = _todosPedidos.Count(p => string.Equals(p.Status, "Entregue", StringComparison.OrdinalIgnoreCase));
+                lblValorFaturamento.Text = finalizados.ToString();
+
+                // Popular grid de últimos pedidos (exibe os 5 mais recentes)
+                PopularUltimosPedidos(_todosPedidos);
             }
             catch (Exception ex)
             {
@@ -64,5 +80,24 @@ namespace BetaFit.Desktop.UserControls
                 MessageBoxIcon.Error);
             }
         }
+
+        private void PopularUltimosPedidos(List<BetaFit.Desktop.DTOs.OrderResponseDto> pedidos)
+        {
+            // Limpa linhas existentes
+            gridUltimosPedidos.Rows.Clear();
+
+            foreach (var pedido in pedidos.OrderByDescending(p => p.CreatedAt).Take(5))
+            {
+                gridUltimosPedidos.Rows.Add(
+                    pedido.Id,
+                    pedido.UserName,
+                    pedido.CreatedAt.ToString("dd/MM/yyyy HH:mm"),
+                    pedido.Status,
+                    pedido.Total.ToString("C")
+                );
+            }
+        }
+
+
     }
 }

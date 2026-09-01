@@ -9,6 +9,7 @@ namespace BetaFit.Application.DTOs
     public class OrderDto
     {
         public int Id { get; set; }
+        public string UserName { get; set; } = string.Empty;
         public string UserId { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public decimal Total { get; set; }
@@ -23,6 +24,7 @@ namespace BetaFit.Application.DTOs
         public decimal UnitPrice { get; set; }
         public int Quantity { get; set; }
         public decimal Subtotal { get; set; }
+        public string? ImageUrl { get; set; }
     }
 
     public class CreateOrderDto
