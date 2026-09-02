@@ -1,4 +1,4 @@
-﻿@model HomeViewModel
+@model HomeViewModel
 @{
     ViewData["Title"] = "Início";
     var apiUnavailable = (bool)(ViewData["ApiUnavailable"] ?? false);
@@ -73,19 +73,20 @@
             @foreach (var product in Model.FeaturedProducts)
             {
                 <a class="bf-product-card" asp-controller="Catalog" asp-action="Details" asp-route-id="@product.Id">
-                    <div class="bf-product-card__media">
+                    <div class="bf-product-card__media bf-product-card__media--carousel" data-product-carousel>
                         @if (product.IsFeatured)
                         {
                             <span class="bf-product-card__badge">Destaque</span>
                         }
-                        @if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+                        @{ var images = product.ImageUrls?.Any() == true ? product.ImageUrls : (string.IsNullOrWhiteSpace(product.ImageUrl) ? new List<string>() : new List<string> { product.ImageUrl! }); }
+                        @if (images.Any())
                         {
-                            <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+                            <div class="bf-product-card__slides">
+                                @foreach (var img in images) { <img src="@img" alt="@product.Name" loading="lazy" decoding="async" /> }
+                            </div>
                         }
-                        else
-                        {
-                            <div class="bf-product-card__placeholder">BF</div>
-                        }
+                        else { <div class="bf-product-card__placeholder">BF</div> }
+                        @if (images.Count > 1) { <span class="bf-product-card__carousel-hint" aria-hidden="true">Passe o mouse · @images.Count fotos</span> }
                     </div>
                     <div class="bf-product-card__body">
                         <span class="bf-product-card__cat">@product.CategoryName · @product.Gender</span>

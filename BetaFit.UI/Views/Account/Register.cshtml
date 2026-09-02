@@ -1,14 +1,60 @@
 @model RegisterDto
-@{ ViewData["Title"]="Criar conta"; }
-<section class="bf-auth-page"><div class="bf-auth-visual"><span>BETAFIT</span><strong>COMECE<br /><em>SUA JORNADA.</em></strong></div><div class="bf-auth-panel"><div class="bf-auth-panel__inner"><a class="bf-back-link" asp-controller="Home" asp-action="Index">← Voltar para a loja</a><span class="bf-eyebrow bf-eyebrow--dark">Área do cliente</span><h1>Criar sua<br />conta.</h1><p class="bf-auth-intro">Preencha seus dados para criar sua conta Beta Fit.</p>
-@if(!ViewData.ModelState.IsValid){<div class="bf-alert bf-alert--error" role="alert">@Html.ValidationSummary(true,"",new{@class="bf-validation"})</div>}
-<form asp-controller="Account" asp-action="Register" method="post" class="bf-form">@Html.AntiForgeryToken()
-<label>Nome completo<input asp-for="FullName" autocomplete="name" maxlength="120" placeholder="Seu nome completo" required /></label>
-<label>E-mail<input asp-for="Email" type="email" autocomplete="email" maxlength="256" placeholder="voce@email.com" required /></label>
-<label>Telefone<input asp-for="PhoneNumber" type="tel" autocomplete="tel" inputmode="tel" maxlength="15" minlength="10" placeholder="(11) 99999-9999" data-phone-mask required /></label>
-<label>Data de nascimento<input asp-for="BirthDate" type="date" autocomplete="bday" required /></label>
-<p class="bf-form-hint">É necessário ter 18 anos ou mais para criar uma conta.</p>
-<label>Senha<input asp-for="Password" type="password" autocomplete="new-password" minlength="6" placeholder="Mínimo de 6 caracteres" required /></label>
-<label>Confirmar senha<input asp-for="ConfirmPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Repita sua senha" required /></label>
-<label class="bf-check"><input type="checkbox" required /><span>Li e aceito os <a asp-controller="Home" asp-action="Terms">Termos de Uso</a> e a <a asp-controller="Home" asp-action="Privacy">Política de Privacidade</a>.</span></label>
-<button class="bf-btn bf-btn--dark bf-btn--wide" type="submit">Criar conta <span>→</span></button></form><p class="bf-auth-switch">Já possui uma conta? <a asp-controller="Account" asp-action="Login">Entrar</a></p></div></div></section>
+@{
+    ViewData["Title"] = "Criar conta";
+}
+<section class="bf-auth-page">
+    <div class="bf-auth-visual">
+        <span>BETAFIT</span>
+        <strong>COMECE<br /><em>SUA JORNADA.</em></strong>
+    </div>
+    <div class="bf-auth-panel">
+        <div class="bf-auth-panel__inner">
+            <a class="bf-back-link" asp-controller="Home" asp-action="Index">← Voltar para a loja</a>
+            <span class="bf-eyebrow bf-eyebrow--dark">Área do cliente</span>
+            <h1>Criar sua<br />conta.</h1>
+            <p class="bf-auth-intro">Crie sua conta e tenha uma experiência mais completa na Beta Fit.</p>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="bf-alert bf-alert--error" role="alert">@Html.ValidationSummary(true, "", new { @class = "bf-validation" })</div>
+            }
+
+            <form asp-controller="Account" asp-action="Register" method="post" class="bf-form" id="register-form">
+                @Html.AntiForgeryToken()
+                <label>Nome completo<input asp-for="FullName" autocomplete="name" maxlength="120" placeholder="Seu nome completo" required /><span asp-validation-for="FullName" class="text-danger"></span></label>
+                <label>E-mail<input asp-for="Email" type="email" autocomplete="email" maxlength="256" placeholder="voce@email.com" required /><span asp-validation-for="Email" class="text-danger"></span></label>
+                <label>Telefone<input asp-for="PhoneNumber" type="tel" autocomplete="tel" inputmode="tel" maxlength="15" minlength="10" placeholder="(11) 99999-9999" data-phone-mask required /><span asp-validation-for="PhoneNumber" class="text-danger"></span></label>
+                <label>Data de nascimento<input asp-for="BirthDate" type="date" autocomplete="bday" required /><span asp-validation-for="BirthDate" class="text-danger"></span></label>
+                <p class="bf-form-hint">É necessário ter 18 anos ou mais para criar uma conta.</p>
+
+                <div class="bf-password-field">
+                    <label for="Password">Senha</label>
+                    <div class="bf-password-input-wrap">
+                        <input asp-for="Password" type="password" autocomplete="new-password" minlength="6" placeholder="Crie uma senha forte" required aria-describedby="password-requirements" />
+                        <button type="button" class="bf-password-toggle" data-password-toggle="#Password" aria-label="Mostrar senha">Mostrar</button>
+                    </div>
+                    <div class="bf-password-meter" aria-hidden="true"><span id="password-meter-bar"></span></div>
+                    <ul class="bf-password-requirements" id="password-requirements">
+                        <li data-rule="length">6 caracteres</li>
+                        <li data-rule="upper">1 letra maiúscula</li>
+                        <li data-rule="special">1 caractere especial</li>
+                    </ul>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="bf-password-field">
+                    <label for="ConfirmPassword">Confirmar senha</label>
+                    <div class="bf-password-input-wrap">
+                        <input asp-for="ConfirmPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Repita sua senha" required />
+                        <button type="button" class="bf-password-toggle" data-password-toggle="#ConfirmPassword" aria-label="Mostrar confirmação">Mostrar</button>
+                    </div>
+                    <span id="confirm-password-feedback" class="bf-password-feedback"></span>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <label class="bf-check"><input type="checkbox" id="terms" required /><span>Li e aceito os <a asp-controller="Home" asp-action="Terms">Termos de Uso</a> e a <a asp-controller="Home" asp-action="Privacy">Política de Privacidade</a>.</span></label>
+                <button class="bf-btn bf-btn--dark bf-btn--wide" id="register-submit" type="submit" disabled>Criar conta <span>→</span></button>
+            </form>
+            <p class="bf-auth-switch">Já possui uma conta? <a asp-controller="Account" asp-action="Login">Entrar</a></p>
+        </div>
+    </div>
+</section>

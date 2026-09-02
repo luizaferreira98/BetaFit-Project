@@ -1,9 +1,49 @@
 @model CatalogViewModel
-@{ ViewData["Title"]="Catálogo"; var apiUnavailable=(bool)(ViewData["ApiUnavailable"]??false); }
+@using System.Text.Json
+@{
+    ViewData["Title"]="Catálogo";
+    var apiUnavailable=(bool)(ViewData["ApiUnavailable"]??false);
+}
 @if(apiUnavailable){<div class="bf-container bf-alert-wrap"><div class="bf-alert" role="alert">O catálogo está temporariamente indisponível. Inicie a BetaFit.API e atualize a página.</div></div>}
 <section class="bf-page-hero"><div class="bf-container bf-page-hero__inner"><div><span class="bf-eyebrow bf-eyebrow--dark">Coleção Beta Fit</span><h1>Catálogo</h1><p>Explore todas as peças disponíveis na coleção atual.</p></div><div class="bf-page-hero__count"><strong>@Model.TotalCount</strong><span>produtos encontrados</span></div></div></section>
-<section class="bf-section bf-section--catalog"><div class="bf-container"><form method="get" class="bf-filter-bar"><div class="bf-filter-search"><input class="bf-input" type="text" name="searchTerm" placeholder="Buscar produto..." value="@Model.SearchTerm" /></div><select class="bf-select" name="categoryId"><option value="">Todas as categorias</option>@foreach(var c in Model.Categories){<option value="@c.Id" selected="@(Model.CategoryId==c.Id)">@c.Name</option>}</select><select class="bf-select" name="gender"><option value="">Todos os gêneros</option><option value="Masculino" selected="@(Model.Gender==Gender.Masculino)">Masculino</option><option value="Feminino" selected="@(Model.Gender==Gender.Feminino)">Feminino</option><option value="Unissex" selected="@(Model.Gender==Gender.Unissex)">Unissex</option></select><select class="bf-select" name="sortBy"><option value="">Ordenar por nome</option><option value="price_asc" selected="@(Model.SortBy=="price_asc")">Menor preço</option><option value="price_desc" selected="@(Model.SortBy=="price_desc")">Maior preço</option><option value="newest" selected="@(Model.SortBy=="newest")">Novidades</option></select><button class="bf-btn bf-btn--dark" type="submit">Filtrar</button></form>
+<section class="bf-section bf-section--catalog"><div class="bf-container">
+<form method="get" class="bf-filter-bar"><div class="bf-filter-search"><input class="bf-input" type="text" name="searchTerm" placeholder="Buscar produto..." value="@Model.SearchTerm" /></div><select class="bf-select" name="categoryId"><option value="">Todas as categorias</option>@foreach(var c in Model.Categories){<option value="@c.Id" selected="@(Model.CategoryId==c.Id)">@c.Name</option>}</select><select class="bf-select" name="gender"><option value="">Todos os gêneros</option><option value="Masculino" selected="@(Model.Gender==Gender.Masculino)">Masculino</option><option value="Feminino" selected="@(Model.Gender==Gender.Feminino)">Feminino</option><option value="Unissex" selected="@(Model.Gender==Gender.Unissex)">Unissex</option></select><select class="bf-select" name="sortBy"><option value="">Ordenar por nome</option><option value="price_asc" selected="@(Model.SortBy=="price_asc")">Menor preço</option><option value="price_desc" selected="@(Model.SortBy=="price_desc")">Maior preço</option><option value="newest" selected="@(Model.SortBy=="newest")">Novidades</option></select><button class="bf-btn bf-btn--dark" type="submit">Filtrar</button></form>
 <div class="bf-catalog-meta"><span>Mostrando <strong>@Model.Items.Count</strong> de <strong>@Model.TotalCount</strong> produtos</span></div>
-<div class="bf-product-grid bf-product-grid--catalog">@foreach(var product in Model.Items){<article class="bf-product-card bf-product-card--catalog"><a asp-controller="Catalog" asp-action="Details" asp-route-id="@product.Id"><div class="bf-product-card__media">@if(product.IsFeatured){<span class="bf-product-card__badge">Destaque</span>}@if(!string.IsNullOrWhiteSpace(product.ImageUrl)){<img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />}else{<div class="bf-product-card__placeholder">BF</div>}</div><div class="bf-product-card__body"><span class="bf-product-card__cat">@product.CategoryName · @product.Gender</span><strong>@product.Name</strong><span class="bf-product-card__price">@product.Price.ToString("C")</span></div></a>@if(User?.Identity?.IsAuthenticated==true){<form class="bf-card-cart-form" asp-controller="Catalog" asp-action="AddToCart" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@product.Id" /><input type="hidden" name="quantity" value="1" />@if(product.AvailableSizes.Any()){<select name="size" aria-label="Tamanho de @product.Name">@foreach(var size in product.AvailableSizes){<option value="@size">@size</option>}</select>}<button class="bf-btn bf-btn--dark bf-btn--wide" type="submit">Adicionar ao carrinho <span>→</span></button></form>}else{<a class="bf-card-login-link" asp-controller="Account" asp-action="Login">Entre para adicionar</a>}</article>}</div>
+<div class="bf-product-grid bf-product-grid--catalog">
+@foreach(var product in Model.Items)
+{
+    var images=product.ImageUrls?.Any()==true?product.ImageUrls:(string.IsNullOrWhiteSpace(product.ImageUrl)?new List<string>():new List<string>{product.ImageUrl!});
+    var requiresSize=BetaFit.UI.Helpers.ProductCatalogRules.RequiresSize(product.CategoryName);
+    <article class="bf-product-card bf-product-card--catalog">
+        <a asp-controller="Catalog" asp-action="Details" asp-route-id="@product.Id">
+            <div class="bf-product-card__media bf-product-card__media--carousel" data-product-carousel>
+                @if(product.IsFeatured){<span class="bf-product-card__badge">Destaque</span>}
+                <div class="bf-product-card__slides">
+                @if(images.Any())
+                {
+                    foreach(var img in images){<img src="@img" alt="@product.Name" loading="lazy" decoding="async" />}
+                }
+                else {<div class="bf-product-card__placeholder">BF</div>}
+                </div>
+                @if(images.Count>1){<span class="bf-product-card__carousel-hint" aria-hidden="true">Passe o mouse · @images.Count fotos</span>}
+            </div>
+            <div class="bf-product-card__body"><span class="bf-product-card__cat">@product.CategoryName · @product.Gender</span><strong>@product.Name</strong><span class="bf-product-card__price">@product.Price.ToString("C")</span></div>
+        </a>
+        @if(User?.Identity?.IsAuthenticated==true)
+        {
+            <form class="bf-card-cart-form" asp-controller="Catalog" asp-action="AddToCart" method="post">
+                @Html.AntiForgeryToken()<input type="hidden" name="id" value="@product.Id" /><input type="hidden" name="quantity" value="1" />
+                @if(requiresSize && product.AvailableSizes.Any())
+                {
+                    <select name="size" aria-label="Tamanho de @product.Name"><option value="">Tamanho</option>@foreach(var size in product.AvailableSizes){<option value="@size">@size</option>}</select>
+                }
+                <button class="bf-btn bf-btn--dark bf-btn--wide" type="submit">Adicionar ao carrinho <span>→</span></button>
+            </form>
+        }
+        else {<a class="bf-card-login-link" asp-controller="Account" asp-action="Login">Entre para adicionar</a>}
+    </article>
+}
+</div>
 @if(!Model.Items.Any()){<div class="bf-empty"><strong>Nenhum produto encontrado</strong><span>Tente ajustar os filtros.</span></div>}
-@if(Model.TotalPages>1){<div class="bf-pagination">@for(int i=1;i<=Model.TotalPages;i++){<a class="@(i==Model.Page?"active":"")" asp-controller="Catalog" asp-action="Index" asp-route-searchTerm="@Model.SearchTerm" asp-route-categoryId="@Model.CategoryId" asp-route-gender="@Model.Gender" asp-route-sortBy="@Model.SortBy" asp-route-page="@i">@i</a>}</div>}</div></section>
+@if(Model.TotalPages>1){<div class="bf-pagination">@for(int i=1;i<=Model.TotalPages;i++){<a class="@(i==Model.Page?"active":"")" asp-controller="Catalog" asp-action="Index" asp-route-searchTerm="@Model.SearchTerm" asp-route-categoryId="@Model.CategoryId" asp-route-gender="@Model.Gender" asp-route-sortBy="@Model.SortBy" asp-route-page="@i">@i</a>}</div>}
+</div></section>

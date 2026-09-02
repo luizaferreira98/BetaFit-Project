@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BetaFit.Infraestructure.Migrations
 {
     [DbContext(typeof(BetaFitDbContext))]
-    [Migration("20260901194824_Banco1")]
-    partial class Banco1
+    [Migration("20260902192636_Banco10")]
+    partial class Banco10
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

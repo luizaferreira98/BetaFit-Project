@@ -279,17 +279,108 @@
     }
 
     // ---------------------------------------------------------------------
-    // Live product image preview (supports multiple files)
+    // Smart product size UI
+    // ---------------------------------------------------------------------
+    const updateSizePicker = () => {
+        document.querySelectorAll("[data-size-picker]").forEach((picker) => {
+            const select = document.getElementById("product-category");
+            if (!select) return;
+            const option = select.options[select.selectedIndex];
+            const requires = option?.dataset.requiresSize === "true";
+            picker.classList.toggle("is-not-required", !requires);
+            picker.querySelectorAll('input[name="AvailableSizes"]').forEach((input) => {
+                input.disabled = !requires;
+                if (!requires) input.checked = false;
+            });
+            const status = document.getElementById("size-status");
+            const helper = document.getElementById("size-helper");
+            if (status) status.textContent = requires ? "Obrigatório para esta categoria" : "Não se aplica";
+            if (helper) helper.textContent = requires
+                ? "Selecione os tamanhos que o cliente poderá escolher."
+                : "A seleção de tamanho não será exibida para este tipo de produto.";
+        });
+    };
+    document.getElementById("product-category")?.addEventListener("change", updateSizePicker);
+    updateSizePicker();
+
+    // ---------------------------------------------------------------------
+    // Premium product image upload: drag/drop, ordering and remove
     // ---------------------------------------------------------------------
     document.querySelectorAll("[data-image-preview-input]").forEach((input) => {
-        const previewId=input.getAttribute("data-image-preview-input"); const preview=previewId?document.getElementById(previewId):null;
-        if(!preview || !(input instanceof HTMLInputElement)) return;
-        const grid=preview.querySelector(".bf-image-upload-preview__grid");
-        input.addEventListener("change",()=>{
-            if(!grid) return; grid.innerHTML=""; const files=Array.from(input.files||[]);
-            const allowed=["image/jpeg","image/png","image/webp"];
-            files.forEach(file=>{if(!allowed.includes(file.type))return; const url=URL.createObjectURL(file); const item=document.createElement("div"); item.className="bf-image-preview-thumb"; item.innerHTML=`<img src="${url}" alt="Pré-visualização" /><span>${file.name}</span>`; grid.appendChild(item);});
-            preview.classList.toggle("is-ready", grid.children.length>0); const placeholder=preview.querySelector(".bf-image-upload-preview__placeholder"); if(placeholder)placeholder.hidden=grid.children.length>0;
+        const previewId = input.getAttribute("data-image-preview-input");
+        const preview = previewId ? document.getElementById(previewId) : null;
+        if (!preview || !(input instanceof HTMLInputElement)) return;
+
+        const grid = preview.querySelector(".bf-image-upload-preview__grid");
+        const zone = input.closest("[data-upload-zone]");
+        const count = zone?.querySelector("[data-upload-count]");
+        const allowed = ["image/jpeg", "image/png", "image/webp"];
+        let files = [];
+
+        const syncInput = () => {
+            const dt = new DataTransfer();
+            files.forEach(file => dt.items.add(file));
+            input.files = dt.files;
+        };
+
+        const render = () => {
+            if (!grid) return;
+            grid.innerHTML = "";
+            files.forEach((file, index) => {
+                const url = URL.createObjectURL(file);
+                const item = document.createElement("div");
+                item.className = "bf-image-preview-thumb";
+                item.draggable = true;
+                item.dataset.index = String(index);
+                item.innerHTML = `
+                    <div class="bf-image-preview-thumb__image">
+                        <img src="${url}" alt="Pré-visualização de ${file.name}">
+                        <button type="button" class="bf-image-preview-remove" aria-label="Remover ${file.name}">×</button>
+                    </div>
+                    <div class="bf-image-preview-thumb__meta">
+                        <strong>${index === 0 ? "Principal" : `Foto ${index + 1}`}</strong>
+                        <span>${file.name}</span>
+                    </div>`;
+                grid.appendChild(item);
+                item.querySelector(".bf-image-preview-remove")?.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    files.splice(index, 1);
+                    syncInput();
+                    render();
+                });
+                item.addEventListener("dragstart", () => item.classList.add("is-dragging"));
+                item.addEventListener("dragend", () => {
+                    item.classList.remove("is-dragging");
+                    const from = Number(item.dataset.index);
+                    const target = [...grid.children].findIndex(el => el.getBoundingClientRect().left > item.getBoundingClientRect().left);
+                    if (target >= 0 && target !== from) {
+                        const moved = files.splice(from, 1)[0];
+                        files.splice(target, 0, moved);
+                        syncInput();
+                        render();
+                    }
+                });
+            });
+            preview.classList.toggle("is-ready", files.length > 0);
+            const placeholder = preview.querySelector(".bf-image-upload-preview__placeholder");
+            if (placeholder) placeholder.hidden = files.length > 0;
+            if (count) count.textContent = `${files.length} ${files.length === 1 ? "foto" : "fotos"}`;
+        };
+
+        const acceptFiles = (incoming) => {
+            const valid = Array.from(incoming).filter(file => allowed.includes(file.type) && file.size <= 5 * 1024 * 1024);
+            files = [...files, ...valid];
+            syncInput();
+            render();
+        };
+
+        input.addEventListener("change", () => acceptFiles(input.files || []));
+        zone?.addEventListener("dragover", event => { event.preventDefault(); zone.classList.add("is-dragover"); });
+        zone?.addEventListener("dragleave", () => zone.classList.remove("is-dragover"));
+        zone?.addEventListener("drop", event => {
+            event.preventDefault();
+            zone.classList.remove("is-dragover");
+            acceptFiles(event.dataTransfer.files || []);
         });
     });
 
@@ -319,3 +410,91 @@ document.addEventListener("input",(event)=>{
 document.querySelectorAll("[data-phone-mask]").forEach(input=>input.addEventListener("input",()=>{let d=input.value.replace(/\D/g,"").slice(0,11); if(d.length<=10)input.value=d.replace(/(\d{2})(\d{4})(\d{0,4})/,"($1) $2-$3").replace(/-$/,''); else input.value=d.replace(/(\d{2})(\d{5})(\d{0,4})/,"($1) $2-$3").replace(/-$/,'');}));
 // Product gallery.
 document.querySelectorAll("[data-gallery-image]").forEach(button=>button.addEventListener("click",()=>{const main=document.getElementById("bf-main-product-image");if(main)main.src=button.dataset.galleryImage||"";}));
+
+
+// Product-card image carousel: desktop hover + touch swipe on mobile.
+(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.querySelectorAll("[data-product-carousel]").forEach((media) => {
+        const slides = [...media.querySelectorAll(".bf-product-card__slides > img")];
+        if (slides.length <= 1) return;
+        let index = 0;
+        let timer = null;
+        let startX = 0;
+
+        const show = (next) => {
+            index = (next + slides.length) % slides.length;
+            slides.forEach((img, i) => img.classList.toggle("is-active", i === index));
+        };
+        show(0);
+
+        const start = () => {
+            if (reduced || timer) return;
+            timer = window.setInterval(() => show(index + 1), 900);
+        };
+        const stop = () => {
+            if (timer) window.clearInterval(timer);
+            timer = null;
+            show(0);
+        };
+
+        media.addEventListener("mouseenter", start);
+        media.addEventListener("mouseleave", stop);
+        media.addEventListener("touchstart", e => { startX = e.changedTouches[0].clientX; }, { passive: true });
+        media.addEventListener("touchend", e => {
+            const delta = e.changedTouches[0].clientX - startX;
+            if (Math.abs(delta) < 35) return;
+            show(index + (delta < 0 ? 1 : -1));
+        }, { passive: true });
+    });
+})();
+
+// Password visibility + live registration validation.
+(() => {
+    const form = document.getElementById("register-form");
+    if (!form) return;
+
+    document.querySelectorAll("[data-password-toggle]").forEach(button => {
+        button.addEventListener("click", () => {
+            const input = document.querySelector(button.dataset.passwordToggle);
+            if (!input) return;
+            const visible = input.type === "text";
+            input.type = visible ? "password" : "text";
+            button.textContent = visible ? "Mostrar" : "Ocultar";
+            button.setAttribute("aria-label", visible ? "Mostrar senha" : "Ocultar senha");
+        });
+    });
+
+    const password = document.getElementById("Password");
+    const confirm = document.getElementById("ConfirmPassword");
+    const terms = document.getElementById("terms");
+    const submit = document.getElementById("register-submit");
+    const bar = document.getElementById("password-meter-bar");
+    const feedback = document.getElementById("confirm-password-feedback");
+
+    const update = () => {
+        if (!password || !confirm || !submit) return;
+        const value = password.value;
+        const rules = {
+            length: value.length >= 6,
+            upper: /[A-Z]/.test(value),
+            special: /[^a-zA-Z0-9]/.test(value)
+        };
+        Object.entries(rules).forEach(([key, ok]) => {
+            const el = form.querySelector(`[data-rule="${key}"]`);
+            el?.classList.toggle("is-valid", ok);
+        });
+        const score = Object.values(rules).filter(Boolean).length;
+        if (bar) bar.style.width = `${(score / 3) * 100}%`;
+        const matching = value.length > 0 && value === confirm.value;
+        if (feedback) {
+            feedback.textContent = confirm.value ? (matching ? "✓ As senhas coincidem" : "As senhas ainda não coincidem") : "";
+            feedback.classList.toggle("is-valid", matching);
+        }
+        submit.disabled = !(score === 3 && matching && terms?.checked);
+    };
+
+    [password, confirm, terms].forEach(el => el?.addEventListener("input", update));
+    terms?.addEventListener("change", update);
+    update();
+})();

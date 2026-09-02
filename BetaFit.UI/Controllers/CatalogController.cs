@@ -15,6 +15,7 @@ using BetaFit.Application.Interfaces;
 using BetaFit.Domain.Enums;
 using BetaFit.UI.Models;
 using BetaFit.UI.Services;
+using BetaFit.UI.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -145,6 +146,22 @@ namespace BetaFit.UI.Controllers
                 var product = await _productService.GetByIdAsync(id);
                 if (product is null || !product.IsActive)
                     return NotFound();
+
+                var requiresSize = ProductCatalogRules.RequiresSize(product.CategoryName);
+                if (requiresSize && string.IsNullOrWhiteSpace(size))
+                {
+                    TempData["Error"] = "Selecione um tamanho antes de adicionar este produto.";
+                    return RedirectToAction(nameof(Details), new { id });
+                }
+
+                if (!requiresSize)
+                    size = null;
+
+                if (requiresSize && !product.AvailableSizes.Contains(size!, StringComparer.OrdinalIgnoreCase))
+                {
+                    TempData["Error"] = "O tamanho selecionado não está disponível para este produto.";
+                    return RedirectToAction(nameof(Details), new { id });
+                }
 
                 CartService.Add(HttpContext, product, quantity, size);
                 return RedirectToAction("Index", "Cart");
