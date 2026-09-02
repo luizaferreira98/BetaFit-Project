@@ -54,6 +54,8 @@
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges24 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges25 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges26 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges27 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges28 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             lblTituloNovoProduto = new Guna.UI2.WinForms.Guna2HtmlLabel();
             lblDescricaoPedidos = new Guna.UI2.WinForms.Guna2HtmlLabel();
             guna2Panel1 = new Guna.UI2.WinForms.Guna2Panel();
@@ -70,6 +72,10 @@
             lblEmail = new Guna.UI2.WinForms.Guna2HtmlLabel();
             txtNome = new Guna.UI2.WinForms.Guna2TextBox();
             lblNome = new Guna.UI2.WinForms.Guna2HtmlLabel();
+            txtTelefone = new Guna.UI2.WinForms.Guna2TextBox();
+            lblTelefone = new Guna.UI2.WinForms.Guna2HtmlLabel();
+            dtpNascimento = new DateTimePicker();
+            lblNascimento = new Guna.UI2.WinForms.Guna2HtmlLabel();
             guna2Panel3 = new Guna.UI2.WinForms.Guna2Panel();
             guna2HtmlLabel11 = new Guna.UI2.WinForms.Guna2HtmlLabel();
             lblExcluirConta = new Guna.UI2.WinForms.Guna2HtmlLabel();
@@ -179,7 +185,7 @@
             lblNomeCompleto.Size = new Size(129, 23);
             lblNomeCompleto.TabIndex = 15;
             lblNomeCompleto.Text = "Nome Completo";
-            
+
             // 
             // btnAtualizarProdutos
             // 
@@ -207,6 +213,10 @@
             guna2Panel2.Controls.Add(lblEmail);
             guna2Panel2.Controls.Add(txtNome);
             guna2Panel2.Controls.Add(lblNome);
+            guna2Panel2.Controls.Add(txtTelefone);
+            guna2Panel2.Controls.Add(lblTelefone);
+            guna2Panel2.Controls.Add(dtpNascimento);
+            guna2Panel2.Controls.Add(lblNascimento);
             guna2Panel2.CustomizableEdges = customizableEdges17;
             guna2Panel2.Location = new Point(15, 170);
             guna2Panel2.Name = "guna2Panel2";
@@ -302,6 +312,63 @@
             lblNome.Size = new Size(103, 17);
             lblNome.TabIndex = 23;
             lblNome.Text = "NOME COMPLETO";
+            // 
+            // txtTelefone
+            // 
+            txtTelefone.BackColor = SystemColors.ButtonShadow;
+            txtTelefone.BorderColor = Color.FromArgb(224, 224, 224);
+            txtTelefone.BorderRadius = 5;
+            txtTelefone.CustomizableEdges = customizableEdges27;
+            txtTelefone.DefaultText = "";
+            txtTelefone.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
+            txtTelefone.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
+            txtTelefone.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
+            txtTelefone.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
+            txtTelefone.FillColor = Color.DimGray;
+            txtTelefone.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtTelefone.Font = new Font("Segoe UI", 9F);
+            txtTelefone.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtTelefone.Location = new Point(320, 35);
+            txtTelefone.Name = "txtTelefone";
+            txtTelefone.PlaceholderForeColor = Color.LightGray;
+            txtTelefone.PlaceholderText = "(00) 00000-0000";
+            txtTelefone.SelectedText = "";
+            txtTelefone.ShadowDecoration.CustomizableEdges = customizableEdges28;
+            txtTelefone.Size = new Size(289, 36);
+            txtTelefone.TabIndex = 25;
+            // 
+            // lblTelefone
+            // 
+            lblTelefone.BackColor = Color.Transparent;
+            lblTelefone.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblTelefone.ForeColor = SystemColors.ButtonFace;
+            lblTelefone.Location = new Point(320, 10);
+            lblTelefone.Name = "lblTelefone";
+            lblTelefone.Size = new Size(69, 17);
+            lblTelefone.TabIndex = 26;
+            lblTelefone.Text = "TELEFONE";
+            // 
+            // dtpNascimento
+            // 
+            dtpNascimento.Font = new Font("Segoe UI", 9F);
+            dtpNascimento.Format = DateTimePickerFormat.Short;
+            dtpNascimento.Location = new Point(320, 105);
+            dtpNascimento.MaxDate = DateTime.Today;
+            dtpNascimento.MinDate = new DateTime(1900, 1, 1);
+            dtpNascimento.Name = "dtpNascimento";
+            dtpNascimento.Size = new Size(289, 27);
+            dtpNascimento.TabIndex = 29;
+            // 
+            // lblNascimento
+            // 
+            lblNascimento.BackColor = Color.Transparent;
+            lblNascimento.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblNascimento.ForeColor = SystemColors.ButtonFace;
+            lblNascimento.Location = new Point(320, 80);
+            lblNascimento.Name = "lblNascimento";
+            lblNascimento.Size = new Size(126, 17);
+            lblNascimento.TabIndex = 30;
+            lblNascimento.Text = "DATA DE NASCIMENTO";
             // 
             // guna2Panel3
             // 
@@ -407,6 +474,7 @@
             Controls.Add(lblTituloNovoProduto);
             Name = "PerfilUserControl";
             Size = new Size(677, 474);
+            Load += PerfilUserControl_Load;
             guna2Panel1.ResumeLayout(false);
             guna2Panel1.PerformLayout();
             guna2Panel4.ResumeLayout(false);
@@ -417,6 +485,11 @@
             guna2Panel3.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
+
+            btnAtualizarProdutos.Click += btnAtualizarPerfil_Click;
+            btnSalvarProduto.Click += btnSalvarPerfil_Click;
+            BtnAlterarSenha.Click += BtnAlterarSenha_Click;
+            BtnExcuirCnta.Click += BtnExcuirCnta_Click;
         }
 
         #endregion
@@ -443,5 +516,9 @@
         private Guna.UI2.WinForms.Guna2Button BtnExcuirCnta;
         private Guna.UI2.WinForms.Guna2Button BtnAlterarSenha;
         private Guna.UI2.WinForms.Guna2Button BtnDados;
+        private Guna.UI2.WinForms.Guna2TextBox txtTelefone;
+        private Guna.UI2.WinForms.Guna2HtmlLabel lblTelefone;
+        private System.Windows.Forms.DateTimePicker dtpNascimento;
+        private Guna.UI2.WinForms.Guna2HtmlLabel lblNascimento;
     }
 }

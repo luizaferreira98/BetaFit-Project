@@ -69,18 +69,69 @@ namespace BetaFit.Infraestructure.Identity
                 var camisetas = await context.Categories.FirstAsync(c => c.Name == "Camisetas");
                 var leggings = await context.Categories.FirstAsync(c => c.Name == "Leggings");
                 var moletons = await context.Categories.FirstAsync(c => c.Name == "Moletons");
-                var shorts = await context.Categories.FirstAsync(c => c.Name == "Shorts");
                 var tenis = await context.Categories.FirstAsync(c => c.Name == "Tênis");
                 var acessorios = await context.Categories.FirstAsync(c => c.Name == "Acessórios");
 
                 var products = new List<Product>
                 {
+                    // ---------------- TÊNIS ----------------
                     new Product
                     {
-                        Name = "Camiseta Dry Fit Performance",
-                        Description = "Camiseta com tecido de secagem rápida, ideal para treinos de alta intensidade.",
-                        Price = 89.90m,
-                        ImageUrl = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab",
+                        Name = "Tênis Urban Low White",
+                        Description = "Tênis casual branco com detalhe preto no calcanhar, cabedal em couro sintético e solado emborrachado leve. Combina com o dia a dia e treinos leves.",
+                        Price = 259.90m,
+                        ImageUrl = "/images/products/betafit_tenis_feminino_branco_preto.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_tenis_feminino_branco_preto.jpg\"]",
+                        Gender = Gender.Feminino,
+                        CategoryId = tenis.Id,
+                        IsFeatured = true,
+                        CreatedAt = DateTime.Now
+                    },
+                    new Product
+                    {
+                        Name = "Tênis Runner Flex Black",
+                        Description = "Tênis de corrida all black, cabedal em mesh respirável e entressola com amortecimento macio para treinos de alta performance.",
+                        Price = 329.90m,
+                        ImageUrl = "/images/products/betafit_tenis_feminino_all_black.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_tenis_feminino_all_black.jpg\"]",
+                        Gender = Gender.Feminino,
+                        CategoryId = tenis.Id,
+                        IsFeatured = false,
+                        CreatedAt = DateTime.Now
+                    },
+                    new Product
+                    {
+                        Name = "Tênis Runner Panther Black",
+                        Description = "Tênis de corrida masculino com logo Beta Fit no lateral, solado espesso com bom amortecimento e mesh reforçado para treinos intensos.",
+                        Price = 349.90m,
+                        ImageUrl = "/images/products/betafit_tenis_masculino_all_black.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_tenis_masculino_all_black.jpg\"]",
+                        Gender = Gender.Masculino,
+                        CategoryId = tenis.Id,
+                        IsFeatured = true,
+                        CreatedAt = DateTime.Now
+                    },
+                    new Product
+                    {
+                        Name = "Tênis Runner Panther White",
+                        Description = "Versão branca do Runner Panther, com solado em duas cores e cabedal em mesh macio — leveza e respiro para longas distâncias.",
+                        Price = 349.90m,
+                        ImageUrl = "/images/products/betafit_tenis_masculino_branco_preto.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_tenis_masculino_branco_preto.jpg\"]",
+                        Gender = Gender.Masculino,
+                        CategoryId = tenis.Id,
+                        IsFeatured = false,
+                        CreatedAt = DateTime.Now
+                    },
+
+                    // ---------------- CAMISETAS / REGATAS ----------------
+                    new Product
+                    {
+                        Name = "Regata Dry Performance Preta",
+                        Description = "Regata masculina em tecido dry fit com textura sport, corte reto e logo Beta discreto no peito. Ideal para treinos de alta intensidade.",
+                        Price = 79.90m,
+                        ImageUrl = "/images/products/betafit_regata_preta_textura.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_regata_preta_textura.jpg\"]",
                         Gender = Gender.Masculino,
                         CategoryId = camisetas.Id,
                         IsFeatured = true,
@@ -88,10 +139,85 @@ namespace BetaFit.Infraestructure.Identity
                     },
                     new Product
                     {
-                        Name = "Legging High Support",
-                        Description = "Legging de cintura alta com compressão, perfeita para treinos funcionais e corrida.",
-                        Price = 129.90m,
-                        ImageUrl = "https://images.unsplash.com/photo-1594381898411-846e7d193883",
+                        Name = "Regata Dry Performance Cinza",
+                        Description = "Regata masculina cinza mescla com logo do urso Beta Fit, tecido leve e respirável para academia e corrida.",
+                        Price = 79.90m,
+                        ImageUrl = "/images/products/betafit_regata_cinza_frente_urso.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_regata_cinza_frente_urso.jpg\"]",
+                        Gender = Gender.Masculino,
+                        CategoryId = camisetas.Id,
+                        IsFeatured = false,
+                        CreatedAt = DateTime.Now
+                    },
+                    new Product
+                    {
+                        Name = "Camiseta Oversized Vista Sua Disciplina",
+                        Description = "Camiseta oversized preta unissex com estampa 'Vista Sua Disciplina' nas costas. Modelagem ampla e tecido encorpado.",
+                        Price = 119.90m,
+                        ImageUrl = "/images/products/blusa_dupla_modelos_fitness_beta.jpg",
+                        ImageUrlsJson = "[\"/images/products/blusa_dupla_modelos_fitness_beta.jpg\"]",
+                        Gender = Gender.Unissex,
+                        CategoryId = camisetas.Id,
+                        IsFeatured = true,
+                        CreatedAt = DateTime.Now
+                    },
+                    new Product
+                    {
+                        Name = "Camiseta Oversized Move Forward",
+                        Description = "Camiseta oversized preta unissex com estampa gráfica neon 'Move Forward' nas costas. Algodão premium e caimento solto.",
+                        Price = 119.90m,
+                        ImageUrl = "/images/products/betafit_progression_line_clean.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_progression_line_clean.jpg\"]",
+                        Gender = Gender.Unissex,
+                        CategoryId = camisetas.Id,
+                        IsFeatured = false,
+                        CreatedAt = DateTime.Now
+                    },
+                    new Product
+                    {
+                        Name = "Camiseta Oversized Core Discipline",
+                        Description = "Camiseta oversized preta unissex com estampa de cronômetro nas costas, remetendo ao foco e à disciplina do treino.",
+                        Price = 119.90m,
+                        ImageUrl = "/images/products/betafit_core_discipline_clean.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_core_discipline_clean.jpg\"]",
+                        Gender = Gender.Unissex,
+                        CategoryId = camisetas.Id,
+                        IsFeatured = false,
+                        CreatedAt = DateTime.Now
+                    },
+                    new Product
+                    {
+                        Name = "Camiseta Oversized Elite Neon",
+                        Description = "Camiseta oversized preta masculina com estampa 'BETA' fragmentada em neon nas costas. Visual streetwear para dentro e fora da academia.",
+                        Price = 119.90m,
+                        ImageUrl = "/images/products/betafit_elite_neon_clean.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_elite_neon_clean.jpg\"]",
+                        Gender = Gender.Masculino,
+                        CategoryId = camisetas.Id,
+                        IsFeatured = false,
+                        CreatedAt = DateTime.Now
+                    },
+                    new Product
+                    {
+                        Name = "Camiseta Oversized Power Elements",
+                        Description = "Camiseta oversized branca masculina com estampa 'Power Elements' nas costas. Tecido encorpado e caimento solto.",
+                        Price = 119.90m,
+                        ImageUrl = "/images/products/betafit_power_elements_robusto_rosto.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_power_elements_robusto_rosto.jpg\"]",
+                        Gender = Gender.Masculino,
+                        CategoryId = camisetas.Id,
+                        IsFeatured = true,
+                        CreatedAt = DateTime.Now
+                    },
+
+                    // ---------------- LEGGINGS / CALÇAS DE TREINO ----------------
+                    new Product
+                    {
+                        Name = "Legging Cargo Neon",
+                        Description = "Legging feminina verde neon com bolso cargo lateral e capuz combinando em preto. Estilo statement para treinos funcionais.",
+                        Price = 149.90m,
+                        ImageUrl = "/images/products/betafit_calca_feminina_neon.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_calca_feminina_neon.jpg\"]",
                         Gender = Gender.Feminino,
                         CategoryId = leggings.Id,
                         IsFeatured = true,
@@ -99,46 +225,102 @@ namespace BetaFit.Infraestructure.Identity
                     },
                     new Product
                     {
-                        Name = "Moletom Canguru Beta Fit",
-                        Description = "Moletom com capuz e bolso canguru, forro macio para dias frios de treino.",
-                        Price = 179.90m,
-                        ImageUrl = "https://images.unsplash.com/photo-1556821840-3a63f95609a7",
-                        Gender = Gender.Unissex,
+                        Name = "Legging Performance Grafite",
+                        Description = "Legging feminina grafite com compressão e logo do urso Beta Fit em neon, combina com o conjunto de treino de alta performance.",
+                        Price = 149.90m,
+                        ImageUrl = "/images/products/betafit_calca_feminina_grafite.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_calca_feminina_grafite.jpg\"]",
+                        Gender = Gender.Feminino,
+                        CategoryId = leggings.Id,
+                        IsFeatured = false,
+                        CreatedAt = DateTime.Now
+                    },
+                    new Product
+                    {
+                        Name = "Calça Jogger Essential Cinza",
+                        Description = "Calça jogger masculina cinza mescla, cordão de ajuste na cintura e punho elástico. Conforto para o pré e pós-treino.",
+                        Price = 139.90m,
+                        ImageUrl = "/images/products/betafit_calca_cinza_com_camiseta.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_calca_cinza_com_camiseta.jpg\"]",
+                        Gender = Gender.Masculino,
+                        CategoryId = leggings.Id,
+                        IsFeatured = false,
+                        CreatedAt = DateTime.Now
+                    },
+
+                    // ---------------- MOLETONS ----------------
+                    new Product
+                    {
+                        Name = "Moletom Canguru Beta",
+                        Description = "Moletom masculino preto com capuz, bolso canguru com zíper e detalhe neon na gola. Forro macio para dias frios de treino.",
+                        Price = 199.90m,
+                        ImageUrl = "/images/products/betafit_moletom_masculino.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_moletom_masculino.jpg\"]",
+                        Gender = Gender.Masculino,
                         CategoryId = moletons.Id,
                         IsFeatured = true,
                         CreatedAt = DateTime.Now
                     },
+
+                    // ---------------- ACESSÓRIOS ----------------
                     new Product
                     {
-                        Name = "Short Everyday",
-                        Description = "Short leve e respirável, com bolso lateral e cordão de ajuste.",
-                        Price = 69.90m,
-                        ImageUrl = "https://images.unsplash.com/photo-1591195853828-11db59a44f6b",
-                        Gender = Gender.Masculino,
-                        CategoryId = shorts.Id,
+                        Name = "Boné Beta Fit Branco",
+                        Description = "Boné aba curva branco com logo Beta Fit bordado, ajuste traseiro e tecido de secagem rápida.",
+                        Price = 59.90m,
+                        ImageUrl = "/images/products/betafit_bone_branco.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_bone_branco.jpg\"]",
+                        Gender = Gender.Unissex,
+                        CategoryId = acessorios.Id,
                         IsFeatured = false,
                         CreatedAt = DateTime.Now
                     },
                     new Product
                     {
-                        Name = "Tênis Runner Pro",
-                        Description = "Tênis para corrida com amortecimento em gel e solado antiderrapante.",
-                        Price = 349.90m,
-                        ImageUrl = "https://images.unsplash.com/photo-1542291026-7eec264c27ff",
-                        Gender =    Gender.Unissex,
-                        CategoryId = tenis.Id,
+                        Name = "Boné Beta Fit Grafite",
+                        Description = "Boné aba curva grafite com friso neon e logo Beta Fit bordado, visual discreto e esportivo.",
+                        Price = 59.90m,
+                        ImageUrl = "/images/products/betafit_bone_grafite.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_bone_grafite.jpg\"]",
+                        Gender = Gender.Unissex,
+                        CategoryId = acessorios.Id,
+                        IsFeatured = false,
+                        CreatedAt = DateTime.Now
+                    },
+                    new Product
+                    {
+                        Name = "Boné Beta Fit Verde Neon",
+                        Description = "Boné aba curva verde neon, peça statement da coleção, com logo Beta Fit bordado em preto e branco.",
+                        Price = 64.90m,
+                        ImageUrl = "/images/products/betafit_bone_verde_neon.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_bone_verde_neon.jpg\"]",
+                        Gender = Gender.Unissex,
+                        CategoryId = acessorios.Id,
                         IsFeatured = true,
                         CreatedAt = DateTime.Now
                     },
                     new Product
                     {
-                        Name = "Boné Beta Fit Performance",
-                        Description = "Boné esportivo ajustável com proteção UV e tecido de secagem rápida.",
-                        Price = 49.90m,
-                        ImageUrl = "https://images.unsplash.com/photo-1521369909029-2afed882baee",
+                        Name = "Boné Beta Fit Preto",
+                        Description = "Boné aba curva all black com logo Beta Fit bordado tom sobre tom, o clássico da linha de acessórios.",
+                        Price = 59.90m,
+                        ImageUrl = "/images/products/betafit_bone_preto.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_bone_preto.jpg\"]",
                         Gender = Gender.Unissex,
                         CategoryId = acessorios.Id,
                         IsFeatured = false,
+                        CreatedAt = DateTime.Now
+                    },
+                    new Product
+                    {
+                        Name = "Shaker Pro 700ml",
+                        Description = "Coqueteleira Beta Fit de 700ml com misturador interno, tampa com trava e corpo resistente a impacto. Essencial para o pré e pós-treino.",
+                        Price = 39.90m,
+                        ImageUrl = "/images/products/betafit_shaker_pro.jpg",
+                        ImageUrlsJson = "[\"/images/products/betafit_shaker_pro.jpg\"]",
+                        Gender = Gender.Unissex,
+                        CategoryId = acessorios.Id,
+                        IsFeatured = true,
                         CreatedAt = DateTime.Now
                     }
                 };

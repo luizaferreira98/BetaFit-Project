@@ -31,11 +31,15 @@
             components = new System.ComponentModel.Container();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges1 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges2 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges6 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges10 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges11 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges7 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges8 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges9 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges5 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges6 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges3 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges4 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges5 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             pnlEsquerdo = new Guna.UI2.WinForms.Guna2Panel();
             guna2HtmlLabel1 = new Guna.UI2.WinForms.Guna2HtmlLabel();
             lblSubtitulo = new Guna.UI2.WinForms.Guna2HtmlLabel();
@@ -48,13 +52,13 @@
             lblCarregando = new Guna.UI2.WinForms.Guna2HtmlLabel();
             btnFechar = new Guna.UI2.WinForms.Guna2CircleButton();
             btnEntrar = new Guna.UI2.WinForms.Guna2Button();
-            txtSenha = new TextBox();
             lblSenha = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            txtEmail = new TextBox();
             lblEmail = new Guna.UI2.WinForms.Guna2HtmlLabel();
             guna2DragControl1 = new Guna.UI2.WinForms.Guna2DragControl(components);
             guna2DragControl2 = new Guna.UI2.WinForms.Guna2DragControl(components);
             guna2DragControl3 = new Guna.UI2.WinForms.Guna2DragControl(components);
+            txtSenha = new Guna.UI2.WinForms.Guna2TextBox();
+            txtEmail = new Guna.UI2.WinForms.Guna2TextBox();
             pnlEsquerdo.SuspendLayout();
             pnlDireito.SuspendLayout();
             SuspendLayout();
@@ -118,21 +122,21 @@
             // pnlDireito
             // 
             pnlDireito.BackColor = SystemColors.ButtonFace;
+            pnlDireito.Controls.Add(txtEmail);
+            pnlDireito.Controls.Add(txtSenha);
             pnlDireito.Controls.Add(lblVersao);
             pnlDireito.Controls.Add(lblErro);
             pnlDireito.Controls.Add(lblApi);
             pnlDireito.Controls.Add(lblCarregando);
             pnlDireito.Controls.Add(btnFechar);
             pnlDireito.Controls.Add(btnEntrar);
-            pnlDireito.Controls.Add(txtSenha);
             pnlDireito.Controls.Add(lblSenha);
-            pnlDireito.Controls.Add(txtEmail);
             pnlDireito.Controls.Add(lblEmail);
             pnlDireito.Controls.Add(lblTituloLogin);
-            pnlDireito.CustomizableEdges = customizableEdges6;
+            pnlDireito.CustomizableEdges = customizableEdges10;
             pnlDireito.Location = new Point(358, -2);
             pnlDireito.Name = "pnlDireito";
-            pnlDireito.ShadowDecoration.CustomizableEdges = customizableEdges7;
+            pnlDireito.ShadowDecoration.CustomizableEdges = customizableEdges11;
             pnlDireito.Size = new Size(362, 452);
             pnlDireito.TabIndex = 3;
             // 
@@ -191,7 +195,7 @@
             btnFechar.ForeColor = Color.Black;
             btnFechar.Location = new Point(314, 14);
             btnFechar.Name = "btnFechar";
-            btnFechar.ShadowDecoration.CustomizableEdges = customizableEdges3;
+            btnFechar.ShadowDecoration.CustomizableEdges = customizableEdges7;
             btnFechar.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
             btnFechar.Size = new Size(36, 33);
             btnFechar.TabIndex = 7;
@@ -203,7 +207,7 @@
             btnEntrar.BorderColor = Color.DimGray;
             btnEntrar.Cursor = Cursors.Hand;
             btnEntrar.CustomBorderColor = Color.FromArgb(64, 64, 64);
-            btnEntrar.CustomizableEdges = customizableEdges4;
+            btnEntrar.CustomizableEdges = customizableEdges8;
             btnEntrar.DisabledState.BorderColor = Color.DarkGray;
             btnEntrar.DisabledState.CustomBorderColor = Color.DarkGray;
             btnEntrar.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
@@ -213,21 +217,11 @@
             btnEntrar.ForeColor = Color.Black;
             btnEntrar.Location = new Point(29, 256);
             btnEntrar.Name = "btnEntrar";
-            btnEntrar.ShadowDecoration.CustomizableEdges = customizableEdges5;
+            btnEntrar.ShadowDecoration.CustomizableEdges = customizableEdges9;
             btnEntrar.Size = new Size(293, 45);
             btnEntrar.TabIndex = 6;
             btnEntrar.Text = "ENTRAR";
             btnEntrar.Click += btnEntrar_Click;
-            // 
-            // txtSenha
-            // 
-            txtSenha.Cursor = Cursors.Hand;
-            txtSenha.Location = new Point(29, 205);
-            txtSenha.Name = "txtSenha";
-            txtSenha.PlaceholderText = "••••••••";
-            txtSenha.Size = new Size(293, 23);
-            txtSenha.TabIndex = 5;
-            txtSenha.KeyDown += txtSenha_KeyDown;
             // 
             // lblSenha
             // 
@@ -240,22 +234,12 @@
             lblSenha.TabIndex = 4;
             lblSenha.Text = "SENHA";
             // 
-            // txtEmail
-            // 
-            txtEmail.Cursor = Cursors.Hand;
-            txtEmail.Location = new Point(29, 145);
-            txtEmail.Name = "txtEmail";
-            txtEmail.PlaceholderText = "admin@betafit.com";
-            txtEmail.Size = new Size(293, 23);
-            txtEmail.TabIndex = 3;
-            txtEmail.KeyDown += txtEmail_KeyDown;
-            // 
             // lblEmail
             // 
             lblEmail.BackColor = Color.Transparent;
             lblEmail.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblEmail.ForeColor = SystemColors.ControlDarkDark;
-            lblEmail.Location = new Point(29, 122);
+            lblEmail.Location = new Point(29, 119);
             lblEmail.Name = "lblEmail";
             lblEmail.Size = new Size(43, 17);
             lblEmail.TabIndex = 2;
@@ -275,6 +259,45 @@
             // 
             guna2DragControl3.DockIndicatorTransparencyValue = 0.6D;
             guna2DragControl3.UseTransparentDrag = true;
+            // 
+            // txtSenha
+            // 
+            txtSenha.CustomizableEdges = customizableEdges5;
+            txtSenha.DefaultText = "";
+            txtSenha.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
+            txtSenha.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
+            txtSenha.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
+            txtSenha.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
+            txtSenha.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtSenha.Font = new Font("Segoe UI", 9F);
+            txtSenha.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtSenha.Location = new Point(29, 205);
+            txtSenha.Name = "txtSenha";
+            txtSenha.PlaceholderText = "";
+            txtSenha.SelectedText = "";
+            txtSenha.ShadowDecoration.CustomizableEdges = customizableEdges6;
+            txtSenha.Size = new Size(293, 36);
+            txtSenha.TabIndex = 12;
+            txtSenha.UseSystemPasswordChar = true;
+            // 
+            // txtEmail
+            // 
+            txtEmail.CustomizableEdges = customizableEdges3;
+            txtEmail.DefaultText = "";
+            txtEmail.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
+            txtEmail.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
+            txtEmail.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
+            txtEmail.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
+            txtEmail.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtEmail.Font = new Font("Segoe UI", 9F);
+            txtEmail.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtEmail.Location = new Point(29, 140);
+            txtEmail.Name = "txtEmail";
+            txtEmail.PlaceholderText = "seuemail@betafit.com";
+            txtEmail.SelectedText = "";
+            txtEmail.ShadowDecoration.CustomizableEdges = customizableEdges4;
+            txtEmail.Size = new Size(293, 36);
+            txtEmail.TabIndex = 13;
             // 
             // LoginForm
             // 
@@ -303,9 +326,7 @@
         private Guna.UI2.WinForms.Guna2HtmlLabel lblTituloLogin;
         private Guna.UI2.WinForms.Guna2Panel pnlDireito;
         private Guna.UI2.WinForms.Guna2HtmlLabel lblEmail;
-        private TextBox txtEmail;
         private Guna.UI2.WinForms.Guna2Button btnEntrar;
-        private TextBox txtSenha;
         private Guna.UI2.WinForms.Guna2HtmlLabel lblSenha;
         private Guna.UI2.WinForms.Guna2CircleButton btnFechar;
         private Guna.UI2.WinForms.Guna2HtmlLabel lblVersao;
@@ -315,5 +336,7 @@
         private Guna.UI2.WinForms.Guna2DragControl guna2DragControl1;
         private Guna.UI2.WinForms.Guna2DragControl guna2DragControl2;
         private Guna.UI2.WinForms.Guna2DragControl guna2DragControl3;
+        private Guna.UI2.WinForms.Guna2TextBox txtEmail;
+        private Guna.UI2.WinForms.Guna2TextBox txtSenha;
     }
 }

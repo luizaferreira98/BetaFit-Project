@@ -108,15 +108,22 @@ namespace BetaFit.Desktop.UserControls
             if (string.IsNullOrWhiteSpace(imageUrl))
                 return _imagemPlaceholder;
 
-            if (_cacheImagens.TryGetValue(imageUrl, out var cacheada))
+            // Monta a URL absoluta antes de baixar. O banco guarda caminhos
+            // relativos (ex: "/images/products/xxx.jpg"), que só existem
+            // servidos pelo BetaFit.UI — não pela BetaFit.API.
+            var urlAbsoluta = ResolverUrlAbsolutaDaImagem(imageUrl);
+            if (urlAbsoluta == null)
+                return _imagemPlaceholder;
+
+            if (_cacheImagens.TryGetValue(urlAbsoluta, out var cacheada))
                 return cacheada;
 
             try
             {
-                var bytes = await _httpImagens.GetByteArrayAsync(imageUrl);
+                var bytes = await _httpImagens.GetByteArrayAsync(urlAbsoluta);
                 using var ms = new System.IO.MemoryStream(bytes);
                 var imagem = Image.FromStream(ms);
-                _cacheImagens[imageUrl] = imagem;
+                _cacheImagens[urlAbsoluta] = imagem;
                 return imagem;
             }
             catch
@@ -124,6 +131,24 @@ namespace BetaFit.Desktop.UserControls
                 // URL quebrada, 404, timeout, arquivo não é imagem, etc.
                 return _imagemPlaceholder;
             }
+        }
+
+        //=================================================
+        // RESOLVE O CAMINHO DA IMAGEM PARA UMA URL ABSOLUTA
+        //=================================================
+        // Se já vier absoluta (http/https), usa como está.
+        // Se vier relativa ("/images/products/xxx.jpg"), monta usando o
+        // UiBaseUrl (BetaFit.UI é quem serve os arquivos estáticos de imagem).
+        private string? ResolverUrlAbsolutaDaImagem(string imageUrl)
+        {
+            if (Uri.TryCreate(imageUrl, UriKind.Absolute, out _))
+                return imageUrl;
+
+            var uiBaseUrl = AppConfig.UiBaseUrl;
+            if (string.IsNullOrWhiteSpace(uiBaseUrl))
+                return null; // BetaFit.UI não localizado — sem como resolver o caminho relativo
+
+            return $"{uiBaseUrl.TrimEnd('/')}/{imageUrl.TrimStart('/')}";
         }
 
         //=================================================
@@ -201,7 +226,7 @@ namespace BetaFit.Desktop.UserControls
                     nomeCategoria,
                     p.Price.ToString("C"),
                     p.Gender,
-                    p.IsFeatured ? "Ativo" : "Inativo",
+                    p.IsActive ? "Ativo" : "Inativo",
                     p.CreatedAt.ToString("dd/MM/yyyy HH:mm")
                 );
 

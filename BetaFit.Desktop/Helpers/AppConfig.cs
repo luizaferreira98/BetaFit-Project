@@ -23,6 +23,22 @@ namespace BetaFit.Desktop.Helpers
                  //?? : Coalescência nula, retorna o valor à esquerda se não for nulo, caso contrário retorna o valor à direita
                  ApiEndpointResolver.Resolve() ?? string.Empty;
 
+        ///<summary>
+        ///URL base do BetaFit.UI, Exemplo: "http://localhost:5085"
+        ///
+        /// As imagens de produto (ImageUrl/ImageUrls) são salvas como caminhos
+        /// relativos (ex: "/images/products/xxx.jpg") e servidas pelo projeto
+        /// BetaFit.UI, não pela BetaFit.API. Por isso precisamos resolver essa
+        /// URL separadamente.
+        ///
+        /// Resolvida na seguinte ordem pelo UiEndpointResolver:
+        /// 1. launchSettings.json do BetaFit.UI
+        /// 2. appsettings.json → UiSettings.BaseUrl (fallback configurável)
+        /// 3. String vazia se não encontrada (imagens caem no placeholder)
+        ///</summary>
+        public static string UiBaseUrl =>
+                 UiEndpointResolver.Resolve() ?? string.Empty;
+
         public static string AppName =>
               GetNestedValue("AppSettings", "AppName") ?? "SenacGames Desktop";
 
