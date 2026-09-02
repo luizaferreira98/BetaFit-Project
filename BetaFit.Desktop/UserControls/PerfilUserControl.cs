@@ -75,12 +75,12 @@ namespace BetaFit.Desktop.UserControls
             txtNome.Text = perfil.FullName;
             txtEmail.Text = perfil.Email;
             txtTelefone.Text = perfil.PhoneNumber;
-            dtpNascimento.Value = perfil.BirthDate ?? DateTime.Today.AddYears(-18);
+            dtpDNascimento.Value = perfil.BirthDate ?? DateTime.Today.AddYears(-18);
 
             lblNomeCompleto.Text = string.IsNullOrWhiteSpace(perfil.FullName)
                 ? "Usuário"
                 : perfil.FullName;
-            guna2HtmlLabel3.Text = perfil.Email;
+            lblEmail.Text = perfil.Email;
             guna2HtmlLabel2.Text = perfil.IsAdmin ? "Administrador" : "Usuário";
         }
 
@@ -120,7 +120,7 @@ namespace BetaFit.Desktop.UserControls
                 FullName = txtNome.Text.Trim(),
                 Email = txtEmail.Text.Trim(),
                 PhoneNumber = txtTelefone.Text.Trim(),
-                BirthDate = dtpNascimento.Value.Date
+                BirthDate = dtpDNascimento.Value.Date
             };
 
             var (success, perfilAtualizado, error) = await _profileApiService.UpdateAsync(dto);
@@ -148,6 +148,20 @@ namespace BetaFit.Desktop.UserControls
             {
                 MessageBox.Show("Aguarde o carregamento do perfil e tente novamente.",
                     "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // A API exige FullName/Email/PhoneNumber/BirthDate em TODO PUT
+            // em /api/profile, mesmo quando é só a senha que está mudando.
+            // Se o perfil ainda tiver campo obrigatório vazio (ex: telefone
+            // nunca cadastrado), o PUT falharia com 400 antes mesmo de chegar
+            // a validar a senha — então avisamos e paramos aqui.
+            if (string.IsNullOrWhiteSpace(_perfilAtual.PhoneNumber))
+            {
+                MessageBox.Show(
+                    "Antes de alterar a senha, preencha e salve seu telefone na aba " +
+                    "\"Dados Pessoais\". A API exige esse campo em toda atualização de perfil.",
+                    "Complete seu perfil", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 

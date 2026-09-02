@@ -310,7 +310,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(64, 64, 64);
+            BackColor = Color.Black;
             Controls.Add(pnlModalProduto);
             Controls.Add(btnAtualizarProdutos);
             Controls.Add(lblSubtituloProdutos);

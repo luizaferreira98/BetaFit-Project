@@ -33,19 +33,21 @@
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges2 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges10 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges11 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges3 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges4 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges5 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges6 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges7 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges8 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges9 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges5 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges6 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges3 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges4 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             pnlEsquerdo = new Guna.UI2.WinForms.Guna2Panel();
             guna2HtmlLabel1 = new Guna.UI2.WinForms.Guna2HtmlLabel();
             lblSubtitulo = new Guna.UI2.WinForms.Guna2HtmlLabel();
             lblTituloSistema = new Guna.UI2.WinForms.Guna2HtmlLabel();
             lblTituloLogin = new Guna.UI2.WinForms.Guna2HtmlLabel();
             pnlDireito = new Guna.UI2.WinForms.Guna2Panel();
+            txtEmail = new Guna.UI2.WinForms.Guna2TextBox();
+            txtSenha = new Guna.UI2.WinForms.Guna2TextBox();
             lblVersao = new Guna.UI2.WinForms.Guna2HtmlLabel();
             lblErro = new Guna.UI2.WinForms.Guna2HtmlLabel();
             lblApi = new Guna.UI2.WinForms.Guna2HtmlLabel();
@@ -57,8 +59,6 @@
             guna2DragControl1 = new Guna.UI2.WinForms.Guna2DragControl(components);
             guna2DragControl2 = new Guna.UI2.WinForms.Guna2DragControl(components);
             guna2DragControl3 = new Guna.UI2.WinForms.Guna2DragControl(components);
-            txtSenha = new Guna.UI2.WinForms.Guna2TextBox();
-            txtEmail = new Guna.UI2.WinForms.Guna2TextBox();
             pnlEsquerdo.SuspendLayout();
             pnlDireito.SuspendLayout();
             SuspendLayout();
@@ -139,6 +139,45 @@
             pnlDireito.ShadowDecoration.CustomizableEdges = customizableEdges11;
             pnlDireito.Size = new Size(362, 452);
             pnlDireito.TabIndex = 3;
+            // 
+            // txtEmail
+            // 
+            txtEmail.CustomizableEdges = customizableEdges3;
+            txtEmail.DefaultText = "";
+            txtEmail.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
+            txtEmail.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
+            txtEmail.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
+            txtEmail.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
+            txtEmail.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtEmail.Font = new Font("Segoe UI", 9F);
+            txtEmail.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtEmail.Location = new Point(29, 140);
+            txtEmail.Name = "txtEmail";
+            txtEmail.PlaceholderText = "seuemail@betafit.com";
+            txtEmail.SelectedText = "";
+            txtEmail.ShadowDecoration.CustomizableEdges = customizableEdges4;
+            txtEmail.Size = new Size(293, 36);
+            txtEmail.TabIndex = 13;
+            // 
+            // txtSenha
+            // 
+            txtSenha.CustomizableEdges = customizableEdges5;
+            txtSenha.DefaultText = "";
+            txtSenha.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
+            txtSenha.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
+            txtSenha.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
+            txtSenha.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
+            txtSenha.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtSenha.Font = new Font("Segoe UI", 9F);
+            txtSenha.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtSenha.Location = new Point(29, 205);
+            txtSenha.Name = "txtSenha";
+            txtSenha.PlaceholderText = "";
+            txtSenha.SelectedText = "";
+            txtSenha.ShadowDecoration.CustomizableEdges = customizableEdges6;
+            txtSenha.Size = new Size(293, 36);
+            txtSenha.TabIndex = 12;
+            txtSenha.UseSystemPasswordChar = true;
             // 
             // lblVersao
             // 
@@ -248,56 +287,19 @@
             // guna2DragControl1
             // 
             guna2DragControl1.DockIndicatorTransparencyValue = 0.6D;
+            guna2DragControl1.TargetControl = pnlEsquerdo;
             guna2DragControl1.UseTransparentDrag = true;
             // 
             // guna2DragControl2
             // 
             guna2DragControl2.DockIndicatorTransparencyValue = 0.6D;
+            guna2DragControl2.TargetControl = pnlDireito;
             guna2DragControl2.UseTransparentDrag = true;
             // 
             // guna2DragControl3
             // 
             guna2DragControl3.DockIndicatorTransparencyValue = 0.6D;
             guna2DragControl3.UseTransparentDrag = true;
-            // 
-            // txtSenha
-            // 
-            txtSenha.CustomizableEdges = customizableEdges5;
-            txtSenha.DefaultText = "";
-            txtSenha.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
-            txtSenha.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
-            txtSenha.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
-            txtSenha.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
-            txtSenha.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
-            txtSenha.Font = new Font("Segoe UI", 9F);
-            txtSenha.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
-            txtSenha.Location = new Point(29, 205);
-            txtSenha.Name = "txtSenha";
-            txtSenha.PlaceholderText = "";
-            txtSenha.SelectedText = "";
-            txtSenha.ShadowDecoration.CustomizableEdges = customizableEdges6;
-            txtSenha.Size = new Size(293, 36);
-            txtSenha.TabIndex = 12;
-            txtSenha.UseSystemPasswordChar = true;
-            // 
-            // txtEmail
-            // 
-            txtEmail.CustomizableEdges = customizableEdges3;
-            txtEmail.DefaultText = "";
-            txtEmail.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
-            txtEmail.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
-            txtEmail.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
-            txtEmail.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
-            txtEmail.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
-            txtEmail.Font = new Font("Segoe UI", 9F);
-            txtEmail.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
-            txtEmail.Location = new Point(29, 140);
-            txtEmail.Name = "txtEmail";
-            txtEmail.PlaceholderText = "seuemail@betafit.com";
-            txtEmail.SelectedText = "";
-            txtEmail.ShadowDecoration.CustomizableEdges = customizableEdges4;
-            txtEmail.Size = new Size(293, 36);
-            txtEmail.TabIndex = 13;
             // 
             // LoginForm
             // 
@@ -308,6 +310,7 @@
             Controls.Add(pnlEsquerdo);
             FormBorderStyle = FormBorderStyle.None;
             Name = "LoginForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "LoginForm";
             Load += LoginForm_Load;
             pnlEsquerdo.ResumeLayout(false);

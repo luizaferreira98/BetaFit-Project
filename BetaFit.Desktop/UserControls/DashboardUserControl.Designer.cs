@@ -150,7 +150,7 @@
             // 
             // pnlColorPedidos
             // 
-            pnlColorPedidos.BackColor = Color.DeepSkyBlue;
+            pnlColorPedidos.BackColor = Color.GreenYellow;
             pnlColorPedidos.CustomizableEdges = customizableEdges3;
             pnlColorPedidos.Location = new Point(0, 0);
             pnlColorPedidos.Name = "pnlColorPedidos";
@@ -229,7 +229,7 @@
             // 
             // guna2Panel3
             // 
-            guna2Panel3.BackColor = Color.Chocolate;
+            guna2Panel3.BackColor = Color.GreenYellow;
             guna2Panel3.CustomizableEdges = customizableEdges9;
             guna2Panel3.Location = new Point(0, 0);
             guna2Panel3.Name = "guna2Panel3";
@@ -261,7 +261,7 @@
             // 
             // guna2Panel1
             // 
-            guna2Panel1.BackColor = Color.YellowGreen;
+            guna2Panel1.BackColor = Color.GreenYellow;
             guna2Panel1.CustomizableEdges = customizableEdges13;
             guna2Panel1.Location = new Point(25, 75);
             guna2Panel1.Name = "guna2Panel1";
@@ -271,7 +271,7 @@
             // 
             // guna2Panel2
             // 
-            guna2Panel2.BackColor = Color.SlateBlue;
+            guna2Panel2.BackColor = Color.GreenYellow;
             guna2Panel2.CustomizableEdges = customizableEdges15;
             guna2Panel2.Location = new Point(360, 75);
             guna2Panel2.Name = "guna2Panel2";
@@ -364,7 +364,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(64, 64, 64);
+            BackColor = Color.Black;
             Controls.Add(lblUltimosPedidos);
             Controls.Add(gridUltimosPedidos);
             Controls.Add(guna2Panel2);

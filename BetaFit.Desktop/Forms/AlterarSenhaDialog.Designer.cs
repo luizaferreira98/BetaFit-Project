@@ -63,7 +63,6 @@
             txtSenhaAtual.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
             txtSenhaAtual.Location = new Point(57, 31);
             txtSenhaAtual.Name = "txtSenhaAtual";
-            txtSenhaAtual.PasswordChar = '•';
             txtSenhaAtual.PlaceholderText = "";
             txtSenhaAtual.SelectedText = "";
             txtSenhaAtual.ShadowDecoration.CustomizableEdges = customizableEdges2;
@@ -85,7 +84,6 @@
             txtNovaSenha.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
             txtNovaSenha.Location = new Point(57, 93);
             txtNovaSenha.Name = "txtNovaSenha";
-            txtNovaSenha.PasswordChar = '•';
             txtNovaSenha.PlaceholderText = "";
             txtNovaSenha.SelectedText = "";
             txtNovaSenha.ShadowDecoration.CustomizableEdges = customizableEdges4;
@@ -107,7 +105,6 @@
             txtConfirmarSenha.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
             txtConfirmarSenha.Location = new Point(57, 157);
             txtConfirmarSenha.Name = "txtConfirmarSenha";
-            txtConfirmarSenha.PasswordChar = '•';
             txtConfirmarSenha.PlaceholderText = "";
             txtConfirmarSenha.SelectedText = "";
             txtConfirmarSenha.ShadowDecoration.CustomizableEdges = customizableEdges6;

@@ -28,17 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges9 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges10 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges15 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges16 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges11 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges12 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges13 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges14 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle6 = new DataGridViewCellStyle();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges1 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges2 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges7 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges8 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges3 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges4 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges5 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges6 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
             lblTituloPedidos = new Guna.UI2.WinForms.Guna2HtmlLabel();
             lblDescricaoPedidos = new Guna.UI2.WinForms.Guna2HtmlLabel();
             btnAtualizarPedidos = new Guna.UI2.WinForms.Guna2Button();
@@ -83,7 +83,7 @@
             // 
             btnAtualizarPedidos.BorderRadius = 5;
             btnAtualizarPedidos.Cursor = Cursors.Hand;
-            btnAtualizarPedidos.CustomizableEdges = customizableEdges9;
+            btnAtualizarPedidos.CustomizableEdges = customizableEdges1;
             btnAtualizarPedidos.DisabledState.BorderColor = Color.DarkGray;
             btnAtualizarPedidos.DisabledState.CustomBorderColor = Color.DarkGray;
             btnAtualizarPedidos.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
@@ -93,7 +93,7 @@
             btnAtualizarPedidos.ForeColor = Color.Black;
             btnAtualizarPedidos.Location = new Point(512, 21);
             btnAtualizarPedidos.Name = "btnAtualizarPedidos";
-            btnAtualizarPedidos.ShadowDecoration.CustomizableEdges = customizableEdges10;
+            btnAtualizarPedidos.ShadowDecoration.CustomizableEdges = customizableEdges2;
             btnAtualizarPedidos.Size = new Size(148, 45);
             btnAtualizarPedidos.TabIndex = 10;
             btnAtualizarPedidos.Text = "🔃 ATUALIZAR";
@@ -105,10 +105,10 @@
             guna2Panel1.Controls.Add(btnAtualizarStatusPedido);
             guna2Panel1.Controls.Add(cboStatusPedido);
             guna2Panel1.Controls.Add(lblNovoStatus);
-            guna2Panel1.CustomizableEdges = customizableEdges15;
+            guna2Panel1.CustomizableEdges = customizableEdges7;
             guna2Panel1.Location = new Point(15, 79);
             guna2Panel1.Name = "guna2Panel1";
-            guna2Panel1.ShadowDecoration.CustomizableEdges = customizableEdges16;
+            guna2Panel1.ShadowDecoration.CustomizableEdges = customizableEdges8;
             guna2Panel1.Size = new Size(645, 64);
             guna2Panel1.TabIndex = 11;
             // 
@@ -119,7 +119,7 @@
             btnAtualizarStatusPedido.BorderThickness = 1;
             btnAtualizarStatusPedido.Cursor = Cursors.Hand;
             btnAtualizarStatusPedido.CustomBorderColor = Color.GreenYellow;
-            btnAtualizarStatusPedido.CustomizableEdges = customizableEdges11;
+            btnAtualizarStatusPedido.CustomizableEdges = customizableEdges3;
             btnAtualizarStatusPedido.DisabledState.BorderColor = Color.DarkGray;
             btnAtualizarStatusPedido.DisabledState.CustomBorderColor = Color.DarkGray;
             btnAtualizarStatusPedido.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
@@ -129,7 +129,7 @@
             btnAtualizarStatusPedido.ForeColor = Color.GreenYellow;
             btnAtualizarStatusPedido.Location = new Point(319, 13);
             btnAtualizarStatusPedido.Name = "btnAtualizarStatusPedido";
-            btnAtualizarStatusPedido.ShadowDecoration.CustomizableEdges = customizableEdges12;
+            btnAtualizarStatusPedido.ShadowDecoration.CustomizableEdges = customizableEdges4;
             btnAtualizarStatusPedido.Size = new Size(157, 36);
             btnAtualizarStatusPedido.TabIndex = 12;
             btnAtualizarStatusPedido.Text = "🔃 ATUALIZAR STATUS";
@@ -138,18 +138,18 @@
             // cboStatusPedido
             // 
             cboStatusPedido.BackColor = SystemColors.ControlDarkDark;
-            cboStatusPedido.CustomizableEdges = customizableEdges13;
+            cboStatusPedido.CustomizableEdges = customizableEdges5;
             cboStatusPedido.DrawMode = DrawMode.OwnerDrawFixed;
             cboStatusPedido.DropDownStyle = ComboBoxStyle.DropDownList;
             cboStatusPedido.FillColor = Color.FromArgb(64, 64, 64);
             cboStatusPedido.FocusedColor = Color.FromArgb(94, 148, 255);
             cboStatusPedido.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
             cboStatusPedido.Font = new Font("Segoe UI", 10F);
-            cboStatusPedido.ForeColor = Color.LightGray;
+            cboStatusPedido.ForeColor = Color.White;
             cboStatusPedido.ItemHeight = 30;
             cboStatusPedido.Location = new Point(112, 13);
             cboStatusPedido.Name = "cboStatusPedido";
-            cboStatusPedido.ShadowDecoration.CustomizableEdges = customizableEdges14;
+            cboStatusPedido.ShadowDecoration.CustomizableEdges = customizableEdges6;
             cboStatusPedido.Size = new Size(192, 36);
             cboStatusPedido.TabIndex = 14;
             // 
@@ -157,7 +157,7 @@
             // 
             lblNovoStatus.BackColor = Color.Transparent;
             lblNovoStatus.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblNovoStatus.ForeColor = Color.WhiteSmoke;
+            lblNovoStatus.ForeColor = Color.White;
             lblNovoStatus.Location = new Point(17, 21);
             lblNovoStatus.Name = "lblNovoStatus";
             lblNovoStatus.Size = new Size(89, 17);
@@ -166,28 +166,28 @@
             // 
             // gridPedidos
             // 
-            dataGridViewCellStyle4.BackColor = Color.White;
-            gridPedidos.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.BackColor = Color.White;
+            gridPedidos.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             gridPedidos.BackgroundColor = Color.DimGray;
-            dataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = Color.DimGray;
-            dataGridViewCellStyle5.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            dataGridViewCellStyle5.ForeColor = Color.White;
-            dataGridViewCellStyle5.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = DataGridViewTriState.True;
-            gridPedidos.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = Color.DimGray;
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            dataGridViewCellStyle2.ForeColor = Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
+            gridPedidos.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             gridPedidos.ColumnHeadersHeight = 17;
             gridPedidos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
             gridPedidos.Columns.AddRange(new DataGridViewColumn[] { colId, colCliente, colData, colTotal, colItens, colStatus });
-            dataGridViewCellStyle6.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = Color.White;
-            dataGridViewCellStyle6.Font = new Font("Segoe UI", 9F);
-            dataGridViewCellStyle6.ForeColor = Color.FromArgb(71, 69, 94);
-            dataGridViewCellStyle6.SelectionBackColor = Color.FromArgb(231, 229, 255);
-            dataGridViewCellStyle6.SelectionForeColor = Color.FromArgb(71, 69, 94);
-            dataGridViewCellStyle6.WrapMode = DataGridViewTriState.False;
-            gridPedidos.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = Color.White;
+            dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle3.ForeColor = Color.FromArgb(71, 69, 94);
+            dataGridViewCellStyle3.SelectionBackColor = Color.FromArgb(231, 229, 255);
+            dataGridViewCellStyle3.SelectionForeColor = Color.FromArgb(71, 69, 94);
+            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
+            gridPedidos.DefaultCellStyle = dataGridViewCellStyle3;
             gridPedidos.GridColor = Color.Silver;
             gridPedidos.Location = new Point(15, 159);
             gridPedidos.MultiSelect = false;
@@ -203,8 +203,8 @@
             gridPedidos.ThemeStyle.HeaderStyle.Height = 17;
             gridPedidos.ThemeStyle.RowsStyle.Font = new Font("Segoe UI", 9F);
             gridPedidos.ThemeStyle.RowsStyle.Height = 25;
-            gridPedidos.SelectionChanged += gridPedidos_SelectionChanged;
             gridPedidos.CellDoubleClick += gridPedidos_CellDoubleClick;
+            gridPedidos.SelectionChanged += gridPedidos_SelectionChanged;
             // 
             // colId
             // 
@@ -246,7 +246,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(64, 64, 64);
+            BackColor = Color.Black;
             Controls.Add(gridPedidos);
             Controls.Add(guna2Panel1);
             Controls.Add(btnAtualizarPedidos);

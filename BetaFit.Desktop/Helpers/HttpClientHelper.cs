@@ -372,8 +372,32 @@ namespace BetaFit.Desktop.Helpers
             try
             {
                 var doc = JsonDocument.Parse(json);
-                if (doc.RootElement.TryGetProperty("message", out var msg))
-                    return msg.GetString() ?? "Erro desconhecido.";
+
+                // ── ValidationProblemDetails do ASP.NET Core ──────────────────
+                // Formato: { "title": "...", "errors": { "Campo": ["msg1", "msg2"] } }
+                // Sem isso, só o "title" genérico aparecia ("One or more
+                // validation errors occurred."), escondendo qual campo falhou.
+                if (doc.RootElement.TryGetProperty("errors", out var errors) &&
+                    errors.ValueKind == JsonValueKind.Object)
+                {
+                    var mensagens = new List<string>();
+                    foreach (var campo in errors.EnumerateObject())
+                    {
+                        if (campo.Value.ValueKind != JsonValueKind.Array) continue;
+                        foreach (var msg in campo.Value.EnumerateArray())
+                        {
+                            var texto = msg.GetString();
+                            if (!string.IsNullOrWhiteSpace(texto))
+                                mensagens.Add(texto);
+                        }
+                    }
+
+                    if (mensagens.Count > 0)
+                        return string.Join("\n", mensagens);
+                }
+
+                if (doc.RootElement.TryGetProperty("message", out var msgProp))
+                    return msgProp.GetString() ?? "Erro desconhecido.";
                 if (doc.RootElement.TryGetProperty("title", out var title))
                     return title.GetString() ?? "Erro desconhecido.";
             }

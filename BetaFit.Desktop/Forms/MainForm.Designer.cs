@@ -55,6 +55,7 @@
             lblTitulo = new Guna.UI2.WinForms.Guna2HtmlLabel();
             pnlConteudo = new Guna.UI2.WinForms.Guna2Panel();
             guna2DragControl1 = new Guna.UI2.WinForms.Guna2DragControl(components);
+            guna2DragControl2 = new Guna.UI2.WinForms.Guna2DragControl(components);
             pnlMenu.SuspendLayout();
             SuspendLayout();
             // 
@@ -231,7 +232,14 @@
             // guna2DragControl1
             // 
             guna2DragControl1.DockIndicatorTransparencyValue = 0.6D;
+            guna2DragControl1.TargetControl = this;
             guna2DragControl1.UseTransparentDrag = true;
+            // 
+            // guna2DragControl2
+            // 
+            guna2DragControl2.DockIndicatorTransparencyValue = 0.6D;
+            guna2DragControl2.TargetControl = pnlMenu;
+            guna2DragControl2.UseTransparentDrag = true;
             // 
             // MainForm
             // 
@@ -242,6 +250,7 @@
             Controls.Add(pnlMenu);
             FormBorderStyle = FormBorderStyle.None;
             Name = "MainForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "MainForm";
             Load += MainForm_Load;
             pnlMenu.ResumeLayout(false);
@@ -261,5 +270,6 @@
         private Guna.UI2.WinForms.Guna2Button btnCategorias;
         private Guna.UI2.WinForms.Guna2DragControl guna2DragControl1;
         private Guna.UI2.WinForms.Guna2Button btnPerfil;
+        private Guna.UI2.WinForms.Guna2DragControl guna2DragControl2;
     }
 }

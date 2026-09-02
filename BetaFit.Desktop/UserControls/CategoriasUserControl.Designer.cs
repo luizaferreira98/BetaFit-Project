@@ -127,7 +127,7 @@
             btnExcluirCategoria.FillColor = Color.FromArgb(64, 64, 64);
             btnExcluirCategoria.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnExcluirCategoria.ForeColor = Color.White;
-            btnExcluirCategoria.Location = new Point(277, 13);
+            btnExcluirCategoria.Location = new Point(277, 12);
             btnExcluirCategoria.Name = "btnExcluirCategoria";
             btnExcluirCategoria.ShadowDecoration.CustomizableEdges = customizableEdges4;
             btnExcluirCategoria.Size = new Size(97, 45);
@@ -245,7 +245,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(64, 64, 64);
+            BackColor = Color.Black;
             Controls.Add(gridCategorias);
             Controls.Add(pnlBotoesCategorias);
             Controls.Add(guna2HtmlLabel1);
