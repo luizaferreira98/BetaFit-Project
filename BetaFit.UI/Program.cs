@@ -68,7 +68,8 @@ var apiBaseUrl = AppConfig.ApiBaseUrl;
 // Cliente usado apenas para Login/Register (ainda não existe cookie a repassar)
 builder.Services.AddHttpClient("ApiClientAuth", client =>
 {
-    client.BaseAddress = new Uri(apiBaseUrl);
+    client.BaseAddress = new Uri(apiBaseUrl); 
+
 });
 
 // Cliente padrão para os demais serviços (repassa o cookie de autenticação)
