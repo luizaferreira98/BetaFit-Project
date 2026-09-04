@@ -119,19 +119,21 @@ namespace BetaFit.Desktop.Forms
         // Atualiza o estado visual do botão ativo na sidebar.
         private void AtualizarBotaoAtivo(Guna2Button? botao)
         {
+            // Reseta todos os botões da sidebar para o estado "inativo"
+            foreach (var b in new[] { btnDashBoard, btnProdutos, btnCategorias, btnPedidos, btnPerfil })
+            {
+                b.FillColor = Color.Transparent;
+                b.ForeColor = Color.White;
+                b.BorderThickness = 0;
+            }
+
+            _botaoAtivo = botao;
             if (_botaoAtivo != null)
             {
-                _botaoAtivo.FillColor = Color.Transparent;
-                _botaoAtivo.ForeColor = Color.White;
-
-                _botaoAtivo = botao;
-                if (_botaoAtivo != null)
-                {
-                    _botaoAtivo.FillColor = Color.FromArgb(0, 50, 110);
-                    _botaoAtivo.ForeColor = Color.White;
-                    _botaoAtivo.CustomBorderColor = BetaFitTheme.PretoPrimario;
-
-                }
+                _botaoAtivo.FillColor = BetaFitTheme.Admin.AtivoFundoNav;  // verde bem escuro
+                _botaoAtivo.ForeColor = BetaFitTheme.Admin.Lima;           // texto lima
+                _botaoAtivo.BorderThickness = 1;
+                _botaoAtivo.BorderColor = BetaFitTheme.Admin.Lima;
             }
         }
 

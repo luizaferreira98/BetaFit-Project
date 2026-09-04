@@ -61,7 +61,7 @@
             // 
             // pnlMenu
             // 
-            pnlMenu.BackColor = SystemColors.ActiveCaptionText;
+            pnlMenu.BackColor = Color.FromArgb(10, 10, 10);
             pnlMenu.Controls.Add(btnPerfil);
             pnlMenu.Controls.Add(btnLogout);
             pnlMenu.Controls.Add(btnPedidos);
@@ -70,16 +70,17 @@
             pnlMenu.Controls.Add(btnDashBoard);
             pnlMenu.Controls.Add(lblTitulo);
             pnlMenu.CustomizableEdges = customizableEdges13;
-            pnlMenu.Location = new Point(0, -2);
+            pnlMenu.Location = new Point(0, 0);
             pnlMenu.Name = "pnlMenu";
             pnlMenu.ShadowDecoration.CustomizableEdges = customizableEdges14;
-            pnlMenu.Size = new Size(196, 474);
+            pnlMenu.Size = new Size(280, 820);
             pnlMenu.TabIndex = 0;
             // 
             // btnPerfil
             // 
             btnPerfil.BackColor = SystemColors.ActiveCaptionText;
             btnPerfil.BorderColor = Color.WhiteSmoke;
+            btnPerfil.BorderRadius = 8;
             btnPerfil.BorderThickness = 1;
             btnPerfil.CustomizableEdges = customizableEdges1;
             btnPerfil.DisabledState.BorderColor = Color.DarkGray;
@@ -101,7 +102,8 @@
             // btnLogout
             // 
             btnLogout.BackColor = SystemColors.ActiveCaptionText;
-            btnLogout.BorderColor = Color.WhiteSmoke;
+            btnLogout.BorderColor = Color.FromArgb(60, 60, 60);
+            btnLogout.BorderRadius = 8;
             btnLogout.BorderThickness = 1;
             btnLogout.CustomizableEdges = customizableEdges3;
             btnLogout.DisabledState.BorderColor = Color.DarkGray;
@@ -111,12 +113,12 @@
             btnLogout.FillColor = Color.Black;
             btnLogout.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnLogout.ForeColor = Color.White;
-            btnLogout.Location = new Point(16, 430);
+            btnLogout.Location = new Point(16, 760);
             btnLogout.Name = "btnLogout";
             btnLogout.ShadowDecoration.CustomizableEdges = customizableEdges4;
             btnLogout.Size = new Size(165, 32);
             btnLogout.TabIndex = 5;
-            btnLogout.Text = "SAIR";
+            btnLogout.Text = "⏻ SAIR";
             btnLogout.TextAlign = HorizontalAlignment.Left;
             btnLogout.Click += btnLogout_Click;
             // 
@@ -124,6 +126,7 @@
             // 
             btnPedidos.BackColor = SystemColors.ActiveCaptionText;
             btnPedidos.BorderColor = Color.WhiteSmoke;
+            btnPedidos.BorderRadius = 8;
             btnPedidos.BorderThickness = 1;
             btnPedidos.CustomizableEdges = customizableEdges5;
             btnPedidos.DisabledState.BorderColor = Color.DarkGray;
@@ -146,6 +149,7 @@
             // 
             btnCategorias.BackColor = SystemColors.ActiveCaptionText;
             btnCategorias.BorderColor = Color.WhiteSmoke;
+            btnCategorias.BorderRadius = 8;
             btnCategorias.BorderThickness = 1;
             btnCategorias.CustomizableEdges = customizableEdges7;
             btnCategorias.DisabledState.BorderColor = Color.DarkGray;
@@ -168,6 +172,7 @@
             // 
             btnProdutos.BackColor = SystemColors.ActiveCaptionText;
             btnProdutos.BorderColor = Color.WhiteSmoke;
+            btnProdutos.BorderRadius = 8;
             btnProdutos.BorderThickness = 1;
             btnProdutos.CustomizableEdges = customizableEdges9;
             btnProdutos.DisabledState.BorderColor = Color.DarkGray;
@@ -190,6 +195,7 @@
             // 
             btnDashBoard.BackColor = SystemColors.ActiveCaptionText;
             btnDashBoard.BorderColor = Color.WhiteSmoke;
+            btnDashBoard.BorderRadius = 8;
             btnDashBoard.BorderThickness = 1;
             btnDashBoard.CustomizableEdges = customizableEdges11;
             btnDashBoard.DisabledState.BorderColor = Color.DarkGray;
@@ -221,12 +227,12 @@
             // 
             // pnlConteudo
             // 
-            pnlConteudo.BackColor = Color.FromArgb(64, 64, 64);
+            pnlConteudo.BackColor = Color.FromArgb(15, 15, 15);
             pnlConteudo.CustomizableEdges = customizableEdges15;
-            pnlConteudo.Location = new Point(195, -2);
+            pnlConteudo.Location = new Point(280, 0);
             pnlConteudo.Name = "pnlConteudo";
             pnlConteudo.ShadowDecoration.CustomizableEdges = customizableEdges16;
-            pnlConteudo.Size = new Size(677, 474);
+            pnlConteudo.Size = new Size(1120, 820);
             pnlConteudo.TabIndex = 1;
             // 
             // guna2DragControl1
@@ -245,7 +251,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(872, 472);
+            ClientSize = new Size(1400, 820);
             Controls.Add(pnlConteudo);
             Controls.Add(pnlMenu);
             FormBorderStyle = FormBorderStyle.None;

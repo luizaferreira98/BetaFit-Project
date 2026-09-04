@@ -2,13 +2,12 @@
 using BetaFit.Desktop.Forms;
 using BetaFit.Desktop.Helpers;
 using BetaFit.Desktop.Services;
+using BetaFit.Desktop.Themes;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -16,9 +15,8 @@ namespace BetaFit.Desktop.UserControls
 {
     public partial class CategoriasUserControl : UserControl
     {
-
         //=================================================
-        // SERVIÇOS (Inicilizados no Load)
+        // SERVIÇOS (Inicializados no Load)
         //=================================================
         private CategoriesApiService _categoriesService = null!;
 
@@ -28,43 +26,66 @@ namespace BetaFit.Desktop.UserControls
         private List<CategoriaResponseDto> _categorias = new();
 
         //=================================================
+        // PAGINAÇÃO
+        //=================================================
+        private int _paginaAtual = 1;
+        private const int TamanhoPagina = 10;
+
+        //=================================================
+        // MENU DE AÇÕES (coluna "⋮")
+        //=================================================
+        private readonly ContextMenuStrip _menuAcoesCategoria = new();
+
+        //=================================================
+        // ÍCONE + COR POR CATEGORIA (aproximação visual do mockup;
+        // categorias sem mapeamento caem no ícone padrão 🏷)
+        //=================================================
+        private static readonly Dictionary<string, string> _iconePorCategoria =
+            new(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Acessórios"] = "🧢",
+                ["Camisetas"] = "👕",
+                ["Leggings"] = "👖",
+                ["Moletons"] = "🧥",
+                ["Shorts"] = "🩳",
+                ["Tênis"] = "👟",
+            };
+
+        //=================================================
         // CONSTRUTOR
         //=================================================
         public CategoriasUserControl()
         {
             InitializeComponent();
+            ConfigurarMenuAcoes();
+        }
+
+        private void ConfigurarMenuAcoes()
+        {
+            _menuAcoesCategoria.Items.Add("🖊  Editar", null, (s, e) => btnEditarCategoria_Click(s!, e));
+            _menuAcoesCategoria.Items.Add("🗑  Excluir", null, (s, e) => btnExcluirCategoria_Click(s!, e));
         }
 
         //=================================================
-        // LOAD CATEGORIES
+        // LOAD
         //=================================================
         private async void CategoriesUserControl_Load(object sender, EventArgs e)
         {
-            //Guard: não executa em tempo de Design
             if (DesignMode) return;
 
-            //Inicializa serviços
             _categoriesService = new CategoriesApiService();
 
-            //Aplica o tema no DataGridView
-            BetaFit.Desktop.Themes.BetaFitTheme.AplicarEstiloGrid(gridCategorias);
+            // Tema escuro (substitui o AplicarEstiloGrid claro original)
+            BetaFitTheme.AplicarEstiloGridEscuro(gridCategorias);
 
-            //Configurar permissões
             ConfigurarPermissoes();
 
-            // Seleciona a linha completa ao clicar em qualquer célula
             gridCategorias.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-
-            // Impede que o usuário selecione múltiplas linhas de uma vez
             gridCategorias.MultiSelect = false;
 
-            //Reservado para CarregarDados
             await CarregarDadosAsync();
         }
 
-        //=================================================
-        // CONFIGURAÇÕES DE PERMISSÕES
-        //=================================================
         private void ConfigurarPermissoes()
         {
             bool isAdmin = SessionManager.Instance.IsAdmin;
@@ -78,43 +99,205 @@ namespace BetaFit.Desktop.UserControls
         //=================================================
         private async Task CarregarDadosAsync()
         {
-            gridCategorias.Rows.Clear();
-
             try
             {
-                var tarefaCategorias = _categoriesService.GetAllAsync();
-                await Task.WhenAll(tarefaCategorias);
-
-                _categorias = tarefaCategorias.Result;
-
-                PopularGrid(_categorias);
-
+                _categorias = await _categoriesService.GetAllAsync();
+                _paginaAtual = 1;
+                PopularGrid();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"Erro ao carregar games: {ex.Message}",
-                    "Erro",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
+                MessageBox.Show($"Erro ao carregar categorias: {ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
         //=================================================
-        // POPULAR GRID
+        // POPULAR GRID (já considerando a página atual)
         //=================================================
-        private void PopularGrid(List<CategoriaResponseDto> categorias)
+        private void PopularGrid()
         {
             gridCategorias.Rows.Clear();
-            foreach (var c in categorias)
+
+            int inicio = (_paginaAtual - 1) * TamanhoPagina;
+            var pagina = _categorias.Skip(inicio).Take(TamanhoPagina).ToList();
+
+            foreach (var c in pagina)
             {
                 gridCategorias.Rows.Add(
                     c.Id,
                     c.Name,
-                    c.ProductCount,
+                    $"📦  {c.ProductCount}",
                     c.IsActive,
-                    c.CreatedAt.ToString("dd/MM/yyyy HH:mm"));
+                    $"📅  {c.CreatedAt:dd/MM/yyyy HH:mm}",
+                    "⋮");
             }
+
+            AtualizarRodapePaginacao(inicio, pagina.Count);
+        }
+
+        //=================================================
+        // PAGINAÇÃO — rodapé e botões ‹ ›
+        //=================================================
+        private void AtualizarRodapePaginacao(int inicio, int quantidadeNaPagina)
+        {
+            int total = _categorias.Count;
+            int de = total == 0 ? 0 : inicio + 1;
+            int ate = inicio + quantidadeNaPagina;
+
+            lblResumoPaginacao.Text = $"Exibindo {de} a {ate} de {total} categorias";
+            lblPaginaAtual.Text = _paginaAtual.ToString();
+
+            int totalPaginas = Math.Max(1, (int)Math.Ceiling(total / (double)TamanhoPagina));
+            btnPaginaAnterior.Enabled = _paginaAtual > 1;
+            btnProximaPagina.Enabled = _paginaAtual < totalPaginas;
+        }
+
+        private void btnPaginaAnterior_Click(object sender, EventArgs e)
+        {
+            if (_paginaAtual <= 1) return;
+            _paginaAtual--;
+            PopularGrid();
+        }
+
+        private void btnProximaPagina_Click(object sender, EventArgs e)
+        {
+            int totalPaginas = Math.Max(1, (int)Math.Ceiling(_categorias.Count / (double)TamanhoPagina));
+            if (_paginaAtual >= totalPaginas) return;
+            _paginaAtual++;
+            PopularGrid();
+        }
+
+        //=================================================
+        // PINTURA CUSTOMIZADA DAS CÉLULAS
+        //=================================================
+        private void gridCategorias_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+
+            var nomeColuna = gridCategorias.Columns[e.ColumnIndex].Name;
+            switch (nomeColuna)
+            {
+                case "colId":
+                    PintarCelulaId(e);
+                    break;
+                case "colNome":
+                    PintarCelulaCategoria(e);
+                    break;
+                case "colIsActive":
+                    PintarCelulaStatus(e);
+                    break;
+            }
+        }
+
+        private void PintarCelulaId(DataGridViewCellPaintingEventArgs e)
+        {
+            e.PaintBackground(e.CellBounds, true);
+            var texto = e.Value?.ToString() ?? "";
+
+            using var fonte = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            var tam = e.Graphics.MeasureString(texto, fonte);
+
+            int lado = 26;
+            int x = e.CellBounds.Left + 16;
+            int y = e.CellBounds.Top + (e.CellBounds.Height - lado) / 2;
+
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            using (var path = RetanguloArredondado(new Rectangle(x, y, lado, lado), 6))
+            using (var brush = new SolidBrush(BetaFitTheme.Admin.IdBadgeFundo))
+                e.Graphics.FillPath(brush, path);
+
+            using (var brushTexto = new SolidBrush(BetaFitTheme.Admin.Lima))
+                e.Graphics.DrawString(texto, fonte, brushTexto,
+                    x + (lado - tam.Width) / 2, y + (lado - tam.Height) / 2);
+
+            e.Handled = true;
+        }
+
+        private void PintarCelulaCategoria(DataGridViewCellPaintingEventArgs e)
+        {
+            e.PaintBackground(e.CellBounds, true);
+            var nome = e.Value?.ToString() ?? "";
+            var emoji = _iconePorCategoria.TryGetValue(nome, out var ic) ? ic : "🏷";
+
+            const int diametro = 30;
+            int x = e.CellBounds.Left + 12;
+            int y = e.CellBounds.Top + (e.CellBounds.Height - diametro) / 2;
+
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            using (var brush = new SolidBrush(BetaFitTheme.Admin.Lima))
+                e.Graphics.FillEllipse(brush, x, y, diametro, diametro);
+
+            using (var fonteEmoji = new Font("Segoe UI Emoji", 11F))
+            {
+                var tamEmoji = e.Graphics.MeasureString(emoji, fonteEmoji);
+                e.Graphics.DrawString(emoji, fonteEmoji, Brushes.Black,
+                    x + (diametro - tamEmoji.Width) / 2, y + (diametro - tamEmoji.Height) / 2);
+            }
+
+            using var fonteNome = new Font("Segoe UI", 10F, FontStyle.Bold);
+            e.Graphics.DrawString(nome, fonteNome, Brushes.White,
+                x + diametro + 10, e.CellBounds.Top + (e.CellBounds.Height - fonteNome.Height) / 2);
+
+            e.Handled = true;
+        }
+
+        private void PintarCelulaStatus(DataGridViewCellPaintingEventArgs e)
+        {
+            e.PaintBackground(e.CellBounds, true);
+            bool ativo = e.Value != null && Convert.ToBoolean(e.Value);
+
+            var fundo = ativo ? BetaFitTheme.Admin.BadgeAtivoFundo : BetaFitTheme.Admin.BadgeInativoFundo;
+            var texto = ativo ? BetaFitTheme.Admin.BadgeAtivoTexto : BetaFitTheme.Admin.BadgeInativoTexto;
+            var rotulo = ativo ? "✓  Ativo" : "Inativo";
+
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            using var fonte = new Font("Segoe UI", 9F, FontStyle.Bold);
+            var tam = e.Graphics.MeasureString(rotulo, fonte);
+
+            int largura = (int)tam.Width + 24;
+            int altura = 26;
+            int x = e.CellBounds.Left + 8;
+            int y = e.CellBounds.Top + (e.CellBounds.Height - altura) / 2;
+
+            using (var path = RetanguloArredondado(new Rectangle(x, y, largura, altura), altura / 2))
+            using (var brush = new SolidBrush(fundo))
+                e.Graphics.FillPath(brush, path);
+
+            using (var brushTexto = new SolidBrush(texto))
+                e.Graphics.DrawString(rotulo, fonte, brushTexto,
+                    x + (largura - tam.Width) / 2, y + (altura - tam.Height) / 2);
+
+            e.Handled = true;
+        }
+
+        private static GraphicsPath RetanguloArredondado(Rectangle bounds, int raio)
+        {
+            var path = new GraphicsPath();
+            int d = raio * 2;
+            path.AddArc(bounds.X, bounds.Y, d, d, 180, 90);
+            path.AddArc(bounds.Right - d, bounds.Y, d, d, 270, 90);
+            path.AddArc(bounds.Right - d, bounds.Bottom - d, d, d, 0, 90);
+            path.AddArc(bounds.X, bounds.Bottom - d, d, d, 90, 90);
+            path.CloseFigure();
+            return path;
+        }
+
+        //=================================================
+        // CLIQUE NA COLUNA DE AÇÕES ("⋮")
+        //=================================================
+        private void gridCategorias_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+            if (gridCategorias.Columns[e.ColumnIndex].Name != "colAcoes") return;
+
+            gridCategorias.ClearSelection();
+            gridCategorias.Rows[e.RowIndex].Selected = true;
+            gridCategorias.CurrentCell = gridCategorias.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+            var cellRect = gridCategorias.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, false);
+            var pontoTela = gridCategorias.PointToScreen(new Point(cellRect.Left, cellRect.Bottom));
+            _menuAcoesCategoria.Show(pontoTela);
         }
 
         //=================================================
@@ -128,34 +311,27 @@ namespace BetaFit.Desktop.UserControls
                 var (success, _, error) = await _categoriesService.CreateAsync(form.CategoryDto);
                 if (success)
                 {
-                    MessageBox.Show("✅ Categoria criada com sucesso!",
-                        "Sucesso",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                    MessageBox.Show("✅ Categoria criada com sucesso!", "Sucesso",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await CarregarDadosAsync();
                 }
                 else
                 {
-                    MessageBox.Show($"❌ {error}",
-                      "Erro",
-                      MessageBoxButtons.OK,
-                      MessageBoxIcon.Error);
+                    MessageBox.Show($"❌ {error}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
-        // =====================================================================
+        //=================================================
         // BTN DE EDITAR CATEGORIA
-        // =====================================================================
+        //=================================================
         private async void btnEditarCategoria_Click(object sender, EventArgs e)
         {
             var categoria = ObterCategoriaSelecionada();
             if (categoria == null)
             {
-                MessageBox.Show("Selecione uma categoria para editar.",
-                    "Aviso",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
+                MessageBox.Show("Selecione uma categoria para editar.", "Aviso",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -165,25 +341,20 @@ namespace BetaFit.Desktop.UserControls
                 var (success, _, error) = await _categoriesService.UpdateAsync(categoria.Id, form.UpdateDto);
                 if (success)
                 {
-                    MessageBox.Show("✅ Categoria atualizada com sucesso!",
-                        "Sucesso",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                    MessageBox.Show("✅ Categoria atualizada com sucesso!", "Sucesso",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await CarregarDadosAsync();
                 }
                 else
                 {
-                    MessageBox.Show($"❌ {error}",
-                        "Erro",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
+                    MessageBox.Show($"❌ {error}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
-        // =====================================================================
+        //=================================================
         // OBTER CATEGORIA SELECIONADA
-        // =====================================================================
+        //=================================================
         private CategoriaResponseDto? ObterCategoriaSelecionada()
         {
             if (gridCategorias.SelectedRows.Count == 0) return null;
@@ -192,20 +363,18 @@ namespace BetaFit.Desktop.UserControls
             if (row.Cells["colId"].Value == null) return null;
 
             var id = Convert.ToInt32(row.Cells["colId"].Value);
-
-            // Busca na lista de categorias pelo ID selecionado na grid
             return _categorias.FirstOrDefault(c => c.Id == id);
         }
 
-        // =====================================================================
+        //=================================================
         // EXCLUIR CATEGORIA
-        // =====================================================================
+        //=================================================
         private async void btnExcluirCategoria_Click(object sender, EventArgs e)
         {
             var category = ObterCategoriaSelecionada();
             if (category == null)
             {
-                MessageBox.Show("Selecione um categoria para excluir.", "Aviso",
+                MessageBox.Show("Selecione uma categoria para excluir.", "Aviso",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -231,9 +400,9 @@ namespace BetaFit.Desktop.UserControls
             }
         }
 
-        // =====================================================================
+        //=================================================
         // ATUALIZAR BTN
-        // =====================================================================
+        //=================================================
         private async void btnAtualizarProdutos_Click(object sender, EventArgs e) => await CarregarDadosAsync();
     }
 }
