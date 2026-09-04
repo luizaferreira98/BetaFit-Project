@@ -20,7 +20,7 @@ namespace BetaFit.API.Controllers
 {
     [ApiController]            // Define que esta classe responde a requisições HTTP (JSON)
     [Route("api/[controller]")] // A rota será: localhost:porta/api/usuarios
-    [Authorize]                // Exige que o cliente esteja logado (cookie do Identity)
+    [Authorize(Roles = "Admin")] // Somente Admin gerencia outros usuários/funcionários
     public class UsuariosController : ControllerBase
     {
         private readonly IUsuariosService _usuariosService;

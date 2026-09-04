@@ -57,17 +57,37 @@ namespace BetaFit.Desktop.Forms
             // Configura permissões baseadas no perfil do usuário
             ConfigurarPermissoes();
 
-            //Abre o DashBoard como tela inicial
-            NavegarParaDashboard();
+            //Abre a primeira tela que esse papel pode ver
+            if (btnDashBoard.Visible)
+                NavegarParaDashboard();
+            else
+                Navegar(new ProdutosUserControl(), btnProdutos);
         }
 
         // Configura as permissões de visibilidade dos botões com base no perfil do usuário.
+        //
+        //   Admin      - vê tudo
+        //   Gerente    - vê tudo, menos gestão de funcionários (sem tela própria ainda)
+        //   Estoquista - só Produtos/Categorias (foco em catálogo/estoque);
+        //                não vê Dashboard nem Pedidos
         private void ConfigurarPermissoes()
         {
             var isAdmin = SessionManager.Instance.IsAdmin;
+            var isGerente = SessionManager.Instance.IsGerente;
+            var isEstoquista = SessionManager.Instance.IsEstoquista;
 
-            btnCategorias.Visible = isAdmin;
-            //btnUsuarios.Visible = isAdmin;
+            // Dashboard e Pedidos: visão da operação da loja como um todo —
+            // só Admin e Gerente. A API (DashboardController/OrdersController)
+            // já bloqueia isso pra Estoquista, então aqui é só pra não deixar
+            // o botão visível levando a uma tela que vai dar erro de acesso.
+            btnDashBoard.Visible = isAdmin || isGerente;
+            btnPedidos.Visible = isAdmin || isGerente;
+
+            // Categorias: qualquer funcionário que mexe no catálogo
+            // (antes só Admin via esse botão).
+            btnCategorias.Visible = isAdmin || isGerente || isEstoquista;
+
+            // Produtos e Meu Perfil não têm restrição — todo funcionário usa.
         }
 
         // Navega para o Dashboard

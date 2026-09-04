@@ -15,6 +15,10 @@ namespace BetaFit.API.Controllers
         public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         { _userManager = userManager; _signInManager = signInManager; }
 
+        // Domínio reservado exclusivamente para contas de funcionário
+        // (criadas pelo Admin via Desktop, não pelo cadastro público do site).
+        private const string DominioInterno = "@betafit.com";
+
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterDto dto)
         {
@@ -24,6 +28,12 @@ namespace BetaFit.API.Controllers
                 return BadRequest(new { message = "É necessário ter 18 anos ou mais para criar uma conta." });
             if (dto.BirthDate.Date < DateTime.Today.AddYears(-120))
                 return BadRequest(new { message = "Informe uma data de nascimento válida." });
+
+            // Impede que um cliente comum se cadastre usando o domínio interno
+            // da equipe — contas @betafit.com só podem ser criadas pelo Admin,
+            // pela tela de Usuários do Desktop (POST /api/usuarios).
+            if (dto.Email.Trim().EndsWith(DominioInterno, StringComparison.OrdinalIgnoreCase))
+                return BadRequest(new { message = $"O domínio {DominioInterno} é reservado para contas internas da equipe. Utilize outro e-mail para se cadastrar." });
 
             var user = new IdentityUser { UserName = dto.Email.Trim(), Email = dto.Email.Trim(), PhoneNumber = dto.PhoneNumber.Trim() };
             var result = await _userManager.CreateAsync(user, dto.Password);
@@ -70,8 +80,12 @@ namespace BetaFit.API.Controllers
             DateTime? birthDate = DateTime.TryParse(birth, out var parsed) ? parsed : null;
             return new UserDto
             {
-                Id = user.Id, Email = user.Email ?? string.Empty, FullName = claims.FirstOrDefault(c => c.Type == "FullName")?.Value ?? user.UserName ?? string.Empty,
-                PhoneNumber = user.PhoneNumber ?? string.Empty, BirthDate = birthDate, Roles = await _userManager.GetRolesAsync(user)
+                Id = user.Id,
+                Email = user.Email ?? string.Empty,
+                FullName = claims.FirstOrDefault(c => c.Type == "FullName")?.Value ?? user.UserName ?? string.Empty,
+                PhoneNumber = user.PhoneNumber ?? string.Empty,
+                BirthDate = birthDate,
+                Roles = await _userManager.GetRolesAsync(user)
             };
         }
     }

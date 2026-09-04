@@ -54,11 +54,27 @@ namespace BetaFit.Application.Services
             };
         }
 
+        // Papéis válidos que o Admin pode atribuir a um funcionário pela tela
+        // de Usuários do Desktop. "Usuario" (cliente) fica de fora de propósito:
+        // contas de cliente só nascem pelo cadastro público (AuthController.Register).
+        private static readonly string[] PapeisDeFuncionario = { "Admin", "Gerente", "Estoquista" };
+
+        // Domínio reservado para contas internas — mesma regra do AuthController,
+        // só que aplicada no sentido contrário (aqui é onde o funcionário nasce).
+        private const string DominioInterno = "@betafit.com";
+
         public async Task<(bool Success, UsuarioDto? Usuario, string ErrorMessage)> CreateAsync(CreateUsuarioDto dto)
         {
             // Validação simples
             if (dto.Password != dto.ConfirmPassword)
                 return (false, null, "As senhas não coincidem.");
+
+            if (!dto.Email.Trim().EndsWith(DominioInterno, StringComparison.OrdinalIgnoreCase))
+                return (false, null, $"Contas de funcionário devem usar um e-mail {DominioInterno}.");
+
+            var role = string.IsNullOrWhiteSpace(dto.Role) ? "Estoquista" : dto.Role.Trim();
+            if (!PapeisDeFuncionario.Contains(role, StringComparer.OrdinalIgnoreCase))
+                return (false, null, $"Papel inválido. Use um dos seguintes: {string.Join(", ", PapeisDeFuncionario)}.");
 
             // Criar o modelo base do Identity (username = email, já que não há campo "Nome")
             var user = new IdentityUser { UserName = dto.Email, Email = dto.Email };
@@ -71,11 +87,10 @@ namespace BetaFit.Application.Services
                 return (false, null, string.IsNullOrWhiteSpace(mensagens) ? "Erro ao criar usuário." : mensagens);
             }
 
-            // Adiciona o perfil (ex: "Admin" ou "Usuario")
-            var role = string.IsNullOrWhiteSpace(dto.Role) ? "Usuario" : dto.Role;
-            if (!await _roleManager.RoleExistsAsync(role))
-                await _roleManager.CreateAsync(new IdentityRole(role));
-
+            // Não usamos mais RoleManager.CreateAsync aqui: os papéis já são
+            // criados pelo SeedData na inicialização da API, e restringir a
+            // PapeisDeFuncionario acima já garante que só um desses 3 chegue
+            // até aqui — não tem mais como criar um papel novo "na mão".
             await _userManager.AddToRoleAsync(user, role);
 
             var createdUser = new UsuarioDto
@@ -123,9 +138,8 @@ namespace BetaFit.Application.Services
             var roles = await _userManager.GetRolesAsync(user);
             if (!string.IsNullOrWhiteSpace(dto.Role) && !roles.Contains(dto.Role))
             {
-                // Garante que a role exista antes de atribuí-la
-                if (!await _roleManager.RoleExistsAsync(dto.Role))
-                    await _roleManager.CreateAsync(new IdentityRole(dto.Role));
+                if (!PapeisDeFuncionario.Contains(dto.Role, StringComparer.OrdinalIgnoreCase))
+                    return (false, null, $"Papel inválido. Use um dos seguintes: {string.Join(", ", PapeisDeFuncionario)}.");
 
                 // Remove as roles antigas e atribui a nova (usuário tem sempre 1 perfil principal)
                 if (roles.Count > 0)
@@ -159,9 +173,9 @@ namespace BetaFit.Application.Services
 
         public async Task<IEnumerable<string>> GetPerfisAsync()
         {
-            // Retorna a lista de nomes dos perfis cadastrados no Identity
+            // Retorna a lista de papéis que o Admin pode atribuir a um funcionário.
             await Task.CompletedTask;
-            return new List<string> { "Admin", "Usuario" };
+            return PapeisDeFuncionario;
         }
     }
 }

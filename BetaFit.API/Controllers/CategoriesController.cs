@@ -60,7 +60,7 @@ namespace BetaFit.API.Controllers
         /// POST /api/categories
         /// </summary>
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Gerente,Estoquista")]
         public async Task<ActionResult<CategoryDto>> Create([FromBody] CreateCategoryDto dto)
         {
             var category = await _categoryService.CreateAsync(dto);
@@ -72,7 +72,7 @@ namespace BetaFit.API.Controllers
         /// PUT /api/categories/{id}
         /// </summary>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Gerente,Estoquista")]
         public async Task<ActionResult<CategoryDto>> Update(int id, [FromBody] UpdateCategoryDto dto)
         {
             var category = await _categoryService.UpdateAsync(id, dto);
@@ -88,7 +88,7 @@ namespace BetaFit.API.Controllers
         /// DELETE /api/categories/{id}
         /// </summary>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Gerente,Estoquista")]
         public async Task<ActionResult> Delete(int id)
         {
             var deleted = await _categoryService.DeleteAsync(id);

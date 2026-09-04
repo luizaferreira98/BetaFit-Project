@@ -21,12 +21,18 @@ namespace BetaFit.API.Controllers
             _hubContext = hubContext;
         }
 
-        // GET /api/orders -> usado pelo Desktop (Admin vê todos)
+        // GET /api/orders -> usado pelo Desktop (Admin/Gerente veem todos os pedidos)
         [HttpGet]
+        [Authorize(Roles = "Admin,Gerente")]
         public async Task<IActionResult> GetAll()
             => Ok(await _orderService.GetAllAsync());
 
         // GET /api/orders/{id}
+        // Sem restrição de Role aqui: além do Desktop (Admin/Gerente), este
+        // mesmo endpoint é usado pelo site público (BetaFit.UI) na tela
+        // "Meus Pedidos > Detalhes" para o CLIENTE ver o próprio pedido — a
+        // checagem de que o pedido pertence ao usuário logado já é feita lá
+        // (BetaFit.UI/Controllers/OrdersController.cs, método Details).
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -60,6 +66,7 @@ namespace BetaFit.API.Controllers
 
         // PATCH /api/orders/{id}/status -> Desktop altera o status
         [HttpPatch("{id:int}/status")]
+        [Authorize(Roles = "Admin,Gerente")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] string status)
         {
             var ok = await _orderService.UpdateStatusAsync(id, status);

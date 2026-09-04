@@ -334,16 +334,19 @@ namespace BetaFit.Infraestructure.Identity
             // =====================================================================
             //  CONCEITO: Roles no Identity
             // Roles são papéis que definem o nível de acesso do usuário.
-            // Exemplo: "Admin" pode gerenciar produtos, "Usuario" só pode visualizar.
+            //
+            //   Admin      - acesso total; único que gerencia outros funcionários
+            //   Gerente    - CRUD de produtos/categorias/pedidos + dashboard
+            //   Estoquista - CRUD de produtos/categorias (catálogo/estoque)
+            //   Usuario    - cliente da loja (site/UI); NUNCA acessa o Desktop
             // =====================================================================
-            if (!await roleManager.RoleExistsAsync("Admin"))
+            var roles = new[] { "Admin", "Gerente", "Estoquista", "Usuario" };
+            foreach (var role in roles)
             {
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
-            }
-
-            if (!await roleManager.RoleExistsAsync("Usuario"))
-            {
-                await roleManager.CreateAsync(new IdentityRole("Usuario"));
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
             }
 
             // =====================================================================
@@ -373,6 +376,45 @@ namespace BetaFit.Infraestructure.Identity
                     // Atribui a role "Admin" ao usuário
                     await userManager.AddToRoleAsync(adminUser, "Admin");
                 }
+            }
+
+            // =====================================================================
+            // 5. SEED DE CONTAS DE TESTE (Gerente e Estoquista)
+            // =====================================================================
+            //  Enquanto o Desktop não tem uma tela própria de "Usuários/
+            //  Funcionários" pra o Admin criar essas contas pela interface,
+            //  criamos aqui 2 contas de teste — uma pra cada papel novo —
+            //  só pra dar pra logar e validar o comportamento de cada um.
+            //
+            //  ⚠️ São credenciais de DESENVOLVIMENTO. Antes de ir pra produção,
+            //  troque as senhas (ou remova este bloco e crie as contas de
+            //  verdade manualmente).
+            // =====================================================================
+            await SeedFuncionarioDeTesteAsync(userManager, "gerente@betafit.com", "Gerente@123", "Gerente");
+            await SeedFuncionarioDeTesteAsync(userManager, "estoquista@betafit.com", "Estoquista@123", "Estoquista");
+        }
+
+        /// <summary>
+        /// Cria uma conta de funcionário de teste (idempotente — não duplica
+        /// se o e-mail já existir) e atribui o papel informado.
+        /// </summary>
+        private static async Task SeedFuncionarioDeTesteAsync(
+            UserManager<IdentityUser> userManager, string email, string senha, string role)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user != null) return; // já existe, não recria
+
+            user = new IdentityUser
+            {
+                UserName = email,
+                Email = email,
+                EmailConfirmed = true
+            };
+
+            var result = await userManager.CreateAsync(user, senha);
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(user, role);
             }
         }
     }
