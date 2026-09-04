@@ -111,8 +111,8 @@ namespace BetaFit.Desktop.UserControls
                 gridCategorias.Rows.Add(
                     c.Id,
                     c.Name,
-                    c.IsActive,
                     c.ProductCount,
+                    c.IsActive,
                     c.CreatedAt.ToString("dd/MM/yyyy HH:mm"));
             }
         }
