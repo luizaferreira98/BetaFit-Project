@@ -459,6 +459,11 @@ namespace BetaFit.Desktop.Themes
             grid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             grid.ColumnHeadersDefaultCellStyle.Padding = new Padding(12, 4, 12, 4);
             grid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            // Sem isso, a coluna com foco (CurrentCell) herda a cor azul padrão
+            // do Windows (SystemColors.Highlight) vinda do estilo gerado pelo
+            // Designer, deixando só o cabeçalho dela destoando dos demais.
+            grid.ColumnHeadersDefaultCellStyle.SelectionBackColor = Admin.FundoCabecalho;
+            grid.ColumnHeadersDefaultCellStyle.SelectionForeColor = Admin.TextoMuted;
             grid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             grid.ColumnHeadersHeight = 44;
             grid.EnableHeadersVisualStyles = false;

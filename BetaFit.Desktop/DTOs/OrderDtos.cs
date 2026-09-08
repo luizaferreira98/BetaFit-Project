@@ -18,5 +18,6 @@
         public decimal UnitPrice { get; set; }
         public int Quantity { get; set; }
         public decimal Subtotal { get; set; }
+        public string? ImageUrl { get; set; }   // NOVO — vem preenchido pela API (OrderService já busca o produto)
     }
 }

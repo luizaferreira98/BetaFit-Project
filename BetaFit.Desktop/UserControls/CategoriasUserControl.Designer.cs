@@ -68,7 +68,7 @@
             pnlTabela = new Guna.UI2.WinForms.Guna2Panel();
             pnlPaginação = new Guna.UI2.WinForms.Guna2Panel();
             btnProximaPagina = new Guna.UI2.WinForms.Guna2Button();
-            lblPaginaAtual = new Guna.UI2.WinForms.Guna2Button();
+            btnPaginaAtual = new Guna.UI2.WinForms.Guna2Button();
             btnPaginaAnterior = new Guna.UI2.WinForms.Guna2Button();
             lblResumoPaginacao = new Guna.UI2.WinForms.Guna2HtmlLabel();
             pnlBotoesCategorias.SuspendLayout();
@@ -296,7 +296,7 @@
             // pnlPaginação
             // 
             pnlPaginação.Controls.Add(btnProximaPagina);
-            pnlPaginação.Controls.Add(lblPaginaAtual);
+            pnlPaginação.Controls.Add(btnPaginaAtual);
             pnlPaginação.Controls.Add(btnPaginaAnterior);
             pnlPaginação.Controls.Add(lblResumoPaginacao);
             pnlPaginação.CustomizableEdges = customizableEdges37;
@@ -326,26 +326,26 @@
             btnProximaPagina.Text = "›";
             btnProximaPagina.Click += btnProximaPagina_Click;
             // 
-            // lblPaginaAtual
+            // btnPaginaAtual
             // 
-            lblPaginaAtual.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            lblPaginaAtual.BorderColor = Color.FromArgb(198, 255, 40);
-            lblPaginaAtual.BorderRadius = 6;
-            lblPaginaAtual.CustomizableEdges = customizableEdges33;
-            lblPaginaAtual.DisabledState.BorderColor = Color.DarkGray;
-            lblPaginaAtual.DisabledState.CustomBorderColor = Color.DarkGray;
-            lblPaginaAtual.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
-            lblPaginaAtual.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            lblPaginaAtual.Enabled = false;
-            lblPaginaAtual.FillColor = Color.Transparent;
-            lblPaginaAtual.Font = new Font("Segoe UI", 9F);
-            lblPaginaAtual.ForeColor = Color.White;
-            lblPaginaAtual.Location = new Point(917, 10);
-            lblPaginaAtual.Name = "lblPaginaAtual";
-            lblPaginaAtual.ShadowDecoration.CustomizableEdges = customizableEdges34;
-            lblPaginaAtual.Size = new Size(32, 32);
-            lblPaginaAtual.TabIndex = 2;
-            lblPaginaAtual.Text = "1";
+            btnPaginaAtual.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnPaginaAtual.BorderColor = Color.FromArgb(198, 255, 40);
+            btnPaginaAtual.BorderRadius = 6;
+            btnPaginaAtual.CustomizableEdges = customizableEdges33;
+            btnPaginaAtual.DisabledState.BorderColor = Color.DarkGray;
+            btnPaginaAtual.DisabledState.CustomBorderColor = Color.DarkGray;
+            btnPaginaAtual.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
+            btnPaginaAtual.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
+            btnPaginaAtual.Enabled = false;
+            btnPaginaAtual.FillColor = Color.Transparent;
+            btnPaginaAtual.Font = new Font("Segoe UI", 9F);
+            btnPaginaAtual.ForeColor = Color.White;
+            btnPaginaAtual.Location = new Point(917, 10);
+            btnPaginaAtual.Name = "btnPaginaAtual";
+            btnPaginaAtual.ShadowDecoration.CustomizableEdges = customizableEdges34;
+            btnPaginaAtual.Size = new Size(32, 32);
+            btnPaginaAtual.TabIndex = 2;
+            btnPaginaAtual.Text = "1";
             // 
             // btnPaginaAnterior
             // 
@@ -411,7 +411,7 @@
         private Guna.UI2.WinForms.Guna2Panel pnlPaginação;
         private Guna.UI2.WinForms.Guna2Button btnPaginaAnterior;
         private Guna.UI2.WinForms.Guna2HtmlLabel lblResumoPaginacao;
-        private Guna.UI2.WinForms.Guna2Button lblPaginaAtual;
+        private Guna.UI2.WinForms.Guna2Button btnPaginaAtual;
         private Guna.UI2.WinForms.Guna2Button btnProximaPagina;
         private DataGridViewTextBoxColumn colId;
         private DataGridViewTextBoxColumn colNome;

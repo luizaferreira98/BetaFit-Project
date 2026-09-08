@@ -180,5 +180,12 @@ namespace BetaFit.Desktop.UserControls
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void txtPesquisaPedido_KeyDown(object sender, KeyEventArgs e)
+        {
+
+        }
+
+
     }
 }

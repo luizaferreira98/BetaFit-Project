@@ -146,7 +146,7 @@ namespace BetaFit.Desktop.UserControls
             int ate = inicio + quantidadeNaPagina;
 
             lblResumoPaginacao.Text = $"Exibindo {de} a {ate} de {total} categorias";
-            lblPaginaAtual.Text = _paginaAtual.ToString();
+            btnPaginaAtual.Text = _paginaAtual.ToString();
 
             int totalPaginas = Math.Max(1, (int)Math.Ceiling(total / (double)TamanhoPagina));
             btnPaginaAnterior.Enabled = _paginaAtual > 1;
