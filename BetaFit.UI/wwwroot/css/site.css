@@ -51,7 +51,7 @@
 .bf-home-hero__overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, rgba(2, 5, 8, .88), rgba(2, 5, 8, .18))
+    background: linear-gradient(90deg,rgba(2,5,8,.88),rgba(2,5,8,.18))
 }
 
 .bf-home-hero__content {
@@ -74,7 +74,7 @@
 
     .bf-home-hero__content h1 {
         max-width: 780px;
-        font-size: clamp(3rem, 8vw, 7rem);
+        font-size: clamp(3rem,8vw,7rem);
         line-height: .88;
         text-transform: uppercase;
         margin: 18px 0
@@ -138,85 +138,54 @@
     white-space: nowrap
 }
 
-/* Carrossel de produtos: todos os cards no mesmo tamanho */
 .bf-product-rail {
     display: grid;
-    grid-template-columns: 42px minmax(0, 1fr) 42px;
+    grid-template-columns: 42px minmax(0,1fr) 42px;
     align-items: center;
-    gap: 12px;
+    gap: 12px
 }
 
     .bf-product-rail > button {
-        width: 42px;
-        height: 42px;
         border: 1px solid #d7dce0;
-        border-radius: 50%;
         background: #fff;
-        font-size: 1.6rem;
-        cursor: pointer;
+        border-radius: 50%;
+        height: 42px;
+        font-size: 1.6rem
     }
 
 .bf-product-rail__track {
     display: flex;
     gap: 18px;
     overflow-x: auto;
-    padding: 4px;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
+    padding: 4px
 }
 
     .bf-product-rail__track::-webkit-scrollbar {
-        display: none;
+        display: none
     }
-
-    /* Impede que um card, como o de moletom, fique maior que os demais */
-    .bf-product-rail__track .bf-product-card {
-        flex: 0 0 260px;
-        width: 260px;
-        min-width: 260px;
-        max-width: 260px;
-        scroll-snap-align: start;
-    }
-
-    /* Área da foto: mesmo tamanho para todos os produtos */
-    .bf-product-rail__track .bf-product-card__media {
-        width: 100%;
-        height: 320px;
-        aspect-ratio: auto;
-        overflow: hidden;
-    }
-
-        /* A imagem ocupa o espaço sem alterar o tamanho do card */
-        .bf-product-rail__track .bf-product-card__media img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-        }
-
-/* Versão de celular */
-@media (max-width: 800px) {
-    .bf-product-rail {
-        grid-template-columns: 36px minmax(0, 1fr) 36px;
-        gap: 8px;
-    }
-
-        .bf-product-rail > button {
-            width: 36px;
-            height: 36px;
-        }
 
     .bf-product-rail__track .bf-product-card {
-        flex-basis: 220px;
-        width: 220px;
-        min-width: 220px;
-        max-width: 220px;
+        min-width: min(320px,78vw);
+        scroll-snap-align: start
     }
 
-    .bf-product-rail__track .bf-product-card__media {
-        height: 280px;
-    }
+.bf-home-values__grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 24px
 }
+
+.bf-home-values article {
+    border-top: 3px solid #111;
+    padding-top: 20px
+}
+
+    .bf-home-values article > strong {
+        color: #87b800;
+        font-size: 2rem
+    }
 
 .bf-catalog-toolbar {
     display: flex;
@@ -325,7 +294,7 @@
     right: 0;
     top: 0;
     bottom: 0;
-    width: min(420px, 92vw);
+    width: min(420px,92vw);
     background: #fff;
     padding: 28px;
     overflow: auto;
@@ -461,7 +430,7 @@
 
 .bf-product-benefits {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5,1fr);
     gap: 8px;
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
@@ -577,7 +546,7 @@
 
 .bf-color-image-admin__grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4,1fr);
     gap: 12px;
     margin-top: 18px
 }
@@ -635,7 +604,7 @@
     position: absolute;
     right: 0;
     top: 50px;
-    width: min(390px, 90vw);
+    width: min(390px,90vw);
     max-height: 470px;
     overflow: auto;
     background: #fff;
@@ -716,7 +685,7 @@
         }
 
     .bf-product-benefits {
-        grid-template-columns: repeat(3, 1fr)
+        grid-template-columns: repeat(3,1fr)
     }
 }
 
@@ -906,7 +875,7 @@ button, input, select, textarea {
     position: sticky;
     top: 0;
     z-index: 30;
-    background: rgba(255, 255, 255, .96);
+    background: rgba(255,255,255,.96);
     border-bottom: 1px solid var(--bf-line);
     backdrop-filter: blur(14px);
 }
@@ -1195,6 +1164,7 @@ button, input, select, textarea {
 
 .bf-btn--wide {
     width: 100%;
+    margin-bottom:20px;
 }
 
 .bf-text-link {
@@ -1264,7 +1234,7 @@ button, input, select, textarea {
     position: absolute;
     inset: 0;
     opacity: .32;
-    background: radial-gradient(circle at 76% 28%, rgba(201, 255, 34, .14), transparent 25%), linear-gradient(115deg, transparent 0 46%, rgba(255, 255, 255, .035) 46.1% 46.3%, transparent 46.4%);
+    background: radial-gradient(circle at 76% 28%, rgba(201,255,34,.14), transparent 25%), linear-gradient(115deg, transparent 0 46%, rgba(255,255,255,.035) 46.1% 46.3%, transparent 46.4%);
 }
 
 .bf-hero__inner {
@@ -1325,14 +1295,14 @@ button, input, select, textarea {
         content: "";
         position: absolute;
         inset: 0;
-        background: linear-gradient(90deg, var(--bf-black) 0%, transparent 32%, rgba(0, 0, 0, .12));
+        background: linear-gradient(90deg, var(--bf-black) 0%, transparent 32%, rgba(0,0,0,.12));
     }
 
 .bf-hero__visual--empty::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, rgba(201, 255, 34, .12), transparent 36%);
+    background: radial-gradient(circle at center, rgba(201,255,34,.12), transparent 36%);
 }
 
 .bf-hero__monogram {
@@ -1340,7 +1310,7 @@ button, input, select, textarea {
     inset: 0;
     display: grid;
     place-items: center;
-    color: rgba(255, 255, 255, .06);
+    color: rgba(255,255,255,.06);
     font-size: 220px;
     font-weight: 900;
     letter-spacing: -.12em;
@@ -1353,7 +1323,7 @@ button, input, select, textarea {
     z-index: 2;
     min-width: 210px;
     padding: 16px 18px;
-    background: rgba(11, 11, 11, .88);
+    background: rgba(11,11,11,.88);
     border-left: 3px solid var(--bf-lime);
     backdrop-filter: blur(10px);
 }
@@ -1489,7 +1459,7 @@ button, input, select, textarea {
     height: 100%;
     display: grid;
     place-items: center;
-    color: rgba(17, 17, 17, .1);
+    color: rgba(17,17,17,.1);
     font-size: 100px;
     font-weight: 900;
     letter-spacing: -.1em;
@@ -1772,7 +1742,7 @@ button, input, select, textarea {
 
     .bf-input:focus, .bf-select:focus, .bf-form input:focus, .bf-form textarea:focus, .bf-form select:focus {
         border-color: var(--bf-black);
-        box-shadow: 0 0 0 2px rgba(17, 17, 17, .06);
+        box-shadow: 0 0 0 2px rgba(17,17,17,.06);
     }
 
 .bf-catalog-meta {
@@ -1855,7 +1825,7 @@ button, input, select, textarea {
     min-height: 650px;
     display: grid;
     place-items: center;
-    color: rgba(17, 17, 17, .1);
+    color: rgba(17,17,17,.1);
     font-size: 180px;
     font-weight: 900;
 }
@@ -1940,7 +1910,7 @@ button, input, select, textarea {
 
 .bf-cart-item {
     display: grid;
-    grid-template-columns: 92px minmax(0, 1fr) auto auto;
+    grid-template-columns: 92px minmax(0,1fr) auto auto;
     gap: 20px;
     align-items: center;
     padding: 18px 0;
@@ -1965,7 +1935,7 @@ button, input, select, textarea {
         height: 100%;
         display: grid;
         place-items: center;
-        color: rgba(17, 17, 17, .12);
+        color: rgba(17,17,17,.12);
         font-size: 35px;
         font-weight: 900;
     }
@@ -2104,7 +2074,7 @@ button, input, select, textarea {
         height: 500px;
         right: -160px;
         bottom: -160px;
-        border: 80px solid rgba(201, 255, 34, .08);
+        border: 80px solid rgba(201,255,34,.08);
         border-radius: 50%;
     }
 
@@ -2271,7 +2241,7 @@ button, input, select, textarea {
 
 .bf-admin-product {
     display: grid;
-    grid-template-columns: 76px minmax(0, 1fr) 90px 150px;
+    grid-template-columns: 76px minmax(0,1fr) 90px 150px;
     gap: 20px;
     align-items: center;
     padding: 12px 0;
@@ -2296,7 +2266,7 @@ button, input, select, textarea {
         height: 100%;
         display: grid;
         place-items: center;
-        color: rgba(17, 17, 17, .12);
+        color: rgba(17,17,17,.12);
         font-size: 30px;
         font-weight: 900;
     }
@@ -2357,7 +2327,7 @@ button, input, select, textarea {
 }
 
 .bf-form--admin {
-    padding: 30px;
+    padding: 40px;
     border: 1px solid var(--bf-line);
     background: #fff;
 }
@@ -2366,6 +2336,7 @@ button, input, select, textarea {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 18px;
+    margin-top:30px; 
 }
 
 .bf-form-grid__full {
@@ -2436,7 +2407,7 @@ button, input, select, textarea {
     .bf-edit-preview > div {
         display: grid;
         place-items: center;
-        color: rgba(17, 17, 17, .12);
+        color: rgba(17,17,17,.12);
         font-size: 28px;
         font-weight: 900;
     }
@@ -2468,7 +2439,7 @@ button, input, select, textarea {
 .bf-image-upload-preview {
     position: relative;
     min-height: 170px;
-    border: 1px dashed rgba(17, 17, 17, .22);
+    border: 1px dashed rgba(17,17,17,.22);
     background: linear-gradient(145deg, #fafafa, #f2f2f2);
     overflow: hidden;
     display: grid;
@@ -2479,7 +2450,7 @@ button, input, select, textarea {
     .bf-image-upload-preview.is-ready {
         border-style: solid;
         border-color: #c8f500;
-        box-shadow: 0 14px 35px rgba(0, 0, 0, .08);
+        box-shadow: 0 14px 35px rgba(0,0,0,.08);
     }
 
 .bf-image-upload-preview__placeholder {
@@ -2507,7 +2478,7 @@ button, input, select, textarea {
     height: 42px;
     display: grid;
     place-items: center;
-    border: 1px solid rgba(17, 17, 17, .16);
+    border: 1px solid rgba(17,17,17,.16);
     border-radius: 50%;
     font-size: 24px;
     font-weight: 300;
@@ -2521,7 +2492,7 @@ button, input, select, textarea {
     max-height: 300px;
     object-fit: contain;
     background: #fff;
-    animation: bf-image-preview-in .35s cubic-bezier(.2, .8, .2, 1) both;
+    animation: bf-image-preview-in .35s cubic-bezier(.2,.8,.2,1) both;
 }
 
 .bf-image-upload-preview__meta {
@@ -2533,7 +2504,7 @@ button, input, select, textarea {
     justify-content: space-between;
     gap: 12px;
     padding: 8px 10px;
-    background: rgba(17, 17, 17, .88);
+    background: rgba(17,17,17,.88);
     color: #fff;
     backdrop-filter: blur(8px);
     font-size: 9px;
@@ -2564,7 +2535,8 @@ button, input, select, textarea {
         align-items: center;
     }
 
-        .bf-edit-preview--with-upload .bf-current-image img, .bf-edit-preview--with-upload .bf-current-image > div {
+        .bf-edit-preview--with-upload .bf-current-image img,
+        .bf-edit-preview--with-upload .bf-current-image > div {
             width: 86px;
             height: 105px;
             object-fit: cover;
@@ -2574,7 +2546,7 @@ button, input, select, textarea {
         .bf-edit-preview--with-upload .bf-current-image > div {
             display: grid;
             place-items: center;
-            color: rgba(17, 17, 17, .12);
+            color: rgba(17,17,17,.12);
             font-size: 28px;
             font-weight: 900;
         }
@@ -2622,6 +2594,7 @@ button, input, select, textarea {
         grid-template-columns: 1fr;
     }
 }
+
 
 /* Confirm / simple pages */
 .bf-simple-page {
@@ -2699,7 +2672,7 @@ button, input, select, textarea {
         height: 100%;
         display: grid;
         place-items: center;
-        color: rgba(17, 17, 17, .12);
+        color: rgba(17,17,17,.12);
         font-size: 28px;
         font-weight: 900;
     }
@@ -3045,7 +3018,7 @@ button, input, select, textarea {
     }
 
     .bf-cart-item {
-        grid-template-columns: 72px minmax(0, 1fr);
+        grid-template-columns: 72px minmax(0,1fr);
         gap: 13px;
     }
 
@@ -3242,6 +3215,7 @@ button, input, select, textarea {
     }
 
 .bf-image-reveal {
+    margin-bottom: 20px;
     opacity: 0;
     transform: scale(1.035);
     transition: opacity 650ms ease, transform 900ms var(--bf-ease-out);
@@ -3257,8 +3231,8 @@ button, input, select, textarea {
 }
 
     .bf-header.is-scrolled {
-        background: rgba(255, 255, 255, .91);
-        box-shadow: 0 10px 35px rgba(0, 0, 0, .07);
+        background: rgba(255,255,255,.91);
+        box-shadow: 0 10px 35px rgba(0,0,0,.07);
     }
 
         .bf-header.is-scrolled .bf-header__inner {
@@ -3281,7 +3255,9 @@ button, input, select, textarea {
     transition: color 220ms ease, transform 220ms var(--bf-ease-out);
 }
 
-.bf-btn, .bf-section-link, .bf-account-link {
+.bf-btn,
+.bf-section-link,
+.bf-account-link {
     transform: translate3d(var(--mag-x, 0), var(--mag-y, 0), 0);
     transition: transform 260ms var(--bf-ease-spring), background-color 220ms ease, color 220ms ease, border-color 220ms ease, box-shadow 260ms ease;
     position: relative;
@@ -3289,11 +3265,11 @@ button, input, select, textarea {
 }
 
     .bf-btn:hover {
-        box-shadow: 0 12px 28px rgba(0, 0, 0, .12);
+        box-shadow: 0 12px 28px rgba(0,0,0,.12);
     }
 
 .bf-btn--lime:hover, .bf-btn--primary:hover {
-    box-shadow: 0 12px 30px rgba(155, 201, 0, .24);
+    box-shadow: 0 12px 30px rgba(155,201,0,.24);
 }
 
 .bf-ripple {
@@ -3301,14 +3277,16 @@ button, input, select, textarea {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, .42);
+    background: rgba(255,255,255,.42);
     pointer-events: none;
     transform: translate(-50%, -50%) scale(0);
     animation: bf-ripple 560ms ease-out forwards;
 }
 
-.bf-btn--lime .bf-ripple, .bf-btn--primary .bf-ripple, .bf-btn--ghost .bf-ripple {
-    background: rgba(0, 0, 0, .12);
+.bf-btn--lime .bf-ripple,
+.bf-btn--primary .bf-ripple,
+.bf-btn--ghost .bf-ripple {
+    background: rgba(0,0,0,.12);
 }
 
 @keyframes bf-ripple {
@@ -3360,24 +3338,30 @@ button, input, select, textarea {
     }
 }
 
-.bf-product-card, .bf-category-tile, .bf-confirm-card {
+.bf-product-card,
+.bf-category-tile,
+.bf-confirm-card {
     position: relative;
     overflow: hidden;
     transform-style: preserve-3d;
     will-change: transform;
 }
 
-    .bf-product-card::after, .bf-category-tile::after, .bf-confirm-card::after {
+    .bf-product-card::after,
+    .bf-category-tile::after,
+    .bf-confirm-card::after {
         content: "";
         position: absolute;
         inset: 0;
         pointer-events: none;
         opacity: 0;
-        background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(201, 255, 34, .14), transparent 34%);
+        background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(201,255,34,.14), transparent 34%);
         transition: opacity 280ms ease;
     }
 
-    .bf-product-card:hover::after, .bf-category-tile:hover::after, .bf-confirm-card:hover::after {
+    .bf-product-card:hover::after,
+    .bf-category-tile:hover::after,
+    .bf-confirm-card:hover::after {
         opacity: 1;
     }
 
@@ -3397,7 +3381,7 @@ button, input, select, textarea {
 
 .bf-product-card:hover .bf-product-card__badge {
     transform: translateY(0) rotate(-1deg);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, .12);
+    box-shadow: 0 8px 20px rgba(0,0,0,.12);
 }
 
 .bf-category-tile strong {
@@ -3458,7 +3442,7 @@ button, input, select, textarea {
     width: var(--scroll-progress, 0%);
     height: 2px;
     background: var(--bf-lime);
-    box-shadow: 0 0 14px rgba(201, 255, 34, .65);
+    box-shadow: 0 0 14px rgba(201,255,34,.65);
     pointer-events: none;
     transition: width 80ms linear;
 }
@@ -3473,7 +3457,7 @@ button, input, select, textarea {
     pointer-events: none;
     z-index: 1;
     opacity: .22;
-    background: radial-gradient(circle, rgba(201, 255, 34, .32) 0%, rgba(201, 255, 34, .08) 32%, transparent 70%);
+    background: radial-gradient(circle, rgba(201,255,34,.32) 0%, rgba(201,255,34,.08) 32%, transparent 70%);
     mix-blend-mode: multiply;
     will-change: transform;
 }
@@ -3487,7 +3471,9 @@ button, input, select, textarea {
         min-height: 64px;
     }
 
-    .bf-product-card, .bf-category-tile, .bf-confirm-card {
+    .bf-product-card,
+    .bf-category-tile,
+    .bf-confirm-card {
         transform: none !important;
     }
 }
@@ -3503,7 +3489,8 @@ button, input, select, textarea {
         transition-duration: .01ms !important;
     }
 
-    .bf-reveal, .bf-image-reveal {
+    .bf-reveal,
+    .bf-image-reveal {
         opacity: 1 !important;
         transform: none !important;
         filter: none !important;
@@ -3537,6 +3524,7 @@ button, input, select, textarea {
 
 .bf-quantity-control {
     display: inline-flex;
+    justify-content: center;
     align-items: center;
     height: 48px;
     border: 1px solid var(--bf-line);
@@ -3604,7 +3592,7 @@ button, input, select, textarea {
 }
 
     .bf-quantity-control--cart .bf-quantity-btn {
-        width: 38px;
+        width: 100%;
     }
 
     .bf-quantity-control--cart .bf-quantity-input {
@@ -3658,7 +3646,7 @@ button, input, select, textarea {
         }
 
     .bf-cart-item {
-        grid-template-columns: 72px minmax(0, 1fr);
+        grid-template-columns: 72px minmax(0,1fr);
         gap: 12px;
         padding: 18px 0;
     }
@@ -3765,7 +3753,7 @@ button, input, select, textarea {
     }
 
     .bf-cart-item {
-        grid-template-columns: 64px minmax(0, 1fr);
+        grid-template-columns: 64px minmax(0,1fr);
     }
 
     .bf-cart-summary__total strong:last-child {
@@ -3781,11 +3769,12 @@ button, input, select, textarea {
     }
 }
 
+
 /* Auth gate for cart actions */
 .bf-login-required {
     margin-top: 1.5rem;
     padding: 1.25rem;
-    border: 1px solid rgba(17, 17, 17, .12);
+    border: 1px solid rgba(17,17,17,.12);
     border-radius: 18px;
     background: #f7f7f5;
 }
@@ -3800,6 +3789,7 @@ button, input, select, textarea {
         color: #666;
         font-size: .88rem;
     }
+
 
 /* ===== BetaFit functional UI additions ===== */
 .bf-card-cart-form {
@@ -3954,7 +3944,7 @@ button, input, select, textarea {
 
 .bf-admin-gallery__grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5,1fr);
     gap: 10px
 }
 
@@ -3985,7 +3975,7 @@ button, input, select, textarea {
 
 .bf-image-upload-preview__grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3,1fr);
     gap: 8px;
     padding: 10px;
     width: 100%
@@ -4135,7 +4125,7 @@ button, input, select, textarea {
     }
 
     .bf-admin-gallery__grid {
-        grid-template-columns: repeat(3, 1fr)
+        grid-template-columns: repeat(3,1fr)
     }
 
     .bf-gallery__main, .bf-gallery__main img {
@@ -4149,6 +4139,7 @@ button, input, select, textarea {
         gap: 5px
     }
 }
+
 
 /* ========================================================================
    BetaFit UI polish — product forms, responsive galleries and password UX
@@ -4323,7 +4314,7 @@ button, input, select, textarea {
 
 .bf-image-upload-preview__grid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(5,minmax(0,1fr));
     gap: 10px;
 }
 
@@ -4384,7 +4375,7 @@ button, input, select, textarea {
     height: 26px;
     border: 0;
     border-radius: 50%;
-    background: rgba(11, 11, 11, .82);
+    background: rgba(11,11,11,.82);
     color: #fff;
     font-size: 17px;
     line-height: 1;
@@ -4421,7 +4412,7 @@ button, input, select, textarea {
 
 .bf-admin-gallery__grid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(5,minmax(0,1fr));
     gap: 10px;
 }
 
@@ -4482,7 +4473,7 @@ button, input, select, textarea {
         object-fit: cover;
         opacity: 0;
         transform: scale(1.01);
-        transition: opacity .25s, transform .45s;
+        transition: opacity .25s,transform .45s;
     }
 
         .bf-product-card__slides > img:first-child, .bf-product-card__slides > img.is-active {
@@ -4496,7 +4487,7 @@ button, input, select, textarea {
     bottom: 10px;
     transform: translateX(-50%);
     padding: 5px 8px;
-    background: rgba(11, 11, 11, .72);
+    background: rgba(11,11,11,.72);
     color: #fff;
     font-size: 8px;
     font-weight: 800;
@@ -4610,7 +4601,7 @@ button, input, select, textarea {
 
 @media (max-width: 800px) {
     .bf-image-upload-preview__grid, .bf-admin-gallery__grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(3,minmax(0,1fr));
     }
 
     .bf-size-picker__head, .bf-upload-card__head {
@@ -4624,7 +4615,7 @@ button, input, select, textarea {
 
 @media (max-width: 520px) {
     .bf-image-upload-preview__grid, .bf-admin-gallery__grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2,minmax(0,1fr));
     }
 
     .bf-upload-card, .bf-size-picker, .bf-admin-gallery {
@@ -4729,6 +4720,7 @@ button, input, select, textarea {
     }
 }
 
+
 /* Product gallery / modal */
 .bf-gallery__open {
     border: 0;
@@ -4766,13 +4758,13 @@ button, input, select, textarea {
 .bf-gallery-modal__backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, .82)
+    background: rgba(0,0,0,.82)
 }
 
 .bf-gallery-modal__dialog {
     position: relative;
     z-index: 1;
-    max-width: min(92vw, 1200px);
+    max-width: min(92vw,1200px);
     max-height: 92vh;
     margin: 4vh auto;
     background: #fff;
@@ -4833,16 +4825,12 @@ button, input, select, textarea {
 .bf-product-description {
     margin-top: 2rem;
     padding-top: 1.5rem;
-}
-
-.bf-product-benefits + .bf-product-description {
-    margin-top: 0;
-    padding-top: 0;
+    border-top: 1px solid #ddd
 }
 
 .bf-checkout-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(300px, .6fr);
+    grid-template-columns: minmax(0,1.4fr) minmax(300px,.6fr);
     gap: 2rem
 }
 
@@ -4919,7 +4907,7 @@ button, input, select, textarea {
 
 .bf-reviews-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3,minmax(0,1fr));
     gap: 1rem
 }
 
@@ -4956,7 +4944,7 @@ button, input, select, textarea {
 
 .bf-payment-options {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3,minmax(0,1fr));
     gap: 10px;
     margin-top: 16px
 }
@@ -5054,7 +5042,7 @@ button, input, select, textarea {
     position: relative;
     display: inline-block;
     line-height: 0;
-    max-width: min(76vw, 920px);
+    max-width: min(76vw,920px);
     max-height: calc(100vh - 175px)
 }
 
@@ -5072,11 +5060,11 @@ button, input, select, textarea {
     height: 190px;
     border: 2px solid #fff;
     border-radius: 50%;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, .38);
+    box-shadow: 0 4px 24px rgba(0,0,0,.38);
     pointer-events: none;
     opacity: 0;
-    transform: translate(-50%, -50%) scale(.85);
-    transition: opacity .18s, transform .18s;
+    transform: translate(-50%,-50%) scale(.85);
+    transition: opacity .18s,transform .18s;
     background-repeat: no-repeat
 }
 
@@ -5086,7 +5074,7 @@ button, input, select, textarea {
 
     .bf-product-lightbox__image-wrap.is-zoom-enabled .bf-product-lightbox__lens {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1)
+        transform: translate(-50%,-50%) scale(1)
     }
 
 .bf-product-lightbox__zoom {
@@ -5099,8 +5087,8 @@ button, input, select, textarea {
     gap: 6px;
     border: 0;
     border-radius: 22px;
-    background: rgba(255, 255, 255, .94);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, .16);
+    background: rgba(255,255,255,.94);
+    box-shadow: 0 2px 12px rgba(0,0,0,.16);
     padding: 9px 12px;
     color: var(--bf-black);
     font-size: 11px;
@@ -5112,15 +5100,14 @@ button, input, select, textarea {
     .bf-product-lightbox__zoom[aria-pressed="true"] {
         background: var(--bf-lime)
     }
-
 /* Pedidos: o seletor e o botão passam a ter espaço próprio, sem compressão. */
 .bf-admin-product {
-    grid-template-columns: 76px minmax(180px, 1fr) minmax(230px, 270px) max-content
+    grid-template-columns: 76px minmax(180px,1fr) minmax(230px,270px) max-content
 }
 
 .bf-order-status-form {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) max-content;
+    grid-template-columns: minmax(0,1fr) max-content;
     align-items: end;
     gap: 9px
 }
@@ -5152,11 +5139,10 @@ button, input, select, textarea {
     gap: 6px;
     white-space: nowrap
 }
-
 /* Quebras globais para preservar leitura, botões e formulários em telas menores. */
 @media(max-width:980px) {
     .bf-admin-product {
-        grid-template-columns: 68px minmax(0, 1fr) minmax(215px, 240px);
+        grid-template-columns: 68px minmax(0,1fr) minmax(215px,240px);
         gap: 14px
     }
 
@@ -5166,15 +5152,15 @@ button, input, select, textarea {
     }
 
     .bf-container {
-        width: min(100% - 36px, var(--bf-container, 1200px))
+        width: min(100% - 36px,var(--bf-container,1200px))
     }
 
     .bf-product-grid, .bf-product-grid--catalog {
-        grid-template-columns: repeat(2, minmax(0, 1fr))
+        grid-template-columns: repeat(2,minmax(0,1fr))
     }
 
     .bf-benefit-strip__grid {
-        grid-template-columns: repeat(2, 1fr)
+        grid-template-columns: repeat(2,1fr)
     }
 
         .bf-benefit-strip__grid > div:nth-child(odd) {
@@ -5184,7 +5170,7 @@ button, input, select, textarea {
 
 @media(max-width:680px) {
     .bf-admin-product {
-        grid-template-columns: 58px minmax(0, 1fr);
+        grid-template-columns: 58px minmax(0,1fr);
         gap: 12px;
         padding: 16px 0
     }
@@ -5225,7 +5211,7 @@ button, input, select, textarea {
         }
 
     .bf-page-hero h1 {
-        font-size: clamp(38px, 13vw, 58px)
+        font-size: clamp(38px,13vw,58px)
     }
 
     .bf-section {
@@ -5250,7 +5236,7 @@ button, input, select, textarea {
 
 @media(max-width:430px) {
     .bf-container {
-        width: min(100% - 24px, var(--bf-container, 1200px))
+        width: min(100% - 24px,var(--bf-container,1200px))
     }
 
     .bf-product-grid, .bf-product-grid--catalog {
@@ -5319,7 +5305,7 @@ button, input, select, textarea {
     min-width: 0;
     flex: 1;
     opacity: .48;
-    transition: opacity .3s, transform .3s
+    transition: opacity .3s,transform .3s
 }
 
     .bf-checkout-journey__step span {
@@ -5361,7 +5347,7 @@ button, input, select, textarea {
         font-size: 11px;
         opacity: 0;
         transform: scale(.5);
-        transition: opacity .25s, transform .25s
+        transition: opacity .25s,transform .25s
     }
 
     .bf-checkout-journey__step.is-active {
@@ -5436,15 +5422,15 @@ button, input, select, textarea {
 
 /* Página de produto: galeria limpa, controles discretos e visualização em tela inteira. */
 .bf-product-detail--store {
-    grid-template-columns: minmax(0, 1.08fr) minmax(330px, .82fr);
-    gap: clamp(36px, 6vw, 86px);
+    grid-template-columns: minmax(0,1.08fr) minmax(330px,.82fr);
+    gap: clamp(36px,6vw,86px);
     align-items: start
 }
 
 .bf-product-gallery {
     position: relative;
     display: grid;
-    grid-template-columns: 76px minmax(0, 1fr);
+    grid-template-columns: 76px minmax(0,1fr);
     gap: 14px;
     align-items: start
 }
@@ -5467,7 +5453,7 @@ button, input, select, textarea {
     background: #f1f1ee;
     padding: 0;
     cursor: pointer;
-    transition: border-color .2s, transform .2s
+    transition: border-color .2s,transform .2s
 }
 
     .bf-product-gallery__thumb:hover, .bf-product-gallery__thumb.is-active {
@@ -5501,10 +5487,10 @@ button, input, select, textarea {
     border: 0;
     cursor: pointer;
     opacity: 0;
-    transition: opacity .2s, transform .2s;
+    transition: opacity .2s,transform .2s;
     background: #fff;
     color: var(--bf-black);
-    box-shadow: 0 3px 16px rgba(0, 0, 0, .14)
+    box-shadow: 0 3px 16px rgba(0,0,0,.14)
 }
 
 .bf-product-gallery__stage:hover .bf-product-gallery__arrow, .bf-product-gallery__stage:hover .bf-product-gallery__expand {
@@ -5557,7 +5543,7 @@ button, input, select, textarea {
     left: 16px;
     bottom: 14px;
     padding: 6px 9px;
-    background: rgba(255, 255, 255, .88);
+    background: rgba(255,255,255,.88);
     font-size: 9px;
     font-weight: 900;
     letter-spacing: .08em
@@ -5589,7 +5575,8 @@ button, input, select, textarea {
     }
 
 .bf-product-description {
-    margin: 26px 0 19px;
+    margin: 26px 0 22px;
+    border-top: 1px solid var(--bf-line);
     border-bottom: 1px solid var(--bf-line)
 }
 
@@ -5604,7 +5591,7 @@ button, input, select, textarea {
         font-weight: 900;
         letter-spacing: .08em;
         text-transform: uppercase
-   }
+    }
 
         .bf-product-description summary::-webkit-details-marker {
             display: none
@@ -5644,7 +5631,7 @@ button, input, select, textarea {
 .bf-product-lightbox__backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(255, 255, 255, .98)
+    background: rgba(255,255,255,.98)
 }
 
 .bf-product-lightbox__panel {
@@ -5659,7 +5646,7 @@ button, input, select, textarea {
 
     .bf-product-lightbox__panel > img {
         display: block;
-        max-width: min(76vw, 920px);
+        max-width: min(76vw,920px);
         max-height: calc(100vh - 175px);
         object-fit: contain
     }
@@ -5832,7 +5819,7 @@ button, input, select, textarea {
         .bf-product-card__media--carousel .bf-product-card__slides > img {
             opacity: 0;
             transform: scale(1.035);
-            transition: opacity .38s ease, transform .8s cubic-bezier(.2, .65, .2, 1)
+            transition: opacity .38s ease,transform .8s cubic-bezier(.2,.65,.2,1)
         }
 
             .bf-product-card__media--carousel .bf-product-card__slides > img.is-active {
@@ -5858,9 +5845,9 @@ button, input, select, textarea {
         width: 5px;
         height: 5px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, .55);
-        box-shadow: 0 1px 5px rgba(0, 0, 0, .35);
-        transition: width .2s, background .2s
+        background: rgba(255,255,255,.55);
+        box-shadow: 0 1px 5px rgba(0,0,0,.35);
+        transition: width .2s,background .2s
     }
 
         .bf-product-card__carousel-dots i.is-active {
@@ -5874,7 +5861,7 @@ button, input, select, textarea {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, .2));
+    background: linear-gradient(180deg,transparent 55%,rgba(0,0,0,.2));
     opacity: 0;
     transition: opacity .25s
 }
@@ -5989,7 +5976,7 @@ body {
     display: inline-block;
     width: 16px;
     height: 16px;
-    border: 1px solid rgba(0, 0, 0, .22);
+    border: 1px solid rgba(0,0,0,.22);
     border-radius: 50%;
     vertical-align: middle;
     background: #777
@@ -6054,7 +6041,7 @@ body {
 
 .bf-profile-data {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2,minmax(0,1fr));
     gap: 1px;
     margin: 26px 0 0;
     background: var(--bf-line);
@@ -6164,9 +6151,9 @@ body {
     flex-direction: column;
     justify-content: space-between;
     border-radius: 18px;
-    background: linear-gradient(135deg, #111 0%, #2d3028 68%, #587000 100%);
+    background: linear-gradient(135deg,#111 0%,#2d3028 68%,#587000 100%);
     color: #fff;
-    box-shadow: 0 18px 45px rgba(0, 0, 0, .18)
+    box-shadow: 0 18px 45px rgba(0,0,0,.18)
 }
 
     .bf-card-preview > span {
@@ -6194,17 +6181,21 @@ body {
 }
 
 .bf-payment-options {
-    grid-template-columns: repeat(4, minmax(0, 1fr))
+    grid-template-columns: repeat(4,minmax(0,1fr))
 }
 
 .bf-pix-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(320px, .65fr);
+    grid-template-columns: minmax(0,1fr) minmax(320px,.65fr);
     gap: 35px;
     align-items: start
 }
 
 .bf-pix-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     padding: 34px;
     text-align: center;
     border: 1px solid var(--bf-line);
@@ -6261,7 +6252,7 @@ body {
 
 .bf-category-create {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0,1fr) auto;
     gap: 12px;
     align-items: end;
     margin-bottom: 24px;
@@ -6277,7 +6268,7 @@ body {
 
 .bf-category-admin-row {
     display: grid;
-    grid-template-columns: minmax(180px, .8fr) minmax(300px, 1.3fr) auto;
+    grid-template-columns: minmax(180px,.8fr) minmax(300px,1.3fr) auto;
     gap: 18px;
     align-items: center;
     padding: 18px;
@@ -6301,7 +6292,7 @@ body {
 
 .bf-category-inline-form {
     display: grid;
-    grid-template-columns: minmax(160px, 1fr) auto auto;
+    grid-template-columns: minmax(160px,1fr) auto auto;
     gap: 10px;
     align-items: center
 }
@@ -6315,7 +6306,7 @@ body {
 
 .bf-order-admin-row {
     display: grid;
-    grid-template-columns: 150px minmax(220px, 1fr) minmax(280px, .8fr) auto;
+    grid-template-columns: 150px minmax(220px,1fr) minmax(280px,.8fr) auto;
     gap: 20px;
     align-items: center;
     padding: 19px;
@@ -6332,12 +6323,12 @@ body {
 }
 
 .bf-order-admin-row .bf-order-status-form {
-    grid-template-columns: minmax(150px, 1fr) auto
+    grid-template-columns: minmax(150px,1fr) auto
 }
 
 @media(max-width:900px) {
     .bf-payment-options {
-        grid-template-columns: repeat(2, 1fr)
+        grid-template-columns: repeat(2,1fr)
     }
 
     .bf-pix-layout {

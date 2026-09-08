@@ -10,7 +10,16 @@
     <dl class="bf-profile-data">
         <div><dt>E-mail</dt><dd>@Model.Email</dd></div><div><dt>Telefone</dt><dd>@Model.PhoneNumber</dd></div>
         <div><dt>Nascimento</dt><dd>@(Model.BirthDate?.ToString("dd/MM/yyyy") ?? "Não informado")</dd></div><div><dt>Gênero</dt><dd>@(Model.Gender ?? "Não informado")</dd></div>
-        <div><dt>CPF</dt><dd>@(Model.Cpf ?? "Não informado")</dd></div><div><dt>Endereço</dt><dd>@(string.IsNullOrWhiteSpace(Model.Street) ? "Não cadastrado" : $"{Model.Street}, {Model.Number} · {Model.City}/{Model.State}")</dd></div>
+        <div>
+            <dt>CPF</dt>
+
+             <dd data-cpf-display>
+                @(string.IsNullOrWhiteSpace(Model.Cpf)
+                ? "Não informado"
+                : Model.Cpf)
+            </dd>
+        </div>
+        <div><dt>Endereço</dt><dd>@(string.IsNullOrWhiteSpace(Model.Street) ? "Não cadastrado" : $"{Model.Street}, {Model.Number} · {Model.City}/{Model.State}")</dd></div>
         <div><dt>Cartão</dt><dd>@(string.IsNullOrWhiteSpace(Model.CardLast4) ? "Não cadastrado" : $"{Model.CardBrand} final {Model.CardLast4} · {Model.CardExpiry}")</dd></div>
     </dl>
 </div>
