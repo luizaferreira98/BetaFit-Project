@@ -1,11 +1,15 @@
 @model IEnumerable<BetaFit.Application.DTOs.OrderDto>
 @{
     ViewData["Title"] = "Meus Pedidos";
+    var selected = ViewData["SelectedStatus"] as string;
+    var statuses = new[]{"Pendente","Confirmado","EmPreparacao","Pronto","Enviado","Entregue","Cancelado"};
 }
 
 <section class="bf-section">
     <div class="bf-container">
         <h1>Meus Pedidos</h1>
+        @if(TempData["Error"] is string err){<div class="bf-alert bf-alert--error" role="alert">@err</div>}
+        <form method="get" class="bf-admin-filter"><select name="status"><option value="">Todos os pedidos</option>@foreach(var status in statuses){<option value="@status" selected="@(selected==status)">@status</option>}</select><button class="bf-btn bf-btn--dark" type="submit">Filtrar</button><a class="bf-btn bf-btn--ghost" asp-action="MyOrders">Limpar</a></form>
 
         @if (!Model.Any())
         {

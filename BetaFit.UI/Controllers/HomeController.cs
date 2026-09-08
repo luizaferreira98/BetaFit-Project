@@ -10,6 +10,7 @@
 using BetaFit.Application.Interfaces;
 using BetaFit.Application.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using BetaFit.UI.Services;
 
 namespace BetaFit.UI.Controllers
 {
@@ -20,11 +21,13 @@ namespace BetaFit.UI.Controllers
     {
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
+        private readonly HttpSiteSettingsService _siteSettings;
 
-        public HomeController(IProductService productService, ICategoryService categoryService)
+        public HomeController(IProductService productService, ICategoryService categoryService, HttpSiteSettingsService siteSettings)
         {
             _productService = productService;
             _categoryService = categoryService;
+            _siteSettings = siteSettings;
         }
 
         /// <summary>
@@ -45,6 +48,10 @@ namespace BetaFit.UI.Controllers
 
                 var categories = await _categoryService.GetAllAsync();
                 viewModel.Categories = categories.Where(c => c.IsActive).ToList();
+                var products = (await _productService.GetAllAsync()).Where(p => p.IsActive).ToList();
+                viewModel.RecentProducts = products.OrderByDescending(p => p.CreatedAt).Take(12).ToList();
+                viewModel.ProductsByCategory = products.GroupBy(p => p.CategoryName).Where(g => !string.IsNullOrWhiteSpace(g.Key)).ToDictionary(g => g.Key, g => (IReadOnlyList<BetaFit.Application.DTOs.ProductDto>)g.Take(12).ToList());
+                viewModel.SiteSettings = await _siteSettings.GetAsync();
             }
             catch (HttpRequestException)
             {

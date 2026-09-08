@@ -57,37 +57,17 @@ namespace BetaFit.Desktop.Forms
             // Configura permissões baseadas no perfil do usuário
             ConfigurarPermissoes();
 
-            //Abre a primeira tela que esse papel pode ver
-            if (btnDashBoard.Visible)
-                NavegarParaDashboard();
-            else
-                Navegar(new ProdutosUserControl(), btnProdutos);
+            //Abre o DashBoard como tela inicial
+            NavegarParaDashboard();
         }
 
         // Configura as permissões de visibilidade dos botões com base no perfil do usuário.
-        //
-        //   Admin      - vê tudo
-        //   Gerente    - vê tudo, menos gestão de funcionários (sem tela própria ainda)
-        //   Estoquista - só Produtos/Categorias (foco em catálogo/estoque);
-        //                não vê Dashboard nem Pedidos
         private void ConfigurarPermissoes()
         {
             var isAdmin = SessionManager.Instance.IsAdmin;
-            var isGerente = SessionManager.Instance.IsGerente;
-            var isEstoquista = SessionManager.Instance.IsEstoquista;
 
-            // Dashboard e Pedidos: visão da operação da loja como um todo —
-            // só Admin e Gerente. A API (DashboardController/OrdersController)
-            // já bloqueia isso pra Estoquista, então aqui é só pra não deixar
-            // o botão visível levando a uma tela que vai dar erro de acesso.
-            btnDashBoard.Visible = isAdmin || isGerente;
-            btnPedidos.Visible = isAdmin || isGerente;
-
-            // Categorias: qualquer funcionário que mexe no catálogo
-            // (antes só Admin via esse botão).
-            btnCategorias.Visible = isAdmin || isGerente || isEstoquista;
-
-            // Produtos e Meu Perfil não têm restrição — todo funcionário usa.
+            btnCategorias.Visible = isAdmin;
+            //btnUsuarios.Visible = isAdmin;
         }
 
         // Navega para o Dashboard
@@ -119,21 +99,19 @@ namespace BetaFit.Desktop.Forms
         // Atualiza o estado visual do botão ativo na sidebar.
         private void AtualizarBotaoAtivo(Guna2Button? botao)
         {
-            // Reseta todos os botões da sidebar para o estado "inativo"
-            foreach (var b in new[] { btnDashBoard, btnProdutos, btnCategorias, btnPedidos, btnPerfil })
-            {
-                b.FillColor = Color.Transparent;
-                b.ForeColor = Color.White;
-                b.BorderThickness = 0;
-            }
-
-            _botaoAtivo = botao;
             if (_botaoAtivo != null)
             {
-                _botaoAtivo.FillColor = BetaFitTheme.Admin.AtivoFundoNav;  // verde bem escuro
-                _botaoAtivo.ForeColor = BetaFitTheme.Admin.Lima;           // texto lima
-                _botaoAtivo.BorderThickness = 1;
-                _botaoAtivo.BorderColor = BetaFitTheme.Admin.Lima;
+                _botaoAtivo.FillColor = Color.Transparent;
+                _botaoAtivo.ForeColor = Color.White;
+
+                _botaoAtivo = botao;
+                if (_botaoAtivo != null)
+                {
+                    _botaoAtivo.FillColor = Color.FromArgb(0, 50, 110);
+                    _botaoAtivo.ForeColor = Color.White;
+                    _botaoAtivo.CustomBorderColor = BetaFitTheme.PretoPrimario;
+
+                }
             }
         }
 

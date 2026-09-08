@@ -42,7 +42,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
 
 // =====================================================================
-// CARRINHO (Session) — demonstrativo, sem checkout real
+// Infraestrutura de sessão MVC (não utilizada para persistência de carrinho/favoritos)
 // =====================================================================
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -68,8 +68,7 @@ var apiBaseUrl = AppConfig.ApiBaseUrl;
 // Cliente usado apenas para Login/Register (ainda não existe cookie a repassar)
 builder.Services.AddHttpClient("ApiClientAuth", client =>
 {
-    client.BaseAddress = new Uri(apiBaseUrl); 
-
+    client.BaseAddress = new Uri(apiBaseUrl);
 });
 
 // Cliente padrão para os demais serviços (repassa o cookie de autenticação)
@@ -92,6 +91,20 @@ builder.Services.AddScoped<IDashboardService>(sp =>
 
 builder.Services.AddScoped<IOrderService>(sp =>
     new HttpOrderService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+builder.Services.AddScoped<HttpReviewService>(sp =>
+    new HttpReviewService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+builder.Services.AddScoped<HttpCartService>(sp =>
+    new HttpCartService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+builder.Services.AddScoped<HttpFavoriteService>(sp =>
+    new HttpFavoriteService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+builder.Services.AddScoped<HttpPaymentService>(sp =>
+    new HttpPaymentService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+builder.Services.AddScoped<HttpProfileService>(sp =>
+    new HttpProfileService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+builder.Services.AddScoped<HttpSiteSettingsService>(sp =>
+    new HttpSiteSettingsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+builder.Services.AddScoped<HttpNotificationService>(sp =>
+    new HttpNotificationService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
 
 // =====================================================================
 // MVC

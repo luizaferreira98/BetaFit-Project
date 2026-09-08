@@ -1,0 +1,8 @@
+@model BetaFit.Application.DTOs.OrderDto
+@using System.Globalization
+@{ ViewData["Title"] = "Pagamento Pix"; var payload=$"BETAFIT-DEMO|PEDIDO={Model.Id}|VALOR={Model.Total.ToString("0.00",CultureInfo.InvariantCulture)}|CLIENTE={Model.UserId}"; var qrUrl=$"https://quickchart.io/qr?size=320&margin=2&text={Uri.EscapeDataString(payload)}"; }
+<section class="bf-page-hero bf-page-hero--compact"><div class="bf-container bf-page-hero__inner"><div><span class="bf-eyebrow bf-eyebrow--dark">Pagamento demonstrativo</span><h1>Pague com Pix</h1><p>Escaneie o QR Code de exemplo e confirme a transação para continuar.</p></div></div></section>
+<section class="bf-section"><div class="bf-container"><div class="bf-pix-layout">
+    <div class="bf-pix-card"><span class="bf-pix-card__step">Pedido #@Model.Id</span><h2>QR Code Pix</h2><img src="@qrUrl" alt="QR Code demonstrativo do pedido @Model.Id" width="320" height="320" referrerpolicy="no-referrer" /><p>Valor: <strong>@Model.Total.ToString("C")</strong></p><small>Este QR Code contém apenas dados fictícios e não realiza cobrança.</small></div>
+    <aside class="bf-pix-instructions"><span class="bf-eyebrow bf-eyebrow--dark">Como testar</span><ol><li>Abra o leitor de QR Code.</li><li>Confira o número e o valor do pedido.</li><li>Volte para esta tela e conclua a simulação.</li></ol><form asp-action="ConfirmPix" asp-route-id="@Model.Id" method="post">@Html.AntiForgeryToken()<button class="bf-btn bf-btn--dark bf-btn--wide" type="submit">Transação concluída com sucesso <span>✓</span></button></form><a class="bf-btn bf-btn--ghost bf-btn--wide" asp-controller="Orders" asp-action="Details" asp-route-id="@Model.Id">Ver pedido</a></aside>
+</div></div></section>

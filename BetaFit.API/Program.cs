@@ -21,6 +21,7 @@ using BetaFit.Domain.Interfaces;
 using BetaFit.Infraestructure.Context;
 using BetaFit.Infraestructure.Identity;
 using BetaFit.Infraestructure.Repositories;
+using BetaFit.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -85,6 +86,9 @@ builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddHttpClient<IEmailSender, ResendEmailSender>(client => client.BaseAddress = new Uri("https://api.resend.com/"));
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddHttpClient("MercadoPago", client => client.BaseAddress = new Uri("https://api.mercadopago.com"));
 
 // =====================================================================
 // 4. CONTROLLERS
@@ -114,11 +118,13 @@ builder.Services.AddSwaggerGen(options =>
 // =====================================================================
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("UiCors", policy =>
     {
-        policy.AllowAnyOrigin()
+        var origins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? Array.Empty<string>();
+        policy.WithOrigins(origins)
+              .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowCredentials();
     });
 });
 
@@ -142,7 +148,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors("AllowAll");
+app.UseRouting();
+app.UseCors("UiCors");
 
 //  IMPORTANTE: UseAuthentication ANTES de UseAuthorization
 app.UseAuthentication();
@@ -159,6 +166,11 @@ app.MapHub<BetaFit.API.Hubs.OrderHub>("/hubs/orders");
 //  CONCEITO: O seed é executado na inicialização da aplicação.
 // Ele cria categorias, produtos de exemplo e o usuário admin.
 // =====================================================================
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<BetaFitDbContext>();
+    await db.Database.MigrateAsync();
+}
 await SeedData.SeedAsync(app.Services);
 
 app.Run();

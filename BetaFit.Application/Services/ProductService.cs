@@ -149,6 +149,11 @@ namespace BetaFit.Application.Services
 
                 ?? throw new InvalidOperationException("Categoria informada não foi encontrada.");
 
+            if (string.IsNullOrWhiteSpace(dto.Name)) throw new InvalidOperationException("Informe o nome do produto.");
+            if (string.IsNullOrWhiteSpace(dto.Description)) throw new InvalidOperationException("Informe a descrição do produto.");
+            if (dto.Price < 0) throw new InvalidOperationException("O preço não pode ser negativo.");
+            if (dto.Stock < 0) throw new InvalidOperationException("O estoque não pode ser negativo.");
+
             // Mapeia o DTO de criação para a entidade Product
 
             var product = new Product
@@ -161,11 +166,15 @@ namespace BetaFit.Application.Services
 
                 Price = dto.Price,
 
+                Stock = Math.Max(0, dto.Stock),
+
                 ImageUrl = dto.ImageUrl ?? dto.ImageUrls.FirstOrDefault(),
 
                 ImageUrlsJson = JsonSerializer.Serialize((dto.ImageUrls.Any() ? dto.ImageUrls : (dto.ImageUrl is null ? new List<string>() : new List<string> { dto.ImageUrl })).Distinct()),
 
                 AvailableSizesJson = JsonSerializer.Serialize(dto.AvailableSizes.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()),
+                AvailableColorsJson = JsonSerializer.Serialize(dto.AvailableColors.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(20).ToList()),
+                ColorImageUrlsJson = JsonSerializer.Serialize(NormalizeColorImages(dto.AvailableColors, dto.ColorImageUrls)),
 
                 Gender = dto.Gender,
 
@@ -179,6 +188,9 @@ namespace BetaFit.Application.Services
 
             };
 
+            var createImages = (dto.ImageUrls.Any() ? dto.ImageUrls : (dto.ImageUrl is null ? new List<string>() : new List<string> { dto.ImageUrl }))
+                .Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            product.Images = createImages.Select((url, index) => new ProductImage { Url = url, SortOrder = index, IsPrimary = index == 0 }).ToList();
             await _productRepository.AddAsync(product);
 
             product.Category = category;
@@ -207,6 +219,11 @@ namespace BetaFit.Application.Services
 
                 ?? throw new InvalidOperationException("Categoria informada não foi encontrada.");
 
+            if (string.IsNullOrWhiteSpace(dto.Name)) throw new InvalidOperationException("Informe o nome do produto.");
+            if (string.IsNullOrWhiteSpace(dto.Description)) throw new InvalidOperationException("Informe a descrição do produto.");
+            if (dto.Price < 0) throw new InvalidOperationException("O preço não pode ser negativo.");
+            if (dto.Stock < 0) throw new InvalidOperationException("O estoque não pode ser negativo.");
+
             // Atualiza os campos do produto com os dados do DTO
 
             product.Name = dto.Name;
@@ -214,11 +231,16 @@ namespace BetaFit.Application.Services
             product.Description = dto.Description;
 
             product.Price = dto.Price;
+            product.Stock = Math.Max(0, dto.Stock);
 
-            product.ImageUrl = dto.ImageUrl ?? dto.ImageUrls.FirstOrDefault();
-            var updateImages = dto.ImageUrls.Any() ? dto.ImageUrls : (dto.ImageUrl is null ? new List<string>() : new List<string> { dto.ImageUrl });
-            product.ImageUrlsJson = JsonSerializer.Serialize(updateImages.Distinct().ToList());
+            var updateImages = (dto.ImageUrls.Any() ? dto.ImageUrls : (dto.ImageUrl is null ? new List<string>() : new List<string> { dto.ImageUrl }))
+                .Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            product.Images = updateImages.Select((url, index) => new ProductImage { Url = url, SortOrder = index, IsPrimary = index == 0 }).ToList();
+            product.ImageUrl = updateImages.FirstOrDefault();
+            product.ImageUrlsJson = JsonSerializer.Serialize(updateImages);
             product.AvailableSizesJson = JsonSerializer.Serialize(dto.AvailableSizes.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList());
+            product.AvailableColorsJson = JsonSerializer.Serialize(dto.AvailableColors.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(20).ToList());
+            product.ColorImageUrlsJson = JsonSerializer.Serialize(NormalizeColorImages(dto.AvailableColors, dto.ColorImageUrls));
 
             product.Gender = dto.Gender;
 
@@ -311,9 +333,15 @@ namespace BetaFit.Application.Services
 
                 Price = product.Price,
 
+                Stock = product.Stock,
+
                 ImageUrl = product.ImageUrl,
-                ImageUrls = DeserializeList(product.ImageUrlsJson, product.ImageUrl),
-                AvailableSizes = DeserializeList(product.AvailableSizesJson, "P", "M", "G", "GG"),
+                ImageUrls = (product.Images?.OrderBy(x => x.SortOrder).Select(x => x.Url).Where(x => !string.IsNullOrWhiteSpace(x)).ToList())?.Count > 0
+                    ? product.Images.OrderBy(x => x.SortOrder).Select(x => x.Url).ToList()
+                    : DeserializeList(product.ImageUrlsJson, product.ImageUrl ?? string.Empty),
+                AvailableSizes = DeserializeList(product.AvailableSizesJson),
+                AvailableColors = DeserializeList(product.AvailableColorsJson),
+                ColorImageUrls = DeserializeDictionary(product.ColorImageUrlsJson),
 
                 Gender = product.Gender,
 
@@ -329,6 +357,21 @@ namespace BetaFit.Application.Services
 
             };
 
+        }
+
+        private static Dictionary<string, string> NormalizeColorImages(IEnumerable<string>? colors, IDictionary<string, string>? images)
+        {
+            var allowed = new HashSet<string>((colors ?? Array.Empty<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()), StringComparer.OrdinalIgnoreCase);
+            return (images ?? new Dictionary<string, string>())
+                .Where(x => allowed.Contains(x.Key) && !string.IsNullOrWhiteSpace(x.Value))
+                .GroupBy(x => x.Key.Trim(), StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(x => x.Key, x => x.Last().Value.Trim(), StringComparer.OrdinalIgnoreCase);
+        }
+
+        private static Dictionary<string, string> DeserializeDictionary(string? json)
+        {
+            try { return JsonSerializer.Deserialize<Dictionary<string, string>>(json ?? "{}") ?? new(StringComparer.OrdinalIgnoreCase); }
+            catch (JsonException) { return new(StringComparer.OrdinalIgnoreCase); }
         }
 
     }

@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BetaFit.Infraestructure - DbContext
 // =============================================================================
 //  CONCEITO IMPORTANTE: DbContext (Entity Framework Core)
@@ -67,6 +67,13 @@ namespace BetaFit.Infraestructure.Context
         /// Tabela de Itens de Pedido no banco de dados.
         /// </summary>
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Favorite> Favorites { get; set; }
+        public DbSet<PendingProfileChange> PendingProfileChanges { get; set; }
+        public DbSet<ProductReview> ProductReviews { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<UserNotification> UserNotifications { get; set; }
+        public DbSet<SiteSettings> SiteSettings { get; set; }
 
 
         // =====================================================================
@@ -87,6 +94,13 @@ namespace BetaFit.Infraestructure.Context
 
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new OrderItemConfiguration());
+            modelBuilder.ApplyConfiguration(new PendingProfileChangeConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductReviewConfiguration());
+            modelBuilder.ApplyConfiguration(new CartItemConfiguration());
+            modelBuilder.ApplyConfiguration(new FavoriteConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductImageConfiguration());
+            modelBuilder.ApplyConfiguration(new UserNotificationConfiguration());
+            modelBuilder.ApplyConfiguration(new SiteSettingsConfiguration());
 
         }
     }

@@ -1,5 +1,6 @@
 ﻿using BetaFit.Application.DTOs;
 using BetaFit.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace BetaFit.UI.Models
 {
@@ -11,10 +12,12 @@ namespace BetaFit.UI.Models
     /// </summary>
     public class CatalogViewModel
     {
-        public string? SearchTerm { get; set; }
+        [StringLength(100)] public string? SearchTerm { get; set; }
         public int? CategoryId { get; set; }
         public Gender? Gender { get; set; }
         public string? SortBy { get; set; }
+        public string? Availability { get; set; }
+        public string ViewMode { get; set; } = "grid";
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 9;
 

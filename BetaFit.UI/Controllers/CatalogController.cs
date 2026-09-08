@@ -15,7 +15,6 @@ using BetaFit.Application.Interfaces;
 using BetaFit.Domain.Enums;
 using BetaFit.UI.Models;
 using BetaFit.UI.Services;
-using BetaFit.UI.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,11 +24,13 @@ namespace BetaFit.UI.Controllers
     {
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
+        private readonly HttpReviewService _reviewService;
+        private readonly HttpCartService _cartService;
+        private readonly HttpFavoriteService _favoriteService;
 
-        public CatalogController(IProductService productService, ICategoryService categoryService)
+        public CatalogController(IProductService productService, ICategoryService categoryService, HttpReviewService reviewService, HttpCartService cartService, HttpFavoriteService favoriteService)
         {
-            _productService = productService;
-            _categoryService = categoryService;
+            _productService = productService; _categoryService = categoryService; _reviewService = reviewService; _cartService = cartService; _favoriteService = favoriteService;
         }
 
         /// <summary>
@@ -37,8 +38,9 @@ namespace BetaFit.UI.Controllers
         /// URL: /Catalog
         /// </summary>
         [HttpGet("Catalog")]
-        public async Task<IActionResult> Index(string? searchTerm, int? categoryId, Gender? gender, string? sortBy, int page = 1)
+        public async Task<IActionResult> Index(string? searchTerm, int? categoryId, Gender? gender, string? availability, string? sortBy, string viewMode = "grid", int page = 1)
         {
+            if (!string.IsNullOrWhiteSpace(searchTerm) && searchTerm.Length > 100) searchTerm = searchTerm[..100];
             ViewData["Title"] = "Catálogo";
 
             var viewModel = new CatalogViewModel
@@ -47,6 +49,8 @@ namespace BetaFit.UI.Controllers
                 CategoryId = categoryId,
                 Gender = gender,
                 SortBy = sortBy,
+                Availability = availability,
+                ViewMode = viewMode == "list" ? "list" : "grid",
                 Page = page <= 0 ? 1 : page
             };
             var apiUnavailable = false;
@@ -73,6 +77,8 @@ namespace BetaFit.UI.Controllers
                 {
                     query = query.Where(p => p.Gender == gender.Value);
                 }
+
+                query = availability switch { "in" => query.Where(p => p.Stock > 0), "out" => query.Where(p => p.Stock <= 0), _ => query };
 
                 query = viewModel.SortBy switch
                 {
@@ -115,7 +121,6 @@ namespace BetaFit.UI.Controllers
                 product = await _productService.GetByIdAsync(id);
                 if (product is null || !product.IsActive)
                     return NotFound();
-
                 var sameCategory = await _productService.GetByCategoryAsync(product.CategoryId);
                 related = sameCategory.Where(p => p.Id != id && p.IsActive).Take(4).ToList();
             }
@@ -127,6 +132,12 @@ namespace BetaFit.UI.Controllers
             ViewData["Title"] = product?.Name ?? "Produto";
             ViewData["ApiUnavailable"] = apiUnavailable;
             ViewData["RelatedProducts"] = related;
+            ViewData["Reviews"] = product is null ? Array.Empty<ReviewDto>() : await _reviewService.GetByProductAsync(id);
+            ViewData["IsFavorite"] = false;
+            if (User.Identity?.IsAuthenticated == true && product is not null)
+            {
+                try { ViewData["IsFavorite"] = await _favoriteService.IsFavoriteAsync(id); } catch (HttpRequestException) { }
+            }
             return View(product);
         }
 
@@ -137,7 +148,7 @@ namespace BetaFit.UI.Controllers
         [HttpPost("Catalog/AddToCart")]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddToCart(int id, int quantity = 1, string? size = null)
+        public async Task<IActionResult> AddToCart(int id, int quantity = 1, string? size = null, string? color = null)
         {
             quantity = Math.Clamp(quantity, 1, 99);
 
@@ -147,7 +158,7 @@ namespace BetaFit.UI.Controllers
                 if (product is null || !product.IsActive)
                     return NotFound();
 
-                var requiresSize = ProductCatalogRules.RequiresSize(product.CategoryName);
+                var requiresSize = product.AvailableSizes.Any();
                 if (requiresSize && string.IsNullOrWhiteSpace(size))
                 {
                     TempData["Error"] = "Selecione um tamanho antes de adicionar este produto.";
@@ -163,7 +174,20 @@ namespace BetaFit.UI.Controllers
                     return RedirectToAction(nameof(Details), new { id });
                 }
 
-                CartService.Add(HttpContext, product, quantity, size);
+                if (product.AvailableColors.Any() && string.IsNullOrWhiteSpace(color))
+                {
+                    TempData["Error"] = "Selecione uma cor antes de adicionar este produto.";
+                    return RedirectToAction(nameof(Details), new { id });
+                }
+                if (product.AvailableColors.Any() && !product.AvailableColors.Contains(color!, StringComparer.OrdinalIgnoreCase))
+                {
+                    TempData["Error"] = "A cor selecionada não está disponível para este produto.";
+                    return RedirectToAction(nameof(Details), new { id });
+                }
+                if (!product.AvailableColors.Any()) color = null;
+
+                var added = await _cartService.AddAsync(product.Id, quantity, size, color);
+                if (!added.Ok) { TempData["Error"] = added.Message; return RedirectToAction(nameof(Details), new { id }); }
                 return RedirectToAction("Index", "Cart");
             }
             catch (HttpRequestException)

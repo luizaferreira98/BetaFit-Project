@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BetaFit.Application.DTOs;
 using BetaFit.Application.Interfaces;
+using BetaFit.API.Services;
 
 namespace BetaFit.API.Controllers
 {
@@ -30,11 +31,13 @@ namespace BetaFit.API.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
+        private readonly INotificationService _notifications;
 
         //  CONCEITO: O serviço é injetado automaticamente pelo .NET (DI)
-        public ProductsController(IProductService productService)
+        public ProductsController(IProductService productService, INotificationService notifications)
         {
             _productService = productService;
+            _notifications = notifications;
         }
 
         /// <summary>
@@ -91,13 +94,18 @@ namespace BetaFit.API.Controllers
         /// Requer autenticação (somente admin pode criar produtos).
         /// </summary>
         [HttpPost]
-        [Authorize(Roles = "Admin,Gerente,Estoquista")]
+        [Authorize(Roles = "Admin,Funcionario")]
         public async Task<ActionResult<ProductDto>> Create([FromBody] CreateProductDto dto)
         {
-            var product = await _productService.CreateAsync(dto);
+            try
+            {
+                var product = await _productService.CreateAsync(dto);
+                await _notifications.ProductCreatedAsync(product, HttpContext.RequestAborted);
 
-            // Retorna 201 Created com a URL do recurso criado
-            return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
+                // Retorna 201 Created com a URL do recurso criado
+                return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
+            }
+            catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
         }
 
         /// <summary>
@@ -105,15 +113,19 @@ namespace BetaFit.API.Controllers
         /// PUT /api/products/{id}
         /// </summary>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Gerente,Estoquista")]
+        [Authorize(Roles = "Admin,Funcionario")]
         public async Task<ActionResult<ProductDto>> Update(int id, [FromBody] UpdateProductDto dto)
         {
-            var product = await _productService.UpdateAsync(id, dto);
+            try
+            {
+                var product = await _productService.UpdateAsync(id, dto);
 
-            if (product == null)
+                if (product == null)
                 return NotFound(new { message = "Produto não encontrado." });
 
-            return Ok(product);
+                return Ok(product);
+            }
+            catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
         }
 
         /// <summary>
@@ -121,7 +133,7 @@ namespace BetaFit.API.Controllers
         /// DELETE /api/products/{id}
         /// </summary>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,Gerente,Estoquista")]
+        [Authorize(Roles = "Admin,Funcionario")]
         public async Task<ActionResult> Delete(int id)
         {
             var deleted = await _productService.DeleteAsync(id);

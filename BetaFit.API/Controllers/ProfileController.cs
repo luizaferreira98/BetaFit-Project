@@ -1,71 +1,136 @@
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+using BetaFit.API.Services;
 using BetaFit.Application.DTOs;
+using BetaFit.Domain.Entities;
+using BetaFit.Infraestructure.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-namespace BetaFit.API.Controllers
+namespace BetaFit.API.Controllers;
+
+[ApiController, Authorize, Route("api/profile")]
+public class ProfileController : ControllerBase
 {
-    [ApiController, Authorize, Route("api/profile")]
-    public class ProfileController : ControllerBase
+    private readonly UserManager<IdentityUser> _users;
+    private readonly BetaFitDbContext _db;
+    private readonly IEmailSender _email;
+    private readonly IConfiguration _config;
+    public ProfileController(UserManager<IdentityUser> users, BetaFitDbContext db, IEmailSender email, IConfiguration config)
+    { _users=users; _db=db; _email=email; _config=config; }
+
+    [HttpGet]
+    public async Task<ActionResult<UserDto>> Get()
+    { var user=await _users.GetUserAsync(User); return user is null ? Unauthorized() : Ok(await Map(user)); }
+
+    [HttpPut]
+    public async Task<ActionResult<ProfileChangeResponseDto>> Update(UpdateProfileDto dto)
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        public ProfileController(UserManager<IdentityUser> userManager) => _userManager = userManager;
-
-        [HttpGet]
-        public async Task<ActionResult<UserDto>> Get()
+        if (!ModelState.IsValid) return ValidationProblem(ModelState);
+        if (dto.BirthDate.Date > DateTime.Today.AddYears(-18) || dto.BirthDate.Date < DateTime.Today.AddYears(-120))
+            return BadRequest(new { message = "Informe uma data de nascimento válida e tenha pelo menos 18 anos." });
+        var user=await _users.GetUserAsync(User); if(user is null)return Unauthorized();
+        var emailChanged=!string.Equals(user.Email,dto.Email.Trim(),StringComparison.OrdinalIgnoreCase);
+        if (emailChanged && User.IsInRole("Usuario") && IsInternalEmail(dto.Email)) return BadRequest(new { message="O domínio @betafit é reservado para contas internas." });
+        var passwordChanged=!string.IsNullOrWhiteSpace(dto.NewPassword);
+        if (passwordChanged && dto.NewPassword != dto.ConfirmNewPassword) return BadRequest(new { message="A nova senha e a confirmação não coincidem." });
+        if ((emailChanged || passwordChanged) && string.IsNullOrWhiteSpace(dto.CurrentPassword)) return BadRequest(new { message="Informe a senha atual para confirmar a alteração." });
+        if (emailChanged || passwordChanged)
         {
-            var user = await _userManager.GetUserAsync(User);
-            return user is null ? Unauthorized() : Ok(await Map(user));
+            var check=await _users.CheckPasswordAsync(user,dto.CurrentPassword!);
+            if(!check) return BadRequest(new { message="A senha atual está incorreta." });
+            var existing=await _db.PendingProfileChanges.Where(x=>x.UserId==user.Id).ToListAsync(); _db.PendingProfileChanges.RemoveRange(existing);
+            var raw=Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)).Replace("+","-").Replace("/","_").TrimEnd('=');
+            var hash=Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(raw)));
+            var pending=new PendingProfileChange{UserId=user.Id,TokenHash=hash,FullName=dto.FullName.Trim(),Email=dto.Email.Trim(),PhoneNumber=dto.PhoneNumber.Trim(), Cpf=dto.Cpf, Cep=dto.Cep, Street=dto.Street, Number=dto.Number, Complement=dto.Complement, Neighborhood=dto.Neighborhood, City=dto.City, State=dto.State, BirthDate=dto.BirthDate,NewPasswordHash=passwordChanged?_users.PasswordHasher.HashPassword(user,dto.NewPassword!):null,ExpiresAt=DateTime.UtcNow.AddMinutes(30)};
+            _db.PendingProfileChanges.Add(pending); await _db.SaveChangesAsync();
+            var baseUrl=_config["App:PublicBaseUrl"]?.TrimEnd('/') ?? "https://localhost:7000";
+            var link=$"{baseUrl}/Account/ConfirmProfileChange?token={Uri.EscapeDataString(raw)}";
+            var target=emailChanged?dto.Email.Trim():user.Email!;
+            var html=$"<h2>Beta Fit</h2><p>Foi solicitada uma alteração sensível na sua conta.</p><p><a href=\"{link}\">Confirmar alterações</a></p><p>Se você não solicitou isso, ignore esta mensagem.</p>";
+            try { await _email.SendAsync(target,"Confirme uma alteração de segurança — Beta Fit",html); }
+            catch(InvalidOperationException ex){_db.PendingProfileChanges.Remove(pending);await _db.SaveChangesAsync();return StatusCode(503,new{message=ex.Message});}
+            return Ok(new ProfileChangeResponseDto{RequiresVerification=true,Message="Enviamos um link de confirmação por e-mail. As alterações só serão aplicadas após a confirmação."});
         }
-
-        [HttpPut]
-        public async Task<ActionResult<UserDto>> Update(UpdateProfileDto dto)
-        {
-            if (!ModelState.IsValid) return ValidationProblem(ModelState);
-            if (dto.BirthDate.Date > DateTime.Today.AddYears(-18)) return BadRequest(new { message = "É necessário ter 18 anos ou mais." });
-            var user = await _userManager.GetUserAsync(User);
-            if (user is null) return Unauthorized();
-
-            if (!string.Equals(user.Email, dto.Email.Trim(), StringComparison.OrdinalIgnoreCase))
-            {
-                var emailResult = await _userManager.SetEmailAsync(user, dto.Email.Trim());
-                if (!emailResult.Succeeded) return BadRequest(new { message = string.Join(" ", emailResult.Errors.Select(e => e.Description)) });
-                user.UserName = dto.Email.Trim();
-                var nameResult = await _userManager.UpdateAsync(user);
-                if (!nameResult.Succeeded) return BadRequest(new { message = string.Join(" ", nameResult.Errors.Select(e => e.Description)) });
-            }
-
-            user.PhoneNumber = dto.PhoneNumber.Trim();
-            var phoneResult = await _userManager.UpdateAsync(user);
-            if (!phoneResult.Succeeded) return BadRequest(new { message = string.Join(" ", phoneResult.Errors.Select(e => e.Description)) });
-
-            if (!string.IsNullOrWhiteSpace(dto.NewPassword))
-            {
-                if (dto.NewPassword != dto.ConfirmNewPassword) return BadRequest(new { message = "A nova senha e a confirmação não coincidem." });
-                if (string.IsNullOrWhiteSpace(dto.CurrentPassword)) return BadRequest(new { message = "Informe a senha atual para trocar a senha." });
-                var passwordResult = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
-                if (!passwordResult.Succeeded) return BadRequest(new { message = string.Join(" ", passwordResult.Errors.Select(e => e.Description)) });
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            var oldName = claims.FirstOrDefault(c => c.Type == "FullName");
-            var oldBirth = claims.FirstOrDefault(c => c.Type == "BirthDate");
-            var remove = new List<Claim>();
-            if (oldName != null) remove.Add(oldName);
-            if (oldBirth != null) remove.Add(oldBirth);
-            if (remove.Count > 0) await _userManager.RemoveClaimsAsync(user, remove);
-            await _userManager.AddClaimsAsync(user, new[] { new Claim("FullName", dto.FullName.Trim()), new Claim("BirthDate", dto.BirthDate.ToString("yyyy-MM-dd")) });
-
-            return Ok(await Map(user));
-        }
-
-        private async Task<UserDto> Map(IdentityUser user)
-        {
-            var claims = await _userManager.GetClaimsAsync(user);
-            DateTime? birth = DateTime.TryParse(claims.FirstOrDefault(c => c.Type == "BirthDate")?.Value, out var b) ? b : null;
-            return new UserDto
-            { Id = user.Id, Email = user.Email ?? string.Empty, FullName = claims.FirstOrDefault(c => c.Type == "FullName")?.Value ?? user.UserName ?? string.Empty, PhoneNumber = user.PhoneNumber ?? string.Empty, BirthDate = birth, Roles = await _userManager.GetRolesAsync(user) };
-        }
+        await ApplyAsync(user,dto,null); return Ok(new ProfileChangeResponseDto{User=await Map(user),Message="Perfil atualizado com sucesso."});
     }
+
+    [HttpPut("checkout-address")]
+    public async Task<IActionResult> SaveCheckoutAddress(CheckoutAddressDto dto)
+    {
+        if (!ModelState.IsValid) return ValidationProblem(ModelState);
+        var user = await _users.GetUserAsync(User);
+        if (user is null) return Unauthorized();
+
+        var claims = await _users.GetClaimsAsync(user);
+        var types = new[] { "Cpf", "Address.Cep", "Address.Street", "Address.Number", "Address.Complement", "Address.Neighborhood", "Address.City", "Address.State" };
+        var old = claims.Where(c => types.Contains(c.Type)).ToList();
+        if (old.Count > 0) await _users.RemoveClaimsAsync(user, old);
+        await _users.AddClaimsAsync(user, new[]
+        {
+            new Claim("Cpf", new string(dto.Cpf.Where(char.IsDigit).ToArray())),
+            new Claim("Address.Cep", dto.Cep.Trim()), new Claim("Address.Street", dto.Street.Trim()),
+            new Claim("Address.Number", dto.Number.Trim()), new Claim("Address.Neighborhood", dto.Neighborhood.Trim()),
+            new Claim("Address.City", dto.City.Trim()), new Claim("Address.State", dto.State.Trim().ToUpperInvariant())
+        });
+        if (!string.IsNullOrWhiteSpace(dto.Complement))
+            await _users.AddClaimAsync(user, new Claim("Address.Complement", dto.Complement.Trim()));
+        return NoContent();
+    }
+
+    [HttpPut("card")]
+    public async Task<IActionResult> SaveCard(PaymentCardDto dto)
+    {
+        if (!ModelState.IsValid) return ValidationProblem(ModelState);
+        var user = await _users.GetUserAsync(User); if (user is null) return Unauthorized();
+        var number = new string(dto.CardNumber.Where(char.IsDigit).ToArray());
+        if (!PassesLuhn(number)) return BadRequest(new { message = "O número do cartão demonstrativo não passou na validação." });
+        if (!IsFutureExpiry(dto.Expiry)) return BadRequest(new { message = "A validade do cartão deve estar no futuro." });
+        var claims = await _users.GetClaimsAsync(user);
+        var types = new[] { "Card.Holder", "Card.Brand", "Card.Last4", "Card.Expiry" };
+        var old = claims.Where(c => types.Contains(c.Type)).ToList(); if (old.Count > 0) await _users.RemoveClaimsAsync(user, old);
+        await _users.AddClaimsAsync(user, new[]
+        {
+            new Claim("Card.Holder", dto.CardHolderName.Trim()), new Claim("Card.Brand", DetectBrand(number)),
+            new Claim("Card.Last4", number[^4..]), new Claim("Card.Expiry", dto.Expiry)
+        });
+        return NoContent();
+    }
+
+    [HttpPost("confirm-change")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ProfileChangeResponseDto>> Confirm([FromBody] ConfirmProfileChangeDto dto)
+    {
+        if(!ModelState.IsValid)return ValidationProblem(ModelState);
+        var hash=Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(dto.Token)));
+        var pending=await _db.PendingProfileChanges.FirstOrDefaultAsync(x=>x.TokenHash==hash);
+        if(pending is null || pending.ExpiresAt<DateTime.UtcNow)return BadRequest(new{message="O link é inválido ou expirou."});
+        var user=await _users.FindByIdAsync(pending.UserId); if(user is null)return BadRequest(new{message="Usuário não encontrado."});
+        if(!string.Equals(user.Email,pending.Email,StringComparison.OrdinalIgnoreCase)){
+            var email=await _users.FindByEmailAsync(pending.Email); if(email is not null && email.Id!=user.Id)return BadRequest(new{message="Este e-mail já está em uso."});
+            user.Email=pending.Email; user.UserName=pending.Email; user.NormalizedEmail=_users.NormalizeEmail(pending.Email); user.NormalizedUserName=_users.NormalizeName(pending.Email);
+        }
+        user.PhoneNumber=pending.PhoneNumber; user.PasswordHash=pending.NewPasswordHash ?? user.PasswordHash;
+        var update=await _users.UpdateAsync(user); if(!update.Succeeded)return BadRequest(new{message=string.Join(" ",update.Errors.Select(e=>e.Description))});
+        var claims=await _users.GetClaimsAsync(user); var types=new[]{"FullName","BirthDate","Cpf","Address.Cep","Address.Street","Address.Number","Address.Complement","Address.Neighborhood","Address.City","Address.State"}; var old=claims.Where(c=>types.Contains(c.Type)).ToList(); if(old.Count>0)await _users.RemoveClaimsAsync(user,old); var newClaims=new List<Claim>{new("FullName",pending.FullName),new("BirthDate",pending.BirthDate.ToString("yyyy-MM-dd"))}; if(!string.IsNullOrWhiteSpace(pending.Cpf))newClaims.Add(new Claim("Cpf",pending.Cpf)); if(!string.IsNullOrWhiteSpace(pending.Cep))newClaims.Add(new Claim("Address.Cep",pending.Cep)); if(!string.IsNullOrWhiteSpace(pending.Street))newClaims.Add(new Claim("Address.Street",pending.Street)); if(!string.IsNullOrWhiteSpace(pending.Number))newClaims.Add(new Claim("Address.Number",pending.Number)); if(!string.IsNullOrWhiteSpace(pending.Complement))newClaims.Add(new Claim("Address.Complement",pending.Complement)); if(!string.IsNullOrWhiteSpace(pending.Neighborhood))newClaims.Add(new Claim("Address.Neighborhood",pending.Neighborhood)); if(!string.IsNullOrWhiteSpace(pending.City))newClaims.Add(new Claim("Address.City",pending.City)); if(!string.IsNullOrWhiteSpace(pending.State))newClaims.Add(new Claim("Address.State",pending.State)); await _users.AddClaimsAsync(user,newClaims);
+        await _db.PendingProfileChanges.Where(x=>x.UserId==user.Id).ExecuteDeleteAsync();
+        await _users.UpdateSecurityStampAsync(user);
+        return Ok(new ProfileChangeResponseDto{User=await Map(user),Message="Alterações confirmadas com sucesso."});
+    }
+
+    private async Task ApplyAsync(IdentityUser user,UpdateProfileDto dto,string? passwordHash)
+    {
+        user.PhoneNumber=dto.PhoneNumber.Trim(); if(passwordHash!=null)user.PasswordHash=passwordHash; var result=await _users.UpdateAsync(user); if(!result.Succeeded)throw new InvalidOperationException(string.Join(" ",result.Errors.Select(e=>e.Description)));
+        var claims=await _users.GetClaimsAsync(user); var types=new[]{"FullName","BirthDate","Cpf","Address.Cep","Address.Street","Address.Number","Address.Complement","Address.Neighborhood","Address.City","Address.State"}; var old=claims.Where(c=>types.Contains(c.Type)).ToList(); if(old.Count>0)await _users.RemoveClaimsAsync(user,old);
+        var newClaims=new List<Claim>{new("FullName",dto.FullName.Trim()),new("BirthDate",dto.BirthDate.ToString("yyyy-MM-dd"))}; if(!string.IsNullOrWhiteSpace(dto.Cpf))newClaims.Add(new Claim("Cpf",new string(dto.Cpf.Where(char.IsDigit).ToArray()))); if(!string.IsNullOrWhiteSpace(dto.Cep))newClaims.Add(new Claim("Address.Cep",dto.Cep)); if(!string.IsNullOrWhiteSpace(dto.Street))newClaims.Add(new Claim("Address.Street",dto.Street.Trim())); if(!string.IsNullOrWhiteSpace(dto.Number))newClaims.Add(new Claim("Address.Number",dto.Number.Trim())); if(!string.IsNullOrWhiteSpace(dto.Complement))newClaims.Add(new Claim("Address.Complement",dto.Complement.Trim())); if(!string.IsNullOrWhiteSpace(dto.Neighborhood))newClaims.Add(new Claim("Address.Neighborhood",dto.Neighborhood.Trim())); if(!string.IsNullOrWhiteSpace(dto.City))newClaims.Add(new Claim("Address.City",dto.City.Trim())); if(!string.IsNullOrWhiteSpace(dto.State))newClaims.Add(new Claim("Address.State",dto.State.Trim().ToUpperInvariant())); await _users.AddClaimsAsync(user,newClaims);
+    }
+    private async Task<UserDto> Map(IdentityUser user){var claims=await _users.GetClaimsAsync(user);DateTime? birth=DateTime.TryParse(claims.FirstOrDefault(c=>c.Type=="BirthDate")?.Value,out var b)?b:null;return new UserDto{Id=user.Id,Email=user.Email??string.Empty,FullName=claims.FirstOrDefault(c=>c.Type=="FullName")?.Value??user.UserName?.Split('@')[0]??string.Empty,PhoneNumber=user.PhoneNumber??string.Empty,BirthDate=birth,Gender=claims.FirstOrDefault(c=>c.Type=="Gender")?.Value,Cpf=claims.FirstOrDefault(c=>c.Type=="Cpf")?.Value,Cep=claims.FirstOrDefault(c=>c.Type=="Address.Cep")?.Value,Street=claims.FirstOrDefault(c=>c.Type=="Address.Street")?.Value,Number=claims.FirstOrDefault(c=>c.Type=="Address.Number")?.Value,Complement=claims.FirstOrDefault(c=>c.Type=="Address.Complement")?.Value,Neighborhood=claims.FirstOrDefault(c=>c.Type=="Address.Neighborhood")?.Value,City=claims.FirstOrDefault(c=>c.Type=="Address.City")?.Value,State=claims.FirstOrDefault(c=>c.Type=="Address.State")?.Value,CardHolderName=claims.FirstOrDefault(c=>c.Type=="Card.Holder")?.Value,CardBrand=claims.FirstOrDefault(c=>c.Type=="Card.Brand")?.Value,CardLast4=claims.FirstOrDefault(c=>c.Type=="Card.Last4")?.Value,CardExpiry=claims.FirstOrDefault(c=>c.Type=="Card.Expiry")?.Value,Roles=await _users.GetRolesAsync(user)};}
+
+    private static bool PassesLuhn(string number){var sum=0;var alternate=false;for(var i=number.Length-1;i>=0;i--){var n=number[i]-'0';if(alternate){n*=2;if(n>9)n-=9;}sum+=n;alternate=!alternate;}return number.Length is >=13 and <=19 && sum%10==0;}
+    private static bool IsFutureExpiry(string expiry){var parts=expiry.Split('/');if(parts.Length!=2||!int.TryParse(parts[0],out var month)||!int.TryParse(parts[1],out var year)||month is <1 or >12)return false;var lastDay=new DateTime(2000+year,month,DateTime.DaysInMonth(2000+year,month));return lastDay>=DateTime.Today;}
+    private static string DetectBrand(string number)=>number.StartsWith("4")?"Visa":number.StartsWith("5")?"Mastercard":number.StartsWith("34")||number.StartsWith("37")?"American Express":number.StartsWith("6")?"Elo/Discover":"Cartão";
+    private static bool IsInternalEmail(string? email){var domain=email?.Trim().Split('@').LastOrDefault();return !string.IsNullOrWhiteSpace(domain)&&(domain.Equals("betafit",StringComparison.OrdinalIgnoreCase)||domain.EndsWith(".betafit",StringComparison.OrdinalIgnoreCase)||domain.Equals("betafit.com",StringComparison.OrdinalIgnoreCase));}
 }

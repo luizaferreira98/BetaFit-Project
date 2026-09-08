@@ -4,6 +4,7 @@ using BetaFit.Domain.Entities;
 using BetaFit.Domain.Enums;
 using BetaFit.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using System.Text.Json;
 
 namespace BetaFit.Application.Services
 {
@@ -41,8 +42,10 @@ namespace BetaFit.Application.Services
                         ProductName = item.ProductName,
                         UnitPrice = item.UnitPrice,
                         Quantity = item.Quantity,
+                        Size = item.Size,
+                        Color = item.Color,
                         Subtotal = item.UnitPrice * item.Quantity,
-                        ImageUrl = product?.ImageUrl
+                        ImageUrl = product?.Images?.OrderBy(i => i.SortOrder).Select(i => i.Url).FirstOrDefault() ?? product?.ImageUrl
                     });
                 }
 
@@ -50,10 +53,14 @@ namespace BetaFit.Application.Services
                 {
                     Id = order.Id,
                     UserId = order.UserId,
+                    CustomerCpf = order.CustomerCpf, ShippingCep = order.ShippingCep, ShippingStreet = order.ShippingStreet, ShippingNumber = order.ShippingNumber, ShippingComplement = order.ShippingComplement, ShippingNeighborhood = order.ShippingNeighborhood, ShippingCity = order.ShippingCity, ShippingState = order.ShippingState,
                     UserName = await ObterNomeUsuarioAsync(order.UserId),
                     CreatedAt = order.CreatedAt,
                     Total = order.Total,
                     Status = order.Status.ToString(),
+                    PaymentId = order.PaymentId,
+                    PaymentMethod = order.PaymentMethod,
+                    PaymentStatus = order.PaymentStatus,
                     Items = itemDtos
                 });
             }
@@ -79,8 +86,10 @@ namespace BetaFit.Application.Services
                         ProductName = item.ProductName,
                         UnitPrice = item.UnitPrice,
                         Quantity = item.Quantity,
+                        Size = item.Size,
+                        Color = item.Color,
                         Subtotal = item.UnitPrice * item.Quantity,
-                        ImageUrl = product?.ImageUrl
+                        ImageUrl = product?.Images?.OrderBy(i => i.SortOrder).Select(i => i.Url).FirstOrDefault() ?? product?.ImageUrl
                     });
                 }
 
@@ -88,10 +97,14 @@ namespace BetaFit.Application.Services
                 {
                     Id = order.Id,
                     UserId = order.UserId,
+                    CustomerCpf = order.CustomerCpf, ShippingCep = order.ShippingCep, ShippingStreet = order.ShippingStreet, ShippingNumber = order.ShippingNumber, ShippingComplement = order.ShippingComplement, ShippingNeighborhood = order.ShippingNeighborhood, ShippingCity = order.ShippingCity, ShippingState = order.ShippingState,
                     UserName = nomeUsuario,
                     CreatedAt = order.CreatedAt,
                     Total = order.Total,
                     Status = order.Status.ToString(),
+                    PaymentId = order.PaymentId,
+                    PaymentMethod = order.PaymentMethod,
+                    PaymentStatus = order.PaymentStatus,
                     Items = itemDtos
                 });
             }
@@ -116,8 +129,10 @@ namespace BetaFit.Application.Services
                     ProductName = item.ProductName,
                     UnitPrice = item.UnitPrice,
                     Quantity = item.Quantity,
+                    Size = item.Size,
+                    Color = item.Color,
                     Subtotal = item.UnitPrice * item.Quantity,
-                    ImageUrl = product?.ImageUrl
+                    ImageUrl = product?.Images?.OrderBy(i => i.SortOrder).Select(i => i.Url).FirstOrDefault() ?? product?.ImageUrl
                 });
             }
 
@@ -125,10 +140,14 @@ namespace BetaFit.Application.Services
             {
                 Id = order.Id,
                 UserId = order.UserId,
+                CustomerCpf = order.CustomerCpf, ShippingCep = order.ShippingCep, ShippingStreet = order.ShippingStreet, ShippingNumber = order.ShippingNumber, ShippingComplement = order.ShippingComplement, ShippingNeighborhood = order.ShippingNeighborhood, ShippingCity = order.ShippingCity, ShippingState = order.ShippingState,
                 UserName = await ObterNomeUsuarioAsync(order.UserId),
                 CreatedAt = order.CreatedAt,
                 Total = order.Total,
                 Status = order.Status.ToString(),
+                PaymentId = order.PaymentId,
+                PaymentMethod = order.PaymentMethod,
+                PaymentStatus = order.PaymentStatus,
                 Items = itemDtos
             };
         }
@@ -142,10 +161,21 @@ namespace BetaFit.Application.Services
                 UserId = userId,
                 CreatedAt = DateTime.Now,
                 Status = OrderStatus.Pendente,
+                PaymentMethod = NormalizePaymentMethod(dto.PaymentMethod),
+                PaymentStatus = "Aguardando",
+                PaymentId = string.IsNullOrWhiteSpace(dto.CardLast4) ? null : $"Cartão final {dto.CardLast4}",
+                CustomerCpf = dto.CustomerCpf, ShippingCep = dto.ShippingCep, ShippingStreet = dto.ShippingStreet, ShippingNumber = dto.ShippingNumber, ShippingComplement = dto.ShippingComplement, ShippingNeighborhood = dto.ShippingNeighborhood, ShippingCity = dto.ShippingCity, ShippingState = dto.ShippingState,
                 Items = new List<OrderItem>()
             };
 
             decimal total = 0;
+
+            if (dto.Items is null || dto.Items.Count == 0) throw new InvalidOperationException("O pedido precisa ter pelo menos um item.");
+            var requestedByProduct = dto.Items.GroupBy(x => x.ProductId).ToDictionary(g => g.Key, g => g.Sum(x => Math.Clamp(x.Quantity, 1, 99)));
+            // O checkout é demonstrativo: exigir 11 dígitos evita dados vazios,
+            // sem obrigar o usuário a informar um CPF real para uma apresentação.
+            if (string.IsNullOrWhiteSpace(dto.CustomerCpf) || !IsValidDemoCpf(dto.CustomerCpf)) throw new InvalidOperationException("Informe um CPF de teste com 11 dígitos.");
+            if (string.IsNullOrWhiteSpace(dto.ShippingCep) || string.IsNullOrWhiteSpace(dto.ShippingStreet) || string.IsNullOrWhiteSpace(dto.ShippingNumber) || string.IsNullOrWhiteSpace(dto.ShippingNeighborhood) || string.IsNullOrWhiteSpace(dto.ShippingCity) || string.IsNullOrWhiteSpace(dto.ShippingState)) throw new InvalidOperationException("Informe o endereço completo.");
 
             foreach (var itemDto in dto.Items)
             {
@@ -154,23 +184,42 @@ namespace BetaFit.Application.Services
 
                 if (product == null)
                 {
-                    throw new Exception(
-                        $"Produto {itemDto.ProductId} não encontrado.");
+                    throw new InvalidOperationException($"Produto {itemDto.ProductId} não encontrado.");
                 }
+                if (product.Stock < requestedByProduct[product.Id])
+                    throw new InvalidOperationException($"Estoque insuficiente para o produto {product.Name}. Disponível: {product.Stock}.");
 
                 var orderItem = new OrderItem
                 {
                     ProductId = product.Id,
-                    ProductName = string.IsNullOrWhiteSpace(itemDto.Size) ? product.Name : $"{product.Name} · Tamanho {itemDto.Size}",
+                    ProductName = product.Name,
                     UnitPrice = product.Price,
-                    Quantity = itemDto.Quantity
+                    Quantity = Math.Clamp(itemDto.Quantity, 1, 99),
+                    Size = string.IsNullOrWhiteSpace(itemDto.Size) ? null : itemDto.Size.Trim()
+                    ,Color = string.IsNullOrWhiteSpace(itemDto.Color) ? null : itemDto.Color.Trim()
                 };
 
-                order.Items.Add(orderItem);
+                var availableSizes = JsonSerializer.Deserialize<List<string>>(product.AvailableSizesJson) ?? new List<string>();
+                if (availableSizes.Any() && string.IsNullOrWhiteSpace(orderItem.Size))
+                    throw new InvalidOperationException($"Selecione um tamanho para o produto {product.Name}.");
+                if (availableSizes.Any() && !availableSizes.Contains(orderItem.Size!, StringComparer.OrdinalIgnoreCase))
+                    throw new InvalidOperationException($"O tamanho {orderItem.Size} não está disponível para o produto {product.Name}.");
+                var availableColors = JsonSerializer.Deserialize<List<string>>(product.AvailableColorsJson) ?? new List<string>();
+                if (availableColors.Any() && string.IsNullOrWhiteSpace(orderItem.Color))
+                    throw new InvalidOperationException($"Selecione uma cor para o produto {product.Name}.");
+                if (availableColors.Any() && !availableColors.Contains(orderItem.Color!, StringComparer.OrdinalIgnoreCase))
+                    throw new InvalidOperationException($"A cor {orderItem.Color} não está disponível para o produto {product.Name}.");
 
-                total += product.Price * itemDto.Quantity;
+                order.Items.Add(orderItem);
+                total += product.Price * orderItem.Quantity;
             }
 
+            foreach (var group in requestedByProduct)
+            {
+                var p = await _productRepository.GetByIdAsync(group.Key);
+                if (p is null) throw new InvalidOperationException("Produto não encontrado.");
+                p.Stock -= group.Value;
+            }
             order.Total = total;
 
             await _orderRepository.AddAsync(order);
@@ -179,17 +228,22 @@ namespace BetaFit.Application.Services
             {
                 Id = order.Id,
                 UserId = order.UserId,
+                CustomerCpf = order.CustomerCpf, ShippingCep = order.ShippingCep, ShippingStreet = order.ShippingStreet, ShippingNumber = order.ShippingNumber, ShippingComplement = order.ShippingComplement, ShippingNeighborhood = order.ShippingNeighborhood, ShippingCity = order.ShippingCity, ShippingState = order.ShippingState,
                 UserName = await ObterNomeUsuarioAsync(order.UserId),
                 CreatedAt = order.CreatedAt,
                 Total = order.Total,
                 Status = order.Status.ToString(),
-
+                PaymentId = order.PaymentId,
+                PaymentMethod = order.PaymentMethod,
+                PaymentStatus = order.PaymentStatus,
                 Items = order.Items.Select(item => new OrderItemDto
                 {
                     ProductId = item.ProductId,
                     ProductName = item.ProductName,
                     UnitPrice = item.UnitPrice,
                     Quantity = item.Quantity,
+                    Size = item.Size,
+                    Color = item.Color,
                     Subtotal = item.UnitPrice * item.Quantity
                 }).ToList()
             };
@@ -212,10 +266,91 @@ namespace BetaFit.Application.Services
                 return false;
             }
 
+            if (order.Status == OrderStatus.Cancelado)
+                return false;
+
+            if (newStatus == OrderStatus.Cancelado)
+            {
+                foreach (var item in order.Items)
+                {
+                    var product = await _productRepository.GetByIdAsync(item.ProductId);
+                    if (product is not null) product.Stock += item.Quantity;
+                }
+                order.Status = OrderStatus.Cancelado;
+                order.PaymentStatus = "Cancelado";
+                await _orderRepository.UpdateAsync(order);
+                return true;
+            }
+
             await _orderRepository.UpdateStatusAsync(id, newStatus);
 
             return true;
         }
+
+        public async Task<(bool Ok, string Message)> CancelAsync(int id, string userId)
+        {
+            var order = await _orderRepository.GetByIdAsync(id);
+            if (order is null || !string.Equals(order.UserId, userId, StringComparison.Ordinal))
+                return (false, "Pedido não encontrado.");
+            if (order.Status is not (OrderStatus.Pendente or OrderStatus.Confirmado))
+                return (false, "Este pedido não pode mais ser cancelado.");
+
+            foreach (var item in order.Items)
+            {
+                var product = await _productRepository.GetByIdAsync(item.ProductId);
+                if (product is not null) product.Stock += item.Quantity;
+            }
+
+            order.Status = OrderStatus.Cancelado;
+            order.PaymentStatus = "Cancelado";
+            await _orderRepository.UpdateAsync(order);
+            return (true, "Pedido cancelado e estoque devolvido.");
+        }
+
+        public async Task<(bool Ok, string Message)> UpdateDeliveryAsync(int id, string userId, UpdateOrderDeliveryDto dto)
+        {
+            var order = await _orderRepository.GetByIdAsync(id);
+            if (order is null || !string.Equals(order.UserId, userId, StringComparison.Ordinal)) return (false, "Pedido não encontrado.");
+            if (order.Status is not (OrderStatus.Pendente or OrderStatus.Confirmado)) return (false, "O endereço só pode ser alterado antes da preparação do pedido.");
+            order.ShippingCep = Digits(dto.ShippingCep);
+            order.ShippingStreet = dto.ShippingStreet.Trim();
+            order.ShippingNumber = dto.ShippingNumber.Trim();
+            order.ShippingComplement = dto.ShippingComplement?.Trim();
+            order.ShippingNeighborhood = dto.ShippingNeighborhood.Trim();
+            order.ShippingCity = dto.ShippingCity.Trim();
+            order.ShippingState = dto.ShippingState.Trim().ToUpperInvariant();
+            await _orderRepository.UpdateAsync(order);
+            return (true, "Endereço do pedido atualizado.");
+        }
+
+        public async Task<(bool Ok, string Message)> ConfirmDemoPaymentAsync(int id, string userId)
+        {
+            var order = await _orderRepository.GetByIdAsync(id);
+            if (order is null || !string.Equals(order.UserId, userId, StringComparison.Ordinal)) return (false, "Pedido não encontrado.");
+            if (order.Status == OrderStatus.Cancelado) return (false, "Este pedido foi cancelado.");
+            order.PaymentStatus = "Pago (demonstração)";
+            if (order.Status == OrderStatus.Pendente) order.Status = OrderStatus.Confirmado;
+            await _orderRepository.UpdateAsync(order);
+            return (true, "Transação concluída com sucesso.");
+        }
+
+        private static string NormalizePaymentMethod(string? method) => method?.Trim().ToUpperInvariant() switch
+        {
+            "PIX" => "Pix demonstrativo",
+            "CREDITO" => "Cartão de crédito demonstrativo",
+            "DEBITO" => "Cartão de débito demonstrativo",
+            "CARTAO" => "Cartão demonstrativo",
+            "BOLETO" => "Boleto demonstrativo",
+            _ => throw new InvalidOperationException("Escolha uma forma de pagamento válida.")
+        };
+
+        private static bool IsValidDemoCpf(string? value)
+        {
+            var cpf = new string((value ?? string.Empty).Where(char.IsDigit).ToArray());
+            return cpf.Length == 11;
+        }
+
+        private static string Digits(string? value) => new((value ?? string.Empty).Where(char.IsDigit).ToArray());
 
         private async Task<string> ObterNomeUsuarioAsync(string userId)
         {

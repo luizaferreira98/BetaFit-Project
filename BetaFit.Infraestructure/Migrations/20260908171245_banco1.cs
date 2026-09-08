@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BetaFit.Infraestructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Banco10 : Migration
+    public partial class banco1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -74,13 +74,106 @@ namespace BetaFit.Infraestructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerCpf = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: true),
+                    ShippingCep = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: true),
+                    ShippingStreet = table.Column<string>(type: "nvarchar(180)", maxLength: 180, nullable: true),
+                    ShippingNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    ShippingComplement = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: true),
+                    ShippingNeighborhood = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: true),
+                    ShippingCity = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: true),
+                    ShippingState = table.Column<string>(type: "nvarchar(2)", maxLength: 2, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false)
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    PaymentId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    PaymentMethod = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    PaymentStatus = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PendingProfileChanges",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    TokenHash = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Cpf = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: true),
+                    Cep = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: true),
+                    Street = table.Column<string>(type: "nvarchar(180)", maxLength: 180, nullable: true),
+                    Number = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    Complement = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: true),
+                    Neighborhood = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: true),
+                    City = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: true),
+                    State = table.Column<string>(type: "nvarchar(2)", maxLength: 2, nullable: true),
+                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    NewPasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PendingProfileChanges", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductReviews",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    PhotoUrlsJson = table.Column<string>(type: "nvarchar(max)", maxLength: 12000, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductReviews", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SiteSettings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Announcement = table.Column<string>(type: "nvarchar(160)", maxLength: 160, nullable: false),
+                    HeaderLinksJson = table.Column<string>(type: "nvarchar(max)", maxLength: 6000, nullable: false),
+                    HeroSlidesJson = table.Column<string>(type: "nvarchar(max)", maxLength: 24000, nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SiteSettings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserNotifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    LinkUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Type = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserNotifications", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -198,9 +291,12 @@ namespace BetaFit.Infraestructure.Migrations
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    Stock = table.Column<int>(type: "int", nullable: false, defaultValue: 999),
                     ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     ImageUrlsJson = table.Column<string>(type: "nvarchar(max)", maxLength: 8000, nullable: false),
                     AvailableSizesJson = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    AvailableColorsJson = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    ColorImageUrlsJson = table.Column<string>(type: "nvarchar(max)", maxLength: 12000, nullable: false),
                     Gender = table.Column<int>(type: "int", nullable: false),
                     IsFeatured = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
@@ -219,6 +315,49 @@ namespace BetaFit.Infraestructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CartItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    Size = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
+                    Color = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CartItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CartItems_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Favorites",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Favorites", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Favorites_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OrderItems",
                 columns: table => new
                 {
@@ -228,7 +367,9 @@ namespace BetaFit.Infraestructure.Migrations
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false)
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Size = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
+                    Color = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -245,6 +386,28 @@ namespace BetaFit.Infraestructure.Migrations
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductImages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    SortOrder = table.Column<int>(type: "int", nullable: false),
+                    IsPrimary = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductImages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductImages_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -287,6 +450,29 @@ namespace BetaFit.Infraestructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CartItems_ProductId",
+                table: "CartItems",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CartItems_UserId_ProductId_Size_Color",
+                table: "CartItems",
+                columns: new[] { "UserId", "ProductId", "Size", "Color" },
+                unique: true,
+                filter: "[Size] IS NOT NULL AND [Color] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Favorites_ProductId",
+                table: "Favorites",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Favorites_UserId_ProductId",
+                table: "Favorites",
+                columns: new[] { "UserId", "ProductId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_OrderId",
                 table: "OrderItems",
                 column: "OrderId");
@@ -297,9 +483,36 @@ namespace BetaFit.Infraestructure.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PendingProfileChanges_TokenHash",
+                table: "PendingProfileChanges",
+                column: "TokenHash",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductImages_ProductId_IsPrimary",
+                table: "ProductImages",
+                columns: new[] { "ProductId", "IsPrimary" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductImages_ProductId_SortOrder",
+                table: "ProductImages",
+                columns: new[] { "ProductId", "SortOrder" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductReviews_OrderId_ProductId",
+                table: "ProductReviews",
+                columns: new[] { "OrderId", "ProductId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Products_CategoryId",
                 table: "Products",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserNotifications_UserId_IsRead_CreatedAt",
+                table: "UserNotifications",
+                columns: new[] { "UserId", "IsRead", "CreatedAt" });
         }
 
         /// <inheritdoc />
@@ -321,7 +534,28 @@ namespace BetaFit.Infraestructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "CartItems");
+
+            migrationBuilder.DropTable(
+                name: "Favorites");
+
+            migrationBuilder.DropTable(
                 name: "OrderItems");
+
+            migrationBuilder.DropTable(
+                name: "PendingProfileChanges");
+
+            migrationBuilder.DropTable(
+                name: "ProductImages");
+
+            migrationBuilder.DropTable(
+                name: "ProductReviews");
+
+            migrationBuilder.DropTable(
+                name: "SiteSettings");
+
+            migrationBuilder.DropTable(
+                name: "UserNotifications");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

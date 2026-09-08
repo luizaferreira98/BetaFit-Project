@@ -12,6 +12,7 @@
 using System.Net.Http.Json;
 using BetaFit.Application.DTOs;
 using BetaFit.Application.Interfaces;
+using BetaFit.UI.Helpers;
 
 namespace BetaFit.UI.Services
 {
@@ -26,37 +27,44 @@ namespace BetaFit.UI.Services
 
         public async Task<IEnumerable<ProductDto>> GetAllAsync()
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<ProductDto>>("api/Products") ?? new List<ProductDto>();
+            var products = await _httpClient.GetFromJsonAsync<IEnumerable<ProductDto>>("api/Products") ?? Enumerable.Empty<ProductDto>();
+            return products.Select(NormalizeProduct).ToList();
         }
 
         public async Task<ProductDto?> GetByIdAsync(int id)
         {
             var response = await _httpClient.GetAsync($"api/Products/{id}");
             if (!response.IsSuccessStatusCode) return null;
-            return await response.Content.ReadFromJsonAsync<ProductDto>();
+            var product = await response.Content.ReadFromJsonAsync<ProductDto>();
+            return product is null ? null : NormalizeProduct(product);
         }
 
         public async Task<IEnumerable<ProductDto>> GetFeaturedAsync()
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<ProductDto>>("api/Products/featured") ?? new List<ProductDto>();
+            var products = await _httpClient.GetFromJsonAsync<IEnumerable<ProductDto>>("api/Products/featured") ?? Enumerable.Empty<ProductDto>();
+            return products.Select(NormalizeProduct).ToList();
         }
 
         public async Task<IEnumerable<ProductDto>> GetByCategoryAsync(int categoryId)
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<ProductDto>>($"api/Products/category/{categoryId}") ?? new List<ProductDto>();
+            var products = await _httpClient.GetFromJsonAsync<IEnumerable<ProductDto>>($"api/Products/category/{categoryId}") ?? Enumerable.Empty<ProductDto>();
+            return products.Select(NormalizeProduct).ToList();
         }
 
         public async Task<ProductDto> CreateAsync(CreateProductDto dto)
         {
             var response = await _httpClient.PostAsJsonAsync("api/Products", dto);
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+                throw new InvalidOperationException(await ReadErrorAsync(response, "Não foi possível cadastrar o produto."));
             return (await response.Content.ReadFromJsonAsync<ProductDto>())!;
         }
 
         public async Task<ProductDto?> UpdateAsync(int id, UpdateProductDto dto)
         {
             var response = await _httpClient.PutAsJsonAsync($"api/Products/{id}", dto);
-            if (!response.IsSuccessStatusCode) return null;
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound) return null;
+            if (!response.IsSuccessStatusCode)
+                throw new InvalidOperationException(await ReadErrorAsync(response, "Não foi possível atualizar o produto."));
             return await response.Content.ReadFromJsonAsync<ProductDto>();
         }
 
@@ -71,5 +79,33 @@ namespace BetaFit.UI.Services
             var products = await GetAllAsync();
             return products.Count();
         }
+
+        private static ProductDto NormalizeProduct(ProductDto product)
+        {
+            product.ImageUrls = product.ImageUrls?.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() ?? new List<string>();
+            if (product.ImageUrls.Count == 0 && !string.IsNullOrWhiteSpace(product.ImageUrl))
+                product.ImageUrls.Add(product.ImageUrl!);
+
+            // Corrige também produtos antigos que ainda possuem P/M/G salvo em um produto de calçado.
+            // Produtos sem variação ficam com lista vazia; a View não inventa tamanho.
+            product.AvailableSizes = ProductCatalogRules.NormalizeSizes(product.CategoryName, product.AvailableSizes);
+            product.ColorImageUrls ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            return product;
+        }
+
+        private static async Task<string> ReadErrorAsync(HttpResponseMessage response, string fallback)
+        {
+            try
+            {
+                var error = await response.Content.ReadFromJsonAsync<ApiError>();
+                return string.IsNullOrWhiteSpace(error?.Message) ? fallback : error.Message;
+            }
+            catch
+            {
+                return fallback;
+            }
+        }
+
+        private sealed class ApiError { public string Message { get; set; } = string.Empty; }
     }
 }

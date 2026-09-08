@@ -21,7 +21,7 @@
 <div class="bf-container bf-form-page">
 @if (!ViewData.ModelState.IsValid)
 {
-    <div class="bf-alert bf-alert--error" role="alert">@Html.ValidationSummary(true, "", new { @class = "bf-validation" })</div>
+    <div class="bf-alert bf-alert--error" role="alert">@Html.ValidationSummary(false, "", new { @class = "bf-validation" })</div>
 }
 <form asp-controller="Admin" asp-action="NewProduct" method="post" enctype="multipart/form-data" class="bf-form bf-form--admin" id="product-form">
     @Html.AntiForgeryToken()
@@ -29,8 +29,9 @@
     <div class="bf-form-section">
         <div class="bf-form-section__head"><span>01</span><div><strong>Informações do produto</strong><small>Defina os dados principais da peça.</small></div></div>
         <div class="bf-form-grid">
-            <label>Nome<input asp-for="Name" required placeholder="Ex.: Camiseta Beta Performance" /></label>
+            <label>Nome<input asp-for="Name" maxlength="200" required placeholder="Ex.: Camiseta Beta Performance" /></label>
             <label>Preço<input asp-for="Price" type="number" step="0.01" min="0" required placeholder="0,00" /></label>
+            <label>Estoque<input asp-for="Stock" type="number" min="0" max="100000" required /></label>
             <label>
                 Categoria
                 <select asp-for="CategoryId" required id="product-category">
@@ -42,7 +43,7 @@
                 </select>
             </label>
             <label>Gênero<select name="gender" asp-items="Html.GetEnumSelectList<Gender>()"></select></label>
-            <label class="bf-form-grid__full">Descrição<textarea asp-for="Description" rows="5" placeholder="Descreva tecido, caimento, uso e diferenciais."></textarea></label>
+            <label class="bf-form-grid__full">Descrição<textarea asp-for="Description" rows="5" maxlength="2000" required placeholder="Descreva tecido, caimento, uso e diferenciais."></textarea></label>
         </div>
     </div>
 
@@ -51,13 +52,26 @@
             <div><span class="bf-form-kicker">Variação</span><strong>Tamanhos disponíveis</strong><small id="size-helper">Selecione os tamanhos que o cliente poderá escolher.</small></div>
             <span class="bf-size-status" id="size-status">Obrigatório para roupas</span>
         </div>
-        <div class="bf-size-options">
-            @foreach (var size in new[]{"PP","P","M","G","GG","XG","36","38","40","42","44","Único"})
+        <div class="bf-size-options" data-size-options>
+            @foreach (var size in new[]{"PP","P","M","G","GG","XG","Único","35","36","37","38","39","40","41","42","43","44","45"})
             {
-                <label class="bf-size-option"><input type="checkbox" name="AvailableSizes" value="@size" checked="@(Model.AvailableSizes.Contains(size))" /><span>@size</span></label>
+                <label class="bf-size-option" data-size-value="@size"><input type="checkbox" name="AvailableSizes" value="@size" checked="@(Model.AvailableSizes.Contains(size))" /><span>@size</span></label>
             }
         </div>
         <div class="bf-size-picker__hidden" id="size-not-required"><span>✓</span> Esta categoria não usa tamanho. O campo será ocultado para o cliente.</div>
+    </div>
+
+    <div class="bf-size-picker bf-color-picker">
+        <div class="bf-size-picker__head"><div><span class="bf-form-kicker">02 · Variação</span><strong>Cores disponíveis</strong><small>Selecione as cores que poderão ser escolhidas pelo cliente.</small></div></div>
+        <div class="bf-size-options">@foreach(var color in new[]{"Preto","Branco","Cinza","Azul","Verde neon","Rosa","Vermelho","Bege"}){<label class="bf-size-option"><input type="checkbox" name="AvailableColors" value="@color" checked="@(Model.AvailableColors.Contains(color))" /><span><i class="bf-color-dot" data-color="@color"></i>@color</span></label>}</div>
+    </div>
+
+    <div class="bf-color-image-admin">
+        <div class="bf-upload-card__head"><div><span class="bf-form-kicker">Fotos por cor</span><strong>Miniaturas das variações</strong><small>Associe uma foto a cada cor. Ela será exibida como seletor na página do produto.</small></div></div>
+        <div class="bf-color-image-admin__grid">
+        @foreach(var item in new[]{("Preto","preto"),("Branco","branco"),("Cinza","cinza"),("Azul","azul"),("Verde neon","verdeneon"),("Rosa","rosa"),("Vermelho","vermelho"),("Bege","bege")})
+        {<label><span><i class="bf-color-dot" data-color="@item.Item1"></i>@item.Item1</span><input type="file" name="colorImage_@item.Item2" accept="image/jpeg,image/png,image/webp" /></label>}
+        </div>
     </div>
 
     <div class="bf-upload-field bf-form-grid__full bf-upload-card" data-upload-zone>
@@ -86,3 +100,4 @@
 </form>
 </div>
 </section>
+@section Scripts { @await Html.PartialAsync("_ValidationScriptsPartial") }

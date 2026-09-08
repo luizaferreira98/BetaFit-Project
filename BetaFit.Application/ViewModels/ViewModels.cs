@@ -12,6 +12,7 @@
 
 using BetaFit.Application.DTOs;
 using BetaFit.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace BetaFit.Application.ViewModels
 {
@@ -25,6 +26,8 @@ namespace BetaFit.Application.ViewModels
         public IEnumerable<ProductDto> FeaturedProducts { get; set; } = new List<ProductDto>();
         public IEnumerable<CategoryDto> Categories { get; set; } = new List<CategoryDto>();
         public IEnumerable<ProductDto> RecentProducts { get; set; } = new List<ProductDto>();
+        public Dictionary<string, IReadOnlyList<ProductDto>> ProductsByCategory { get; set; } = new();
+        public SiteSettingsDto SiteSettings { get; set; } = new();
     }
 
     /// <summary>
@@ -56,18 +59,26 @@ namespace BetaFit.Application.ViewModels
     public class ProductFormViewModel
     {
         public int Id { get; set; }
+        [Required(ErrorMessage = "Informe o nome do produto.")]
+        [StringLength(200)]
         public string Name { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Informe a descrição do produto.")]
+        [StringLength(2000)]
         public string Description { get; set; } = string.Empty;
+        [Range(0, 999999.99)]
         public decimal Price { get; set; }
+        [Range(0, 100000, ErrorMessage = "Informe um estoque entre 0 e 100000.")]
+        public int Stock { get; set; } = 999;
         public string? ImageUrl { get; set; }
         public List<string> ImageUrls { get; set; } = new();
         public List<string> KeepImageUrls { get; set; } = new();
         public List<string> AvailableSizes { get; set; } = new();
+        public List<string> AvailableColors { get; set; } = new();
+        public Dictionary<string, string> ColorImageUrls { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
         public Gender Gender { get; set; }
 
-        public Enum Enum { get; set; }
-
+        [Range(1, int.MaxValue, ErrorMessage = "Selecione uma categoria.")]
         public int CategoryId { get; set; }
         public bool IsFeatured { get; set; }
         public bool IsActive { get; set; }

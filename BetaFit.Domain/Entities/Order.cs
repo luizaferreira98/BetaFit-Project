@@ -1,4 +1,4 @@
-﻿using BetaFit.Domain.Enums; 
+using BetaFit.Domain.Enums; 
 namespace BetaFit.Domain.Entities
 
 {
@@ -8,11 +8,25 @@ namespace BetaFit.Domain.Entities
 
         public string UserId { get; set; } = string.Empty;
 
+        // Snapshot dos dados usados na compra. O histórico do pedido não depende do perfil atual.
+        public string? CustomerCpf { get; set; }
+        public string? ShippingCep { get; set; }
+        public string? ShippingStreet { get; set; }
+        public string? ShippingNumber { get; set; }
+        public string? ShippingComplement { get; set; }
+        public string? ShippingNeighborhood { get; set; }
+        public string? ShippingCity { get; set; }
+        public string? ShippingState { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public decimal Total { get; set; }
 
         public OrderStatus Status { get; set; } = OrderStatus.Pendente;
+
+        public string? PaymentId { get; set; }
+        public string PaymentMethod { get; set; } = "Pix demonstrativo";
+        public string PaymentStatus { get; set; } = "Pending";
 
         public virtual ICollection<OrderItem> Items { get; set; }
             = new List<OrderItem>();
