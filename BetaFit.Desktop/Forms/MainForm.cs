@@ -96,6 +96,14 @@ namespace BetaFit.Desktop.Forms
             Navegar(new DashboardUserControl(), btnDashBoard);
         }
 
+        // Público de propósito: chamado a partir de dentro de outro UserControl
+        // (ex.: botão "IR PARA PRODUTOS" do estado vazio em PedidosUserControl),
+        // que não tem acesso direto ao método privado Navegar/aos botões da sidebar.
+        public void NavegarParaProdutos()
+        {
+            Navegar(new ProdutosUserControl(), btnProdutos);
+        }
+
         // Navega para a tela de Categorias
         private void Navegar(UserControl control, Guna2Button? botao = null)
         {

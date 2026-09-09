@@ -32,6 +32,7 @@
 // =============================================================================
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Windows.Forms;
@@ -388,6 +389,76 @@ namespace BetaFit.Desktop.Themes
             "Cancelado" => (PerigoFundo, PerigoTexto),
             _ => (NeutroFundo, NeutroTexto)
         };
+
+        // =====================================================================
+        // STATUS DE PEDIDO — VERSÃO "ADMIN" (tela escura, badge = bolinha + texto
+        // colorido, sem fundo preenchido). O enum continua sendo Pendente /
+        // EmPreparacao / Pronto / Entregue / Cancelado (é o que a API espera);
+        // isso aqui é só o RÓTULO e a COR mostrados pro usuário no grid.
+        //
+        // Observação importante: o mockup de referência tinha 5 rótulos (Pago,
+        // Em separação, Aguardando, Enviado, Entregue) que não correspondem 1:1
+        // ao enum atual — não existe um "Pago" equivalente, e o enum tem
+        // "Cancelado", que o mockup não tinha. Mapear "Cancelado" pra "Pago"
+        // ficaria enganoso (pedido cancelado aparecendo com selo verde de
+        // pago), então troquei por um rótulo/cor próprios pra ele. Se quiser
+        // outro texto/cor, é só ajustar os dicionários abaixo.
+        // =====================================================================
+
+        public static readonly Dictionary<string, string> RotulosStatusPedido = new()
+        {
+            { "Pendente", "Aguardando" },
+            { "EmPreparacao", "Em separação" },
+            { "Pronto", "Enviado" },
+            { "Entregue", "Entregue" },
+            { "Cancelado", "Cancelado" },
+        };
+
+        public static string RotuloStatusPedido(string status) =>
+            RotulosStatusPedido.TryGetValue(status, out var rotulo) ? rotulo : status;
+
+        public static Color CorStatusPedidoAdmin(string status) => status switch
+        {
+            "Pendente" => Color.FromArgb(230, 168, 46),      // laranja — Aguardando
+            "EmPreparacao" => Color.FromArgb(90, 155, 235),  // azul — Em separação
+            "Pronto" => Color.FromArgb(90, 200, 140),        // verde — Enviado
+            "Entregue" => Color.FromArgb(170, 120, 230),     // roxo — Entregue
+            "Cancelado" => Color.FromArgb(220, 90, 90),      // vermelho — Cancelado
+            _ => Admin.TextoMuted
+        };
+
+        // Versão "badge preenchido" (pílula colorida) do status — fundo escuro
+        // na mesma família da cor + texto na cor viva, igual ao badge
+        // Ativo/Inativo do grid de Produtos. Usada no lugar da versão "bolinha".
+        public static (Color Fundo, Color Texto) CorBadgeStatusPedidoAdmin(string status) => status switch
+        {
+            "Pendente" => (Color.FromArgb(56, 42, 16), Color.FromArgb(230, 168, 46)),     // laranja — Aguardando
+            "EmPreparacao" => (Color.FromArgb(20, 34, 56), Color.FromArgb(90, 155, 235)), // azul — Em separação
+            "Pronto" => (Color.FromArgb(18, 46, 32), Color.FromArgb(90, 200, 140)),       // verde — Enviado
+            "Entregue" => (Color.FromArgb(42, 28, 56), Color.FromArgb(170, 120, 230)),    // roxo — Entregue
+            "Cancelado" => (Color.FromArgb(56, 22, 22), Color.FromArgb(220, 90, 90)),     // vermelho — Cancelado
+            _ => (Admin.BadgeInativoFundo, Admin.TextoMuted)
+        };
+
+        // Paleta fixa pra "avatar" (bolinha com iniciais) do cliente no grid de
+        // Pedidos — a cor é escolhida por hash do nome, então o mesmo cliente
+        // sempre cai na mesma cor entre um carregamento e outro.
+        public static readonly Color[] PaletaAvatar =
+        {
+            Color.FromArgb(46, 125, 90),   // verde
+            Color.FromArgb(120, 90, 200),  // roxo
+            Color.FromArgb(200, 110, 60),  // laranja queimado
+            Color.FromArgb(60, 110, 180),  // azul
+            Color.FromArgb(160, 70, 110),  // vinho
+            Color.FromArgb(90, 140, 60),   // oliva
+        };
+
+        public static Color CorAvatar(string nome)
+        {
+            if (string.IsNullOrWhiteSpace(nome)) return PaletaAvatar[0];
+            int hash = Math.Abs(nome.GetHashCode());
+            return PaletaAvatar[hash % PaletaAvatar.Length];
+        }
 
         /// <summary>
         /// Liga a pintura em "badge" (fundo colorido + texto colorido,

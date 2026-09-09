@@ -53,9 +53,9 @@
             btnProdutos = new Guna.UI2.WinForms.Guna2Button();
             btnDashBoard = new Guna.UI2.WinForms.Guna2Button();
             lblTitulo = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            pnlConteudo = new Guna.UI2.WinForms.Guna2Panel();
             guna2DragControl1 = new Guna.UI2.WinForms.Guna2DragControl(components);
             guna2DragControl2 = new Guna.UI2.WinForms.Guna2DragControl(components);
+            pnlConteudo = new Guna.UI2.WinForms.Guna2Panel();
             pnlMenu.SuspendLayout();
             SuspendLayout();
             // 
@@ -118,7 +118,7 @@
             btnLogout.ShadowDecoration.CustomizableEdges = customizableEdges4;
             btnLogout.Size = new Size(165, 32);
             btnLogout.TabIndex = 5;
-            btnLogout.Text = "⏻ SAIR";
+            btnLogout.Text = "\u23fb SAIR";
             btnLogout.TextAlign = HorizontalAlignment.Left;
             btnLogout.Click += btnLogout_Click;
             // 
@@ -225,16 +225,6 @@
             lblTitulo.TabIndex = 0;
             lblTitulo.Text = "BETA FIT";
             // 
-            // pnlConteudo
-            // 
-            pnlConteudo.BackColor = Color.FromArgb(15, 15, 15);
-            pnlConteudo.CustomizableEdges = customizableEdges15;
-            pnlConteudo.Location = new Point(280, 0);
-            pnlConteudo.Name = "pnlConteudo";
-            pnlConteudo.ShadowDecoration.CustomizableEdges = customizableEdges16;
-            pnlConteudo.Size = new Size(1120, 820);
-            pnlConteudo.TabIndex = 1;
-            // 
             // guna2DragControl1
             // 
             guna2DragControl1.DockIndicatorTransparencyValue = 0.6D;
@@ -247,11 +237,21 @@
             guna2DragControl2.TargetControl = pnlMenu;
             guna2DragControl2.UseTransparentDrag = true;
             // 
+            // pnlConteudo
+            // 
+            pnlConteudo.BackColor = Color.FromArgb(15, 15, 15);
+            pnlConteudo.CustomizableEdges = customizableEdges15;
+            pnlConteudo.Location = new Point(280, 0);
+            pnlConteudo.Name = "pnlConteudo";
+            pnlConteudo.ShadowDecoration.CustomizableEdges = customizableEdges16;
+            pnlConteudo.Size = new Size(1120, 820);
+            pnlConteudo.TabIndex = 1;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1400, 820);
+            ClientSize = new Size(1386, 788);
             Controls.Add(pnlConteudo);
             Controls.Add(pnlMenu);
             FormBorderStyle = FormBorderStyle.None;
@@ -267,7 +267,6 @@
         #endregion
 
         private Guna.UI2.WinForms.Guna2Panel pnlMenu;
-        private Guna.UI2.WinForms.Guna2Panel pnlConteudo;
         private Guna.UI2.WinForms.Guna2HtmlLabel lblTitulo;
         private Guna.UI2.WinForms.Guna2Button btnDashBoard;
         private Guna.UI2.WinForms.Guna2Button btnProdutos;
@@ -277,5 +276,6 @@
         private Guna.UI2.WinForms.Guna2DragControl guna2DragControl1;
         private Guna.UI2.WinForms.Guna2Button btnPerfil;
         private Guna.UI2.WinForms.Guna2DragControl guna2DragControl2;
+        private Guna.UI2.WinForms.Guna2Panel pnlConteudo;
     }
 }

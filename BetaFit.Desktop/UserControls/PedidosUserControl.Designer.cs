@@ -41,34 +41,29 @@
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges37 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges38 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges33 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges34 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges31 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges32 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges29 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges30 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges27 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges28 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges25 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges26 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges23 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges24 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges35 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges36 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges21 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges22 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges19 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges20 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges17 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges18 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges15 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges16 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges13 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
-            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges14 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges11 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges12 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges13 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges14 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges15 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges16 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges17 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges18 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges19 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges20 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges21 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges22 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges31 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges32 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges27 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges28 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges29 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
+            Guna.UI2.WinForms.Suite.CustomizableEdges customizableEdges30 = new Guna.UI2.WinForms.Suite.CustomizableEdges();
             lblTituloPedidos = new Guna.UI2.WinForms.Guna2HtmlLabel();
             lblDescricaoPedidos = new Guna.UI2.WinForms.Guna2HtmlLabel();
             btnAtualizarPedidos = new Guna.UI2.WinForms.Guna2Button();
@@ -78,7 +73,6 @@
             cboStatusPedido = new Guna.UI2.WinForms.Guna2ComboBox();
             lblNovoStatus = new Guna.UI2.WinForms.Guna2HtmlLabel();
             gridPedidos = new Guna.UI2.WinForms.Guna2DataGridView();
-            pnlTabela = new Guna.UI2.WinForms.Guna2Panel();
             colId = new DataGridViewTextBoxColumn();
             colCliente = new DataGridViewTextBoxColumn();
             colData = new DataGridViewTextBoxColumn();
@@ -86,27 +80,29 @@
             colItens = new DataGridViewTextBoxColumn();
             colStatus = new DataGridViewTextBoxColumn();
             colAcoes = new DataGridViewButtonColumn();
+            pnlTabela = new Guna.UI2.WinForms.Guna2Panel();
+            pnlPaginacao = new Guna.UI2.WinForms.Guna2Panel();
+            lblRetic = new Guna.UI2.WinForms.Guna2HtmlLabel();
             btnPaginaAnterior = new Guna.UI2.WinForms.Guna2Button();
+            btnUltimaPagina = new Guna.UI2.WinForms.Guna2Button();
+            lblResumoPag = new Guna.UI2.WinForms.Guna2HtmlLabel();
+            btnPagina1 = new Guna.UI2.WinForms.Guna2Button();
             btnPagina2 = new Guna.UI2.WinForms.Guna2Button();
             btnPagina3 = new Guna.UI2.WinForms.Guna2Button();
-            btnPagina1 = new Guna.UI2.WinForms.Guna2Button();
             btnProximaPagina = new Guna.UI2.WinForms.Guna2Button();
-            btnUltimaPagina = new Guna.UI2.WinForms.Guna2Button();
-            pnlPaginacao = new Guna.UI2.WinForms.Guna2Panel();
             lblResumoPaginacao = new Guna.UI2.WinForms.Guna2HtmlLabel();
             lblReticencias = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            guna2Button1 = new Guna.UI2.WinForms.Guna2Button();
-            guna2Button2 = new Guna.UI2.WinForms.Guna2Button();
-            guna2Button3 = new Guna.UI2.WinForms.Guna2Button();
-            guna2Button4 = new Guna.UI2.WinForms.Guna2Button();
-            guna2HtmlLabel1 = new Guna.UI2.WinForms.Guna2HtmlLabel();
-            guna2Button5 = new Guna.UI2.WinForms.Guna2Button();
-            guna2Button6 = new Guna.UI2.WinForms.Guna2Button();
-            guna2HtmlLabel2 = new Guna.UI2.WinForms.Guna2HtmlLabel();
+            pnlPedidosVazio = new Guna.UI2.WinForms.Guna2Panel();
+            pctIconeVazio = new Guna.UI2.WinForms.Guna2PictureBox();
+            lblTituloVazio = new Guna.UI2.WinForms.Guna2HtmlLabel();
+            lblSubtituloVazio = new Guna.UI2.WinForms.Guna2HtmlLabel();
+            btnIrParaProdutos = new Guna.UI2.WinForms.Guna2Button();
             pnlStatus.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gridPedidos).BeginInit();
             pnlTabela.SuspendLayout();
             pnlPaginacao.SuspendLayout();
+            pnlPedidosVazio.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pctIconeVazio).BeginInit();
             SuspendLayout();
             // 
             // lblTituloPedidos
@@ -143,7 +139,7 @@
             btnAtualizarPedidos.FillColor = Color.GreenYellow;
             btnAtualizarPedidos.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnAtualizarPedidos.ForeColor = Color.Black;
-            btnAtualizarPedidos.Location = new Point(512, 21);
+            btnAtualizarPedidos.Location = new Point(851, 18);
             btnAtualizarPedidos.Name = "btnAtualizarPedidos";
             btnAtualizarPedidos.ShadowDecoration.CustomizableEdges = customizableEdges2;
             btnAtualizarPedidos.Size = new Size(148, 45);
@@ -153,7 +149,8 @@
             // 
             // pnlStatus
             // 
-            pnlStatus.BackColor = Color.DimGray;
+            pnlStatus.BackColor = Color.FromArgb(10, 10, 10);
+            pnlStatus.BorderColor = Color.FromArgb(45, 45, 45);
             pnlStatus.Controls.Add(txtPesquisaPedido);
             pnlStatus.Controls.Add(btnAtualizarStatusPedido);
             pnlStatus.Controls.Add(cboStatusPedido);
@@ -180,7 +177,7 @@
             txtPesquisaPedido.Font = new Font("Segoe UI", 9F);
             txtPesquisaPedido.ForeColor = Color.White;
             txtPesquisaPedido.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
-            txtPesquisaPedido.Location = new Point(500, 13);
+            txtPesquisaPedido.Location = new Point(654, 13);
             txtPesquisaPedido.Name = "txtPesquisaPedido";
             txtPesquisaPedido.PlaceholderText = "🔎 Pesquisar por cliente, ID...";
             txtPesquisaPedido.SelectedText = "";
@@ -204,7 +201,7 @@
             btnAtualizarStatusPedido.FillColor = Color.FromArgb(64, 64, 64);
             btnAtualizarStatusPedido.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnAtualizarStatusPedido.ForeColor = Color.GreenYellow;
-            btnAtualizarStatusPedido.Location = new Point(319, 13);
+            btnAtualizarStatusPedido.Location = new Point(452, 13);
             btnAtualizarStatusPedido.Name = "btnAtualizarStatusPedido";
             btnAtualizarStatusPedido.ShadowDecoration.CustomizableEdges = customizableEdges6;
             btnAtualizarStatusPedido.Size = new Size(157, 36);
@@ -224,10 +221,10 @@
             cboStatusPedido.Font = new Font("Segoe UI", 10F);
             cboStatusPedido.ForeColor = Color.White;
             cboStatusPedido.ItemHeight = 30;
-            cboStatusPedido.Location = new Point(112, 13);
+            cboStatusPedido.Location = new Point(139, 13);
             cboStatusPedido.Name = "cboStatusPedido";
             cboStatusPedido.ShadowDecoration.CustomizableEdges = customizableEdges8;
-            cboStatusPedido.Size = new Size(192, 36);
+            cboStatusPedido.Size = new Size(280, 36);
             cboStatusPedido.TabIndex = 14;
             // 
             // lblNovoStatus
@@ -235,7 +232,7 @@
             lblNovoStatus.BackColor = Color.Transparent;
             lblNovoStatus.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblNovoStatus.ForeColor = Color.White;
-            lblNovoStatus.Location = new Point(17, 21);
+            lblNovoStatus.Location = new Point(22, 21);
             lblNovoStatus.Name = "lblNovoStatus";
             lblNovoStatus.Size = new Size(89, 17);
             lblNovoStatus.TabIndex = 0;
@@ -265,12 +262,21 @@
             dataGridViewCellStyle3.SelectionForeColor = Color.FromArgb(71, 69, 94);
             dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
             gridPedidos.DefaultCellStyle = dataGridViewCellStyle3;
+            gridPedidos.Dock = DockStyle.Fill;
             gridPedidos.GridColor = Color.Silver;
-            gridPedidos.Location = new Point(3, 18);
+            gridPedidos.Location = new Point(0, 0);
             gridPedidos.MultiSelect = false;
             gridPedidos.Name = "gridPedidos";
+            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = SystemColors.Control;
+            dataGridViewCellStyle4.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle4.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = DataGridViewTriState.True;
+            gridPedidos.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
             gridPedidos.RowHeadersVisible = false;
-            gridPedidos.Size = new Size(645, 295);
+            gridPedidos.Size = new Size(1090, 564);
             gridPedidos.TabIndex = 12;
             gridPedidos.ThemeStyle.AlternatingRowsStyle.BackColor = Color.White;
             gridPedidos.ThemeStyle.BackColor = Color.DimGray;
@@ -282,22 +288,6 @@
             gridPedidos.ThemeStyle.RowsStyle.Height = 25;
             gridPedidos.CellDoubleClick += gridPedidos_CellDoubleClick;
             gridPedidos.SelectionChanged += gridPedidos_SelectionChanged;
-            // 
-            // pnlTabela
-            // 
-            pnlTabela.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            pnlTabela.BackColor = Color.FromArgb(10, 10, 10);
-            pnlTabela.BorderColor = Color.FromArgb(45, 45, 45);
-            pnlTabela.BorderRadius = 10;
-            pnlTabela.BorderThickness = 1;
-            pnlTabela.Controls.Add(pnlPaginacao);
-            pnlTabela.Controls.Add(gridPedidos);
-            pnlTabela.CustomizableEdges = customizableEdges37;
-            pnlTabela.Location = new Point(15, 159);
-            pnlTabela.Name = "pnlTabela";
-            pnlTabela.ShadowDecoration.CustomizableEdges = customizableEdges38;
-            pnlTabela.Size = new Size(1090, 620);
-            pnlTabela.TabIndex = 13;
             // 
             // colId
             // 
@@ -343,10 +333,54 @@
             colAcoes.Text = "\t⋮";
             colAcoes.UseColumnTextForButtonValue = true;
             // 
+            // pnlTabela
+            // 
+            pnlTabela.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            pnlTabela.BackColor = Color.FromArgb(10, 10, 10);
+            pnlTabela.BorderColor = Color.FromArgb(45, 45, 45);
+            pnlTabela.BorderRadius = 10;
+            pnlTabela.BorderThickness = 1;
+            pnlTabela.Controls.Add(gridPedidos);
+            pnlTabela.Controls.Add(pnlPaginacao);
+            pnlTabela.CustomizableEdges = customizableEdges25;
+            pnlTabela.Location = new Point(15, 159);
+            pnlTabela.Name = "pnlTabela";
+            pnlTabela.ShadowDecoration.CustomizableEdges = customizableEdges26;
+            pnlTabela.Size = new Size(1090, 620);
+            pnlTabela.TabIndex = 13;
+            // 
+            // pnlPaginacao
+            // 
+            pnlPaginacao.Controls.Add(lblRetic);
+            pnlPaginacao.Controls.Add(btnPaginaAnterior);
+            pnlPaginacao.Controls.Add(btnUltimaPagina);
+            pnlPaginacao.Controls.Add(lblResumoPag);
+            pnlPaginacao.Controls.Add(btnPagina1);
+            pnlPaginacao.Controls.Add(btnPagina2);
+            pnlPaginacao.Controls.Add(btnPagina3);
+            pnlPaginacao.Controls.Add(btnProximaPagina);
+            pnlPaginacao.CustomizableEdges = customizableEdges23;
+            pnlPaginacao.Dock = DockStyle.Bottom;
+            pnlPaginacao.Location = new Point(0, 564);
+            pnlPaginacao.Name = "pnlPaginacao";
+            pnlPaginacao.ShadowDecoration.CustomizableEdges = customizableEdges24;
+            pnlPaginacao.Size = new Size(1090, 56);
+            pnlPaginacao.TabIndex = 21;
+            // 
+            // lblRetic
+            // 
+            lblRetic.BackColor = Color.Transparent;
+            lblRetic.ForeColor = Color.FromArgb(150, 150, 150);
+            lblRetic.Location = new Point(920, 17);
+            lblRetic.Name = "lblRetic";
+            lblRetic.Size = new Size(12, 17);
+            lblRetic.TabIndex = 21;
+            lblRetic.Text = "...";
+            // 
             // btnPaginaAnterior
             // 
             btnPaginaAnterior.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnPaginaAnterior.CustomizableEdges = customizableEdges33;
+            btnPaginaAnterior.CustomizableEdges = customizableEdges11;
             btnPaginaAnterior.DisabledState.BorderColor = Color.DarkGray;
             btnPaginaAnterior.DisabledState.CustomBorderColor = Color.DarkGray;
             btnPaginaAnterior.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
@@ -354,100 +388,20 @@
             btnPaginaAnterior.FillColor = Color.FromArgb(24, 24, 24);
             btnPaginaAnterior.Font = new Font("Segoe UI", 9F);
             btnPaginaAnterior.ForeColor = Color.White;
-            btnPaginaAnterior.Location = new Point(1633, 12);
+            btnPaginaAnterior.Location = new Point(752, 12);
             btnPaginaAnterior.Name = "btnPaginaAnterior";
-            btnPaginaAnterior.ShadowDecoration.CustomizableEdges = customizableEdges34;
+            btnPaginaAnterior.ShadowDecoration.CustomizableEdges = customizableEdges12;
             btnPaginaAnterior.Size = new Size(32, 32);
-            btnPaginaAnterior.TabIndex = 2;
+            btnPaginaAnterior.TabIndex = 14;
             btnPaginaAnterior.Text = "‹";
-            // 
-            // btnPagina2
-            // 
-            btnPagina2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnPagina2.BorderColor = Color.FromArgb(60, 60, 60);
-            btnPagina2.BorderRadius = 6;
-            btnPagina2.CustomizableEdges = customizableEdges31;
-            btnPagina2.DisabledState.BorderColor = Color.DarkGray;
-            btnPagina2.DisabledState.CustomBorderColor = Color.DarkGray;
-            btnPagina2.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
-            btnPagina2.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            btnPagina2.Enabled = false;
-            btnPagina2.FillColor = Color.Transparent;
-            btnPagina2.Font = new Font("Segoe UI", 9F);
-            btnPagina2.ForeColor = Color.White;
-            btnPagina2.Location = new Point(1714, 12);
-            btnPagina2.Name = "btnPagina2";
-            btnPagina2.ShadowDecoration.CustomizableEdges = customizableEdges32;
-            btnPagina2.Size = new Size(32, 32);
-            btnPagina2.TabIndex = 3;
-            btnPagina2.Text = "2";
-            // 
-            // btnPagina3
-            // 
-            btnPagina3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnPagina3.BorderColor = Color.FromArgb(60, 60, 60);
-            btnPagina3.BorderRadius = 6;
-            btnPagina3.CustomizableEdges = customizableEdges29;
-            btnPagina3.DisabledState.BorderColor = Color.DarkGray;
-            btnPagina3.DisabledState.CustomBorderColor = Color.DarkGray;
-            btnPagina3.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
-            btnPagina3.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            btnPagina3.Enabled = false;
-            btnPagina3.FillColor = Color.Transparent;
-            btnPagina3.Font = new Font("Segoe UI", 9F);
-            btnPagina3.ForeColor = Color.White;
-            btnPagina3.Location = new Point(1754, 12);
-            btnPagina3.Name = "btnPagina3";
-            btnPagina3.ShadowDecoration.CustomizableEdges = customizableEdges30;
-            btnPagina3.Size = new Size(32, 32);
-            btnPagina3.TabIndex = 4;
-            btnPagina3.Text = "3";
-            // 
-            // btnPagina1
-            // 
-            btnPagina1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnPagina1.BorderColor = Color.FromArgb(198, 255, 40);
-            btnPagina1.BorderRadius = 6;
-            btnPagina1.CustomizableEdges = customizableEdges27;
-            btnPagina1.DisabledState.BorderColor = Color.DarkGray;
-            btnPagina1.DisabledState.CustomBorderColor = Color.DarkGray;
-            btnPagina1.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
-            btnPagina1.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            btnPagina1.Enabled = false;
-            btnPagina1.FillColor = Color.Transparent;
-            btnPagina1.Font = new Font("Segoe UI", 9F);
-            btnPagina1.ForeColor = Color.White;
-            btnPagina1.Location = new Point(1673, 12);
-            btnPagina1.Name = "btnPagina1";
-            btnPagina1.ShadowDecoration.CustomizableEdges = customizableEdges28;
-            btnPagina1.Size = new Size(32, 32);
-            btnPagina1.TabIndex = 5;
-            btnPagina1.Text = "1";
-            // 
-            // btnProximaPagina
-            // 
-            btnProximaPagina.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnProximaPagina.CustomizableEdges = customizableEdges25;
-            btnProximaPagina.DisabledState.BorderColor = Color.DarkGray;
-            btnProximaPagina.DisabledState.CustomBorderColor = Color.DarkGray;
-            btnProximaPagina.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
-            btnProximaPagina.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            btnProximaPagina.FillColor = Color.FromArgb(24, 24, 24);
-            btnProximaPagina.Font = new Font("Segoe UI", 9F);
-            btnProximaPagina.ForeColor = Color.White;
-            btnProximaPagina.Location = new Point(1885, 12);
-            btnProximaPagina.Name = "btnProximaPagina";
-            btnProximaPagina.ShadowDecoration.CustomizableEdges = customizableEdges26;
-            btnProximaPagina.Size = new Size(32, 32);
-            btnProximaPagina.TabIndex = 6;
-            btnProximaPagina.Text = "›";
+            btnPaginaAnterior.Click += btnPaginaAnterior_Click;
             // 
             // btnUltimaPagina
             // 
             btnUltimaPagina.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnUltimaPagina.BorderColor = Color.FromArgb(60, 60, 60);
             btnUltimaPagina.BorderRadius = 6;
-            btnUltimaPagina.CustomizableEdges = customizableEdges23;
+            btnUltimaPagina.CustomizableEdges = customizableEdges13;
             btnUltimaPagina.DisabledState.BorderColor = Color.DarkGray;
             btnUltimaPagina.DisabledState.CustomBorderColor = Color.DarkGray;
             btnUltimaPagina.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
@@ -456,36 +410,108 @@
             btnUltimaPagina.FillColor = Color.Transparent;
             btnUltimaPagina.Font = new Font("Segoe UI", 9F);
             btnUltimaPagina.ForeColor = Color.White;
-            btnUltimaPagina.Location = new Point(1833, 12);
+            btnUltimaPagina.Location = new Point(952, 12);
             btnUltimaPagina.Name = "btnUltimaPagina";
-            btnUltimaPagina.ShadowDecoration.CustomizableEdges = customizableEdges24;
+            btnUltimaPagina.ShadowDecoration.CustomizableEdges = customizableEdges14;
             btnUltimaPagina.Size = new Size(32, 32);
-            btnUltimaPagina.TabIndex = 8;
+            btnUltimaPagina.TabIndex = 20;
             btnUltimaPagina.Text = "9";
+            btnUltimaPagina.Click += btnPagina_Click;
             // 
-            // pnlPaginacao
+            // lblResumoPag
             // 
-            pnlPaginacao.Controls.Add(guna2HtmlLabel2);
-            pnlPaginacao.Controls.Add(guna2Button6);
-            pnlPaginacao.Controls.Add(guna2Button5);
-            pnlPaginacao.Controls.Add(guna2HtmlLabel1);
-            pnlPaginacao.Controls.Add(guna2Button4);
-            pnlPaginacao.Controls.Add(guna2Button3);
-            pnlPaginacao.Controls.Add(guna2Button2);
-            pnlPaginacao.Controls.Add(guna2Button1);
-            pnlPaginacao.Controls.Add(btnUltimaPagina);
-            pnlPaginacao.Controls.Add(btnProximaPagina);
-            pnlPaginacao.Controls.Add(btnPagina1);
-            pnlPaginacao.Controls.Add(btnPagina3);
-            pnlPaginacao.Controls.Add(btnPagina2);
-            pnlPaginacao.Controls.Add(btnPaginaAnterior);
-            pnlPaginacao.CustomizableEdges = customizableEdges35;
-            pnlPaginacao.Dock = DockStyle.Bottom;
-            pnlPaginacao.Location = new Point(0, 564);
-            pnlPaginacao.Name = "pnlPaginacao";
-            pnlPaginacao.ShadowDecoration.CustomizableEdges = customizableEdges36;
-            pnlPaginacao.Size = new Size(1090, 56);
-            pnlPaginacao.TabIndex = 13;
+            lblResumoPag.BackColor = Color.Transparent;
+            lblResumoPag.ForeColor = Color.FromArgb(150, 150, 150);
+            lblResumoPag.Location = new Point(29, 17);
+            lblResumoPag.Name = "lblResumoPag";
+            lblResumoPag.Size = new Size(151, 17);
+            lblResumoPag.TabIndex = 13;
+            lblResumoPag.Text = "Exibindo 0 a 0 de 0 produtos";
+            // 
+            // btnPagina1
+            // 
+            btnPagina1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnPagina1.BorderColor = Color.FromArgb(198, 255, 40);
+            btnPagina1.BorderRadius = 6;
+            btnPagina1.CustomizableEdges = customizableEdges15;
+            btnPagina1.DisabledState.BorderColor = Color.DarkGray;
+            btnPagina1.DisabledState.CustomBorderColor = Color.DarkGray;
+            btnPagina1.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
+            btnPagina1.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
+            btnPagina1.Enabled = false;
+            btnPagina1.FillColor = Color.Transparent;
+            btnPagina1.Font = new Font("Segoe UI", 9F);
+            btnPagina1.ForeColor = Color.White;
+            btnPagina1.Location = new Point(792, 12);
+            btnPagina1.Name = "btnPagina1";
+            btnPagina1.ShadowDecoration.CustomizableEdges = customizableEdges16;
+            btnPagina1.Size = new Size(32, 32);
+            btnPagina1.TabIndex = 17;
+            btnPagina1.Text = "1";
+            btnPagina1.Click += btnPagina_Click;
+            // 
+            // btnPagina2
+            // 
+            btnPagina2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnPagina2.BorderColor = Color.FromArgb(60, 60, 60);
+            btnPagina2.BorderRadius = 6;
+            btnPagina2.CustomizableEdges = customizableEdges17;
+            btnPagina2.DisabledState.BorderColor = Color.DarkGray;
+            btnPagina2.DisabledState.CustomBorderColor = Color.DarkGray;
+            btnPagina2.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
+            btnPagina2.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
+            btnPagina2.Enabled = false;
+            btnPagina2.FillColor = Color.Transparent;
+            btnPagina2.Font = new Font("Segoe UI", 9F);
+            btnPagina2.ForeColor = Color.White;
+            btnPagina2.Location = new Point(833, 12);
+            btnPagina2.Name = "btnPagina2";
+            btnPagina2.ShadowDecoration.CustomizableEdges = customizableEdges18;
+            btnPagina2.Size = new Size(32, 32);
+            btnPagina2.TabIndex = 15;
+            btnPagina2.Text = "2";
+            btnPagina2.Click += btnPagina_Click;
+            // 
+            // btnPagina3
+            // 
+            btnPagina3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnPagina3.BorderColor = Color.FromArgb(60, 60, 60);
+            btnPagina3.BorderRadius = 6;
+            btnPagina3.CustomizableEdges = customizableEdges19;
+            btnPagina3.DisabledState.BorderColor = Color.DarkGray;
+            btnPagina3.DisabledState.CustomBorderColor = Color.DarkGray;
+            btnPagina3.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
+            btnPagina3.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
+            btnPagina3.Enabled = false;
+            btnPagina3.FillColor = Color.Transparent;
+            btnPagina3.Font = new Font("Segoe UI", 9F);
+            btnPagina3.ForeColor = Color.White;
+            btnPagina3.Location = new Point(873, 12);
+            btnPagina3.Name = "btnPagina3";
+            btnPagina3.ShadowDecoration.CustomizableEdges = customizableEdges20;
+            btnPagina3.Size = new Size(32, 32);
+            btnPagina3.TabIndex = 16;
+            btnPagina3.Text = "3";
+            btnPagina3.Click += btnPagina_Click;
+            // 
+            // btnProximaPagina
+            // 
+            btnProximaPagina.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnProximaPagina.CustomizableEdges = customizableEdges21;
+            btnProximaPagina.DisabledState.BorderColor = Color.DarkGray;
+            btnProximaPagina.DisabledState.CustomBorderColor = Color.DarkGray;
+            btnProximaPagina.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
+            btnProximaPagina.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
+            btnProximaPagina.FillColor = Color.FromArgb(24, 24, 24);
+            btnProximaPagina.Font = new Font("Segoe UI", 9F);
+            btnProximaPagina.ForeColor = Color.White;
+            btnProximaPagina.Location = new Point(1004, 12);
+            btnProximaPagina.Name = "btnProximaPagina";
+            btnProximaPagina.ShadowDecoration.CustomizableEdges = customizableEdges22;
+            btnProximaPagina.Size = new Size(32, 32);
+            btnProximaPagina.TabIndex = 18;
+            btnProximaPagina.Text = "›";
+            btnProximaPagina.Click += btnProximaPagina_Click;
             // 
             // lblResumoPaginacao
             // 
@@ -509,158 +535,88 @@
             lblReticencias.TabIndex = 7;
             lblReticencias.Text = "...";
             // 
-            // guna2Button1
+            // pnlPedidosVazio
             // 
-            guna2Button1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            guna2Button1.CustomizableEdges = customizableEdges21;
-            guna2Button1.DisabledState.BorderColor = Color.DarkGray;
-            guna2Button1.DisabledState.CustomBorderColor = Color.DarkGray;
-            guna2Button1.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
-            guna2Button1.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            guna2Button1.FillColor = Color.FromArgb(24, 24, 24);
-            guna2Button1.Font = new Font("Segoe UI", 9F);
-            guna2Button1.ForeColor = Color.White;
-            guna2Button1.Location = new Point(798, 13);
-            guna2Button1.Name = "guna2Button1";
-            guna2Button1.ShadowDecoration.CustomizableEdges = customizableEdges22;
-            guna2Button1.Size = new Size(32, 32);
-            guna2Button1.TabIndex = 9;
-            guna2Button1.Text = "‹";
+            pnlPedidosVazio.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            pnlPedidosVazio.BackColor = Color.FromArgb(10, 10, 10);
+            pnlPedidosVazio.BorderColor = Color.FromArgb(45, 45, 45);
+            pnlPedidosVazio.BorderRadius = 10;
+            pnlPedidosVazio.BorderThickness = 1;
+            pnlPedidosVazio.Controls.Add(pctIconeVazio);
+            pnlPedidosVazio.Controls.Add(lblTituloVazio);
+            pnlPedidosVazio.Controls.Add(lblSubtituloVazio);
+            pnlPedidosVazio.Controls.Add(btnIrParaProdutos);
+            pnlPedidosVazio.CustomizableEdges = customizableEdges31;
+            pnlPedidosVazio.Location = new Point(15, 159);
+            pnlPedidosVazio.Name = "pnlPedidosVazio";
+            pnlPedidosVazio.ShadowDecoration.CustomizableEdges = customizableEdges32;
+            pnlPedidosVazio.Size = new Size(1090, 620);
+            pnlPedidosVazio.TabIndex = 14;
+            pnlPedidosVazio.Visible = false;
             // 
-            // guna2Button2
+            // pctIconeVazio
             // 
-            guna2Button2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            guna2Button2.BorderColor = Color.FromArgb(198, 255, 40);
-            guna2Button2.BorderRadius = 6;
-            guna2Button2.CustomizableEdges = customizableEdges19;
-            guna2Button2.DisabledState.BorderColor = Color.DarkGray;
-            guna2Button2.DisabledState.CustomBorderColor = Color.DarkGray;
-            guna2Button2.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
-            guna2Button2.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            guna2Button2.Enabled = false;
-            guna2Button2.FillColor = Color.Transparent;
-            guna2Button2.Font = new Font("Segoe UI", 9F);
-            guna2Button2.ForeColor = Color.White;
-            guna2Button2.Location = new Point(844, 13);
-            guna2Button2.Name = "guna2Button2";
-            guna2Button2.ShadowDecoration.CustomizableEdges = customizableEdges20;
-            guna2Button2.Size = new Size(32, 32);
-            guna2Button2.TabIndex = 10;
-            guna2Button2.Text = "1";
+            pctIconeVazio.CustomizableEdges = customizableEdges27;
+            pctIconeVazio.ImageRotate = 0F;
+            pctIconeVazio.Location = new Point(480, 120);
+            pctIconeVazio.Name = "pctIconeVazio";
+            pctIconeVazio.ShadowDecoration.CustomizableEdges = customizableEdges28;
+            pctIconeVazio.Size = new Size(64, 64);
+            pctIconeVazio.SizeMode = PictureBoxSizeMode.CenterImage;
+            pctIconeVazio.TabIndex = 22;
+            pctIconeVazio.TabStop = false;
             // 
-            // guna2Button3
+            // lblTituloVazio
             // 
-            guna2Button3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            guna2Button3.BorderColor = Color.FromArgb(60, 60, 60);
-            guna2Button3.BorderRadius = 6;
-            guna2Button3.CustomizableEdges = customizableEdges17;
-            guna2Button3.DisabledState.BorderColor = Color.DarkGray;
-            guna2Button3.DisabledState.CustomBorderColor = Color.DarkGray;
-            guna2Button3.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
-            guna2Button3.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            guna2Button3.Enabled = false;
-            guna2Button3.FillColor = Color.Transparent;
-            guna2Button3.Font = new Font("Segoe UI", 9F);
-            guna2Button3.ForeColor = Color.White;
-            guna2Button3.Location = new Point(882, 12);
-            guna2Button3.Name = "guna2Button3";
-            guna2Button3.ShadowDecoration.CustomizableEdges = customizableEdges18;
-            guna2Button3.Size = new Size(32, 32);
-            guna2Button3.TabIndex = 14;
-            guna2Button3.Text = "2";
+            lblTituloVazio.BackColor = Color.Transparent;
+            lblTituloVazio.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblTituloVazio.ForeColor = Color.White;
+            lblTituloVazio.Location = new Point(388, 186);
+            lblTituloVazio.Name = "lblTituloVazio";
+            lblTituloVazio.Size = new Size(257, 27);
+            lblTituloVazio.TabIndex = 23;
+            lblTituloVazio.Text = "Nenhum pedido encontrado";
             // 
-            // guna2Button4
+            // lblSubtituloVazio
             // 
-            guna2Button4.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            guna2Button4.BorderColor = Color.FromArgb(60, 60, 60);
-            guna2Button4.BorderRadius = 6;
-            guna2Button4.CustomizableEdges = customizableEdges15;
-            guna2Button4.DisabledState.BorderColor = Color.DarkGray;
-            guna2Button4.DisabledState.CustomBorderColor = Color.DarkGray;
-            guna2Button4.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
-            guna2Button4.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            guna2Button4.Enabled = false;
-            guna2Button4.FillColor = Color.Transparent;
-            guna2Button4.Font = new Font("Segoe UI", 9F);
-            guna2Button4.ForeColor = Color.White;
-            guna2Button4.Location = new Point(920, 13);
-            guna2Button4.Name = "guna2Button4";
-            guna2Button4.ShadowDecoration.CustomizableEdges = customizableEdges16;
-            guna2Button4.Size = new Size(32, 32);
-            guna2Button4.TabIndex = 15;
-            guna2Button4.Text = "3";
+            lblSubtituloVazio.BackColor = Color.Transparent;
+            lblSubtituloVazio.ForeColor = Color.White;
+            lblSubtituloVazio.Location = new Point(374, 219);
+            lblSubtituloVazio.Name = "lblSubtituloVazio";
+            lblSubtituloVazio.Size = new Size(285, 17);
+            lblSubtituloVazio.TabIndex = 24;
+            lblSubtituloVazio.Text = "Quando houver pedidos na loja, eles aparecerão aqui.";
             // 
-            // guna2HtmlLabel1
+            // btnIrParaProdutos
             // 
-            guna2HtmlLabel1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            guna2HtmlLabel1.BackColor = Color.Transparent;
-            guna2HtmlLabel1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            guna2HtmlLabel1.ForeColor = Color.FromArgb(150, 150, 150);
-            guna2HtmlLabel1.Location = new Point(958, 21);
-            guna2HtmlLabel1.Name = "guna2HtmlLabel1";
-            guna2HtmlLabel1.Size = new Size(12, 23);
-            guna2HtmlLabel1.TabIndex = 16;
-            guna2HtmlLabel1.Text = "...";
-            // 
-            // guna2Button5
-            // 
-            guna2Button5.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            guna2Button5.BorderColor = Color.FromArgb(60, 60, 60);
-            guna2Button5.BorderRadius = 6;
-            guna2Button5.CustomizableEdges = customizableEdges13;
-            guna2Button5.DisabledState.BorderColor = Color.DarkGray;
-            guna2Button5.DisabledState.CustomBorderColor = Color.DarkGray;
-            guna2Button5.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
-            guna2Button5.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            guna2Button5.Enabled = false;
-            guna2Button5.FillColor = Color.Transparent;
-            guna2Button5.Font = new Font("Segoe UI", 9F);
-            guna2Button5.ForeColor = Color.White;
-            guna2Button5.Location = new Point(991, 12);
-            guna2Button5.Name = "guna2Button5";
-            guna2Button5.ShadowDecoration.CustomizableEdges = customizableEdges14;
-            guna2Button5.Size = new Size(32, 32);
-            guna2Button5.TabIndex = 17;
-            guna2Button5.Text = "9";
-            // 
-            // guna2Button6
-            // 
-            guna2Button6.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            guna2Button6.CustomizableEdges = customizableEdges11;
-            guna2Button6.DisabledState.BorderColor = Color.DarkGray;
-            guna2Button6.DisabledState.CustomBorderColor = Color.DarkGray;
-            guna2Button6.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
-            guna2Button6.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            guna2Button6.FillColor = Color.FromArgb(24, 24, 24);
-            guna2Button6.Font = new Font("Segoe UI", 9F);
-            guna2Button6.ForeColor = Color.White;
-            guna2Button6.Location = new Point(1038, 12);
-            guna2Button6.Name = "guna2Button6";
-            guna2Button6.ShadowDecoration.CustomizableEdges = customizableEdges12;
-            guna2Button6.Size = new Size(32, 32);
-            guna2Button6.TabIndex = 18;
-            guna2Button6.Text = "›";
-            // 
-            // guna2HtmlLabel2
-            // 
-            guna2HtmlLabel2.BackColor = Color.Transparent;
-            guna2HtmlLabel2.ForeColor = Color.FromArgb(150, 150, 150);
-            guna2HtmlLabel2.Location = new Point(26, 21);
-            guna2HtmlLabel2.Name = "guna2HtmlLabel2";
-            guna2HtmlLabel2.Size = new Size(145, 17);
-            guna2HtmlLabel2.TabIndex = 19;
-            guna2HtmlLabel2.Text = "Exibindo 0 a 0 de 0 pedidos";
+            btnIrParaProdutos.BorderRadius = 5;
+            btnIrParaProdutos.CustomizableEdges = customizableEdges29;
+            btnIrParaProdutos.DisabledState.BorderColor = Color.DarkGray;
+            btnIrParaProdutos.DisabledState.CustomBorderColor = Color.DarkGray;
+            btnIrParaProdutos.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
+            btnIrParaProdutos.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
+            btnIrParaProdutos.FillColor = Color.GreenYellow;
+            btnIrParaProdutos.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnIrParaProdutos.ForeColor = Color.FromArgb(10, 10, 10);
+            btnIrParaProdutos.Location = new Point(429, 251);
+            btnIrParaProdutos.Name = "btnIrParaProdutos";
+            btnIrParaProdutos.ShadowDecoration.CustomizableEdges = customizableEdges30;
+            btnIrParaProdutos.Size = new Size(180, 45);
+            btnIrParaProdutos.TabIndex = 25;
+            btnIrParaProdutos.Text = "\U0001f6d2 IR PARA PRODUTOS";
+            btnIrParaProdutos.Click += btnIrParaProdutos_Click;
             // 
             // PedidosUserControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Black;
-            Controls.Add(pnlTabela);
-            Controls.Add(pnlStatus);
-            Controls.Add(btnAtualizarPedidos);
-            Controls.Add(lblDescricaoPedidos);
             Controls.Add(lblTituloPedidos);
+            Controls.Add(lblDescricaoPedidos);
+            Controls.Add(btnAtualizarPedidos);
+            Controls.Add(pnlStatus);
+            Controls.Add(pnlTabela);
+            Controls.Add(pnlPedidosVazio);
             Name = "PedidosUserControl";
             Size = new Size(1120, 820);
             Load += PedidosUserControl_Load;
@@ -670,6 +626,9 @@
             pnlTabela.ResumeLayout(false);
             pnlPaginacao.ResumeLayout(false);
             pnlPaginacao.PerformLayout();
+            pnlPedidosVazio.ResumeLayout(false);
+            pnlPedidosVazio.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pctIconeVazio).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -693,22 +652,21 @@
         private DataGridViewTextBoxColumn colItens;
         private DataGridViewTextBoxColumn colStatus;
         private DataGridViewButtonColumn colAcoes;
-        private Guna.UI2.WinForms.Guna2Panel pnlPaginacao;
-        private Guna.UI2.WinForms.Guna2Button guna2Button1;
+        private Guna.UI2.WinForms.Guna2HtmlLabel lblResumoPaginacao;
+        private Guna.UI2.WinForms.Guna2HtmlLabel lblReticencias;
         private Guna.UI2.WinForms.Guna2Button btnUltimaPagina;
         private Guna.UI2.WinForms.Guna2Button btnProximaPagina;
         private Guna.UI2.WinForms.Guna2Button btnPagina1;
         private Guna.UI2.WinForms.Guna2Button btnPagina3;
         private Guna.UI2.WinForms.Guna2Button btnPagina2;
         private Guna.UI2.WinForms.Guna2Button btnPaginaAnterior;
-        private Guna.UI2.WinForms.Guna2HtmlLabel lblResumoPaginacao;
-        private Guna.UI2.WinForms.Guna2HtmlLabel lblReticencias;
-        private Guna.UI2.WinForms.Guna2Button guna2Button2;
-        private Guna.UI2.WinForms.Guna2Button guna2Button3;
-        private Guna.UI2.WinForms.Guna2Button guna2Button4;
-        private Guna.UI2.WinForms.Guna2HtmlLabel guna2HtmlLabel1;
-        private Guna.UI2.WinForms.Guna2Button guna2Button5;
-        private Guna.UI2.WinForms.Guna2Button guna2Button6;
-        private Guna.UI2.WinForms.Guna2HtmlLabel guna2HtmlLabel2;
+        private Guna.UI2.WinForms.Guna2Panel pnlPaginacao;
+        private Guna.UI2.WinForms.Guna2HtmlLabel lblResumoPag;
+        private Guna.UI2.WinForms.Guna2Panel pnlPedidosVazio;
+        private Guna.UI2.WinForms.Guna2Button btnIrParaProdutos;
+        private Guna.UI2.WinForms.Guna2HtmlLabel lblSubtituloVazio;
+        private Guna.UI2.WinForms.Guna2HtmlLabel lblTituloVazio;
+        private Guna.UI2.WinForms.Guna2HtmlLabel lblRetic;
+        private Guna.UI2.WinForms.Guna2PictureBox pctIconeVazio;
     }
 }
