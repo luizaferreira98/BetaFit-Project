@@ -25,7 +25,7 @@ public class AdminController : Controller
     public async Task<IActionResult> Index(string? search, int? categoryId, string? status)
     {
         ViewData["Title"]="Administração"; ViewData["Search"]=search; ViewData["SelectedCategoryId"]=categoryId; ViewData["SelectedStatus"]=status;
-        try { if (User.IsInRole("Admin")) ViewData["Dashboard"] = await _dashboard.GetSummaryAsync(); } catch { }
+        try { if (User.IsInRole("Admin") || User.IsInRole("Funcionario")) ViewData["Dashboard"] = await _dashboard.GetSummaryAsync(); } catch (HttpRequestException) { TempData["Error"] = "Não foi possível atualizar os indicadores agora. Os produtos continuarão disponíveis."; }
         try
         {
             var categories=(await _categories.GetAllAsync()).ToList(); ViewData["Categories"]=categories;
@@ -35,7 +35,8 @@ public class AdminController : Controller
             query=status?.ToLowerInvariant() switch { "active"=>query.Where(p=>p.IsActive&&p.Stock>0),"inactive"=>query.Where(p=>!p.IsActive),"out"=>query.Where(p=>p.Stock<=0),_=>query };
             return View(query.OrderByDescending(p=>p.CreatedAt).ToList());
         }
-        catch(HttpRequestException) { ViewData["Message"]="Não foi possível carregar os produtos."; return View(new List<ProductDto>()); }
+        catch(HttpRequestException) { TempData["Error"] = "Não foi possível carregar os produtos agora. Verifique se a API está disponível e tente novamente."; return View(new List<ProductDto>()); }
+        catch (TaskCanceledException) { TempData["Error"] = "A solicitação demorou demais. Tente novamente."; return View(new List<ProductDto>()); }
     }
 
     [HttpPost("Products/Bulk"), ValidateAntiForgeryToken]

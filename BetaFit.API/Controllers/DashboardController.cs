@@ -17,7 +17,7 @@ namespace BetaFit.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Funcionario")]
     public class DashboardController : ControllerBase
     {
         private readonly IDashboardService _dashboardService;

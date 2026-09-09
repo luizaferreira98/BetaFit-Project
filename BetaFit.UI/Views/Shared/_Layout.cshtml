@@ -18,6 +18,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#111111" />
+    <script>try{const t=localStorage.getItem("betafit-theme");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
     <title>@ViewData["Title"] - Beta Fit</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,6 +28,8 @@
     <link rel="stylesheet" href="~/BetaFit.UI.styles.css" asp-append-version="true" />
 </head>
 <body>
+    <div class="bf-page-loader" data-page-loader aria-hidden="true"><span></span><b>Carregando...</b></div>
+    <div class="bf-toast-region" data-toast-region aria-live="polite" aria-atomic="true"></div>
     <a class="bf-skip-link" href="#main-content">Pular para o conteúdo</a>
 
     <div class="bf-announcement">
@@ -63,6 +66,7 @@
             </nav>
 
             <div class="bf-header__actions">
+                <button class="bf-theme-toggle" type="button" data-theme-toggle aria-pressed="false" title="Alternar tema"><span aria-hidden="true">◐</span><span data-theme-label>Tema</span></button>
                 @if (isAuthenticated)
                 {
                     <div class="bf-notifications" data-notifications><button class="bf-notifications__trigger" type="button" data-notifications-toggle aria-label="Notificações">♢@if(unreadNotifications>0){<b>@unreadNotifications</b>}</button><div class="bf-notifications__panel"><div class="bf-notifications__head"><strong>Notificações</strong>@if(unreadNotifications>0){<form asp-controller="Notifications" asp-action="ReadAll" method="post">@Html.AntiForgeryToken()<input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" /><button>Marcar como lidas</button></form>}</div>@foreach(var n in notifications.Take(8)){<a class="@(!n.IsRead?"is-unread":"")" href="@(n.LinkUrl??"#")"><strong>@n.Title</strong><span>@n.Message</span><small>@n.CreatedAt.ToLocalTime().ToString("dd/MM HH:mm")</small></a>}@if(!notifications.Any()){<p>Nenhuma notificação.</p>}</div></div>

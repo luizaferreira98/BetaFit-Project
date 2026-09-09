@@ -1,8 +1,63 @@
+
+
 (() => {
     "use strict";
 
     const root = document.documentElement;
     const body = document.body;
+
+    // ---------------------------------------------------------------------
+    // Tema claro/escuro persistente
+    // ---------------------------------------------------------------------
+    const themeToggle = document.querySelector("[data-theme-toggle]");
+    const themeLabel = document.querySelector("[data-theme-label]");
+    const applyTheme = (theme) => {
+        document.documentElement.dataset.theme = theme;
+        try { localStorage.setItem("betafit-theme", theme); } catch { }
+        if (themeToggle) themeToggle.setAttribute("aria-pressed", theme === "dark");
+        if (themeLabel) themeLabel.textContent = theme === "dark" ? "Claro" : "Escuro";
+    };
+    const savedTheme = (() => { try { return localStorage.getItem("betafit-theme"); } catch { return null; } })();
+    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    applyTheme(initialTheme);
+    themeToggle?.addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
+
+    // ---------------------------------------------------------------------
+    // Loading e feedback de operações
+    // ---------------------------------------------------------------------
+    const pageLoader = document.querySelector("[data-page-loader]");
+    const showLoader = () => pageLoader?.classList.add("is-visible");
+    document.querySelectorAll("form[data-busy-form]").forEach((form) => {
+        form.addEventListener("submit", (event) => {
+            if (!form.checkValidity()) return;
+            form.classList.add("is-busy");
+            const button = form.querySelector("button[type=submit]");
+            if (button) {
+                button.dataset.originalText ??= button.textContent;
+                button.textContent = button.dataset.busyLabel || "Processando...";
+                button.disabled = true;
+            }
+            showLoader();
+        });
+    });
+
+    document.querySelectorAll(".bf-alert").forEach((alert) => {
+        window.setTimeout(() => {
+            alert.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-6px)" }], { duration: 220, fill: "forwards" });
+            window.setTimeout(() => alert.remove(), 240);
+        }, 5200);
+    });
+
+    const toastRegion = document.querySelector("[data-toast-region]");
+    window.betaFitToast = (message, type = "success") => {
+        if (!toastRegion || !message) return;
+        const toast = document.createElement("div");
+        toast.className = `bf-toast bf-toast--${type}`;
+        toast.textContent = message;
+        toastRegion.appendChild(toast);
+        window.setTimeout(() => toast.remove(), 4200);
+    };
+
 
     root.classList.add("bf-js");
 
