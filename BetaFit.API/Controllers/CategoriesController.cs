@@ -78,7 +78,7 @@ namespace BetaFit.API.Controllers
             var category = await _categoryService.UpdateAsync(id, dto);
 
             if (category == null)
-                return NotFound(new { message = "Categoria não encontrada." });
+                return NotFound(new { message = "Erro ao atualizar categoria." });
 
             return Ok(category);
         }
@@ -94,7 +94,7 @@ namespace BetaFit.API.Controllers
             var deleted = await _categoryService.DeleteAsync(id);
 
             if (!deleted)
-                return NotFound(new { message = "Categoria não encontrada." });
+                return NotFound(new { message = "Categoria não pode ser removida pois há produtos associados a ela." });
 
             return NoContent();
         }

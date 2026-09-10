@@ -68,8 +68,8 @@ namespace BetaFit.Desktop.Forms
             if (DesignMode) return;
 
             // Configura título baseado no modo (criação/edição)
-            this.Text = _categoriaExistente == null ? "Novo Game" : "Editar Game";
-            lblTituloNovaCategoria.Text = _categoriaExistente == null ? "➕ Novo Game" : "✏️ Editar Game";
+            this.Text = _categoriaExistente == null ? "Nova Categoria" : "Editar Categoria";
+            lblTituloNovaCategoria.Text = _categoriaExistente == null ? "➕ Nova Categoria" : "✏️ Editar Categoria";
 
             //Preenche campos se estiver no modo edição
             PreencherCampos();
