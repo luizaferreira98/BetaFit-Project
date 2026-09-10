@@ -11,6 +11,7 @@ public class CreateReviewDto
 
 public class ReviewDto
 {
+    public string ModerationStatus { get; set; } = "Pendente";
     public int Id { get; set; }
     public int OrderId { get; set; }
     public int ProductId { get; set; }

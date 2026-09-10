@@ -51,7 +51,7 @@ namespace BetaFit.Application.Services
 
                 result.Add(new OrderDto
                 {
-                    Id = order.Id,
+                    BoletoDigits=order.BoletoDigits, BoletoDueAt=order.BoletoDueAt, Installments=order.Installments, Id = order.Id,
                     UserId = order.UserId,
                     CustomerCpf = order.CustomerCpf, ShippingCep = order.ShippingCep, ShippingStreet = order.ShippingStreet, ShippingNumber = order.ShippingNumber, ShippingComplement = order.ShippingComplement, ShippingNeighborhood = order.ShippingNeighborhood, ShippingCity = order.ShippingCity, ShippingState = order.ShippingState,
                     UserName = await ObterNomeUsuarioAsync(order.UserId),
@@ -95,7 +95,7 @@ namespace BetaFit.Application.Services
 
                 result.Add(new OrderDto
                 {
-                    Id = order.Id,
+                    BoletoDigits=order.BoletoDigits, BoletoDueAt=order.BoletoDueAt, Installments=order.Installments, Id = order.Id,
                     UserId = order.UserId,
                     CustomerCpf = order.CustomerCpf, ShippingCep = order.ShippingCep, ShippingStreet = order.ShippingStreet, ShippingNumber = order.ShippingNumber, ShippingComplement = order.ShippingComplement, ShippingNeighborhood = order.ShippingNeighborhood, ShippingCity = order.ShippingCity, ShippingState = order.ShippingState,
                     UserName = nomeUsuario,
@@ -119,6 +119,9 @@ namespace BetaFit.Application.Services
             if (order == null)
                 return null;
 
+            if(order.PaymentMethod.Contains("Boleto",StringComparison.OrdinalIgnoreCase) && string.IsNullOrWhiteSpace(order.BoletoDigits))
+            {order.BoletoDigits=DemoBoleto.Create(order.Total);order.BoletoDueAt=order.CreatedAt.Date.AddDays(3);await _orderRepository.UpdateAsync(order);}
+
             var itemDtos = new List<OrderItemDto>();
             foreach (var item in order.Items)
             {
@@ -138,7 +141,7 @@ namespace BetaFit.Application.Services
 
             return new OrderDto
             {
-                Id = order.Id,
+                BoletoDigits=order.BoletoDigits, BoletoDueAt=order.BoletoDueAt, Installments=order.Installments, Id = order.Id,
                 UserId = order.UserId,
                 CustomerCpf = order.CustomerCpf, ShippingCep = order.ShippingCep, ShippingStreet = order.ShippingStreet, ShippingNumber = order.ShippingNumber, ShippingComplement = order.ShippingComplement, ShippingNeighborhood = order.ShippingNeighborhood, ShippingCity = order.ShippingCity, ShippingState = order.ShippingState,
                 UserName = await ObterNomeUsuarioAsync(order.UserId),
@@ -156,6 +159,14 @@ namespace BetaFit.Application.Services
             CreateOrderDto dto,
             string userId)
         {
+            SavedCardDto? selectedCard=null;
+            if(dto.PaymentMethod is "Credito" or "Debito")
+            {
+                var user=await _userManager.FindByIdAsync(userId)??throw new InvalidOperationException("Usuário não encontrado.");
+                selectedCard=DemoWallet.Read(await _userManager.GetClaimsAsync(user)).FirstOrDefault(c=>c.Id==dto.SavedCardId);
+                if(selectedCard is null || selectedCard.Type!=dto.PaymentMethod || !DemoWallet.ValidExpiry(selectedCard.Expiry))throw new InvalidOperationException("Selecione um cartão válido cadastrado em sua conta para esta forma de pagamento.");
+            }
+            if(dto.Installments<1 || dto.Installments>12 || dto.PaymentMethod!="Credito" && dto.Installments!=1)throw new InvalidOperationException("Parcelamento inválido.");
             var order = new Order
             {
                 UserId = userId,
@@ -163,7 +174,8 @@ namespace BetaFit.Application.Services
                 Status = OrderStatus.Pendente,
                 PaymentMethod = NormalizePaymentMethod(dto.PaymentMethod),
                 PaymentStatus = "Aguardando",
-                PaymentId = string.IsNullOrWhiteSpace(dto.CardLast4) ? null : $"Cartão final {dto.CardLast4}",
+                PaymentId = selectedCard is null ? null : $"{selectedCard.Brand} final {selectedCard.Last4}",
+                Installments=dto.Installments,
                 CustomerCpf = dto.CustomerCpf, ShippingCep = dto.ShippingCep, ShippingStreet = dto.ShippingStreet, ShippingNumber = dto.ShippingNumber, ShippingComplement = dto.ShippingComplement, ShippingNeighborhood = dto.ShippingNeighborhood, ShippingCity = dto.ShippingCity, ShippingState = dto.ShippingState,
                 Items = new List<OrderItem>()
             };
@@ -186,6 +198,7 @@ namespace BetaFit.Application.Services
                 {
                     throw new InvalidOperationException($"Produto {itemDto.ProductId} não encontrado.");
                 }
+                if(!product.IsActive)throw new InvalidOperationException($"Produto {product.Name} indisponível.");
                 if (product.Stock < requestedByProduct[product.Id])
                     throw new InvalidOperationException($"Estoque insuficiente para o produto {product.Name}. Disponível: {product.Stock}.");
 
@@ -221,12 +234,13 @@ namespace BetaFit.Application.Services
                 p.Stock -= group.Value;
             }
             order.Total = total;
+            if(dto.PaymentMethod=="Boleto") {order.BoletoDigits=DemoBoleto.Create(total);order.BoletoDueAt=DateTime.Today.AddDays(3); }
 
             await _orderRepository.AddAsync(order);
 
             return new OrderDto
             {
-                Id = order.Id,
+                BoletoDigits=order.BoletoDigits, BoletoDueAt=order.BoletoDueAt, Installments=order.Installments, Id = order.Id,
                 UserId = order.UserId,
                 CustomerCpf = order.CustomerCpf, ShippingCep = order.ShippingCep, ShippingStreet = order.ShippingStreet, ShippingNumber = order.ShippingNumber, ShippingComplement = order.ShippingComplement, ShippingNeighborhood = order.ShippingNeighborhood, ShippingCity = order.ShippingCity, ShippingState = order.ShippingState,
                 UserName = await ObterNomeUsuarioAsync(order.UserId),

@@ -9,6 +9,9 @@ namespace BetaFit.Application.DTOs
 {
     public class OrderDto
     {
+        public string? BoletoDigits { get; set; }
+        public DateTime? BoletoDueAt { get; set; }
+        public int Installments { get; set; } = 1;
         public int Id { get; set; }
         public string UserName { get; set; } = string.Empty;
         public string UserId { get; set; } = string.Empty;
@@ -43,8 +46,10 @@ namespace BetaFit.Application.DTOs
 
     public class CreateOrderDto
     {
+        [StringLength(40)] public string? SavedCardId { get; set; }
+        [Range(1,12)] public int Installments { get; set; } = 1;
         public List<CreateOrderItemDto> Items { get; set; } = new();
-        [StringLength(40)]
+        [Required, RegularExpression("^(Pix|Credito|Debito|Boleto)$")]
         public string? PaymentMethod { get; set; }
         [StringLength(14)]
         public string? CustomerCpf { get; set; }

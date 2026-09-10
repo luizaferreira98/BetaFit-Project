@@ -58,6 +58,9 @@ namespace BetaFit.Domain.Entities
         public string AvailableColorsJson { get; set; } = "[]";
 
         /// <summary>Mapa JSON no formato { "Preto": "/images/..." } para a foto principal de cada cor.</summary>
+        public string ColorGalleriesJson { get; set; } = "{}";
+        public string SizeMeasurementsJson { get; set; } = "{}";
+        public bool MeasurementsAreDemo { get; set; } = true;
         public string ColorImageUrlsJson { get; set; } = "{}";
 
         /// <summary>

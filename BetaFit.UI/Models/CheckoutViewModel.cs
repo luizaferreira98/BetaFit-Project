@@ -18,6 +18,9 @@ public class CheckoutViewModel
     [Required(ErrorMessage = "Escolha uma forma de pagamento.")]
     public string PaymentMethod { get; set; } = "Pix";
     public bool HasSavedAddress { get; set; }
+    public List<BetaFit.Application.DTOs.SavedCardDto> SavedCards { get; set; } = new();
+    public string? SelectedCardId { get; set; }
+    [Range(1,12)] public int Installments { get; set; } = 1;
     public bool HasSavedCard { get; set; }
     public bool UseSavedCard { get; set; }
     public string? SavedCardLabel { get; set; }

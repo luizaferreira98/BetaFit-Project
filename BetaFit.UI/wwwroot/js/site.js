@@ -1,63 +1,8 @@
-
-
 (() => {
     "use strict";
 
     const root = document.documentElement;
     const body = document.body;
-
-    // ---------------------------------------------------------------------
-    // Tema claro/escuro persistente
-    // ---------------------------------------------------------------------
-    const themeToggle = document.querySelector("[data-theme-toggle]");
-    const themeLabel = document.querySelector("[data-theme-label]");
-    const applyTheme = (theme) => {
-        document.documentElement.dataset.theme = theme;
-        try { localStorage.setItem("betafit-theme", theme); } catch { }
-        if (themeToggle) themeToggle.setAttribute("aria-pressed", theme === "dark");
-        if (themeLabel) themeLabel.textContent = theme === "dark" ? "Claro" : "Escuro";
-    };
-    const savedTheme = (() => { try { return localStorage.getItem("betafit-theme"); } catch { return null; } })();
-    const initialTheme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-    applyTheme(initialTheme);
-    themeToggle?.addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
-
-    // ---------------------------------------------------------------------
-    // Loading e feedback de operações
-    // ---------------------------------------------------------------------
-    const pageLoader = document.querySelector("[data-page-loader]");
-    const showLoader = () => pageLoader?.classList.add("is-visible");
-    document.querySelectorAll("form[data-busy-form]").forEach((form) => {
-        form.addEventListener("submit", (event) => {
-            if (!form.checkValidity()) return;
-            form.classList.add("is-busy");
-            const button = form.querySelector("button[type=submit]");
-            if (button) {
-                button.dataset.originalText ??= button.textContent;
-                button.textContent = button.dataset.busyLabel || "Processando...";
-                button.disabled = true;
-            }
-            showLoader();
-        });
-    });
-
-    document.querySelectorAll(".bf-alert").forEach((alert) => {
-        window.setTimeout(() => {
-            alert.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-6px)" }], { duration: 220, fill: "forwards" });
-            window.setTimeout(() => alert.remove(), 240);
-        }, 5200);
-    });
-
-    const toastRegion = document.querySelector("[data-toast-region]");
-    window.betaFitToast = (message, type = "success") => {
-        if (!toastRegion || !message) return;
-        const toast = document.createElement("div");
-        toast.className = `bf-toast bf-toast--${type}`;
-        toast.textContent = message;
-        toastRegion.appendChild(toast);
-        window.setTimeout(() => toast.remove(), 4200);
-    };
-
 
     root.classList.add("bf-js");
 
@@ -664,91 +609,6 @@ document.addEventListener('DOMContentLoaded', () => {
     cat?.addEventListener('change', filterSizes); filterSizes();
 });
 
-// Product detail gallery: thumbnails, hover-revealed navigation and white full-screen viewer.
-(() => {
-    const gallery = document.querySelector('[data-product-gallery]');
-    const lightbox = document.querySelector('[data-product-lightbox]');
-    if (!gallery || !lightbox) return;
-
-    const thumbnails = [...gallery.querySelectorAll('[data-gallery-select]')];
-    const images = thumbnails.map(button => button.querySelector('img')?.src).filter(Boolean);
-    const mainImage = gallery.querySelector('[data-gallery-main]');
-    const count = gallery.querySelector('[data-gallery-count]');
-    const lightboxImage = lightbox.querySelector('[data-lightbox-image]');
-    const lightboxCount = lightbox.querySelector('[data-lightbox-count]');
-    const lightboxThumbnails = [...lightbox.querySelectorAll('[data-lightbox-select]')];
-    const zoomArea = lightbox.querySelector('[data-lightbox-zoom-area]');
-    const lens = lightbox.querySelector('[data-lightbox-lens]');
-    const zoomButton = lightbox.querySelector('[data-lightbox-zoom]');
-    let zoomEnabled = false;
-    let current = 0;
-
-    if (!mainImage || !lightboxImage || images.length === 0) return;
-
-    const normalize = index => (index + images.length) % images.length;
-    const update = (index) => {
-        current = normalize(index);
-        const source = images[current];
-        mainImage.src = source;
-        lightboxImage.src = source;
-        if (lens) lens.style.backgroundImage = `url("${source}")`;
-        const label = `${current + 1} / ${images.length}`;
-        if (count) count.textContent = label;
-        if (lightboxCount) lightboxCount.textContent = label;
-        thumbnails.forEach((button, position) => {
-            const active = position === current;
-            button.classList.toggle('is-active', active);
-            button.setAttribute('aria-current', active ? 'true' : 'false');
-        });
-        lightboxThumbnails.forEach((button, position) => button.classList.toggle('is-active', position === current));
-    };
-    const open = () => {
-        update(current);
-        lightbox.setAttribute('aria-hidden', 'false');
-        document.body.classList.add('bf-modal-open');
-    };
-    const close = () => {
-        lightbox.setAttribute('aria-hidden', 'true');
-        document.body.classList.remove('bf-modal-open');
-        zoomEnabled = false;
-        zoomArea?.classList.remove('is-zoom-enabled');
-        zoomButton?.setAttribute('aria-pressed', 'false');
-    };
-
-    thumbnails.forEach((button, index) => button.addEventListener('click', () => update(index)));
-    gallery.querySelector('[data-gallery-previous]')?.addEventListener('click', () => update(current - 1));
-    gallery.querySelector('[data-gallery-next]')?.addEventListener('click', () => update(current + 1));
-    gallery.querySelector('[data-gallery-expand]')?.addEventListener('click', open);
-    lightbox.querySelectorAll('[data-lightbox-close]').forEach(button => button.addEventListener('click', close));
-    lightbox.querySelector('[data-lightbox-previous]')?.addEventListener('click', () => update(current - 1));
-    lightbox.querySelector('[data-lightbox-next]')?.addEventListener('click', () => update(current + 1));
-    lightboxThumbnails.forEach((button, index) => button.addEventListener('click', () => update(index)));
-    zoomButton?.addEventListener('click', () => {
-        zoomEnabled = !zoomEnabled;
-        zoomArea?.classList.toggle('is-zoom-enabled', zoomEnabled);
-        zoomButton.setAttribute('aria-pressed', String(zoomEnabled));
-    });
-    zoomArea?.addEventListener('pointermove', event => {
-        if (!zoomEnabled || !lens || event.pointerType === 'touch') return;
-        const rect = zoomArea.getBoundingClientRect();
-        const x = Math.max(0, Math.min(event.clientX - rect.left, rect.width));
-        const y = Math.max(0, Math.min(event.clientY - rect.top, rect.height));
-        const zoom = 2.4;
-        const halfLens = lens.offsetWidth / 2;
-        lens.style.left = `${x}px`;
-        lens.style.top = `${y}px`;
-        lens.style.backgroundSize = `${rect.width * zoom}px ${rect.height * zoom}px`;
-        lens.style.backgroundPosition = `${halfLens - x * zoom}px ${halfLens - y * zoom}px`;
-    });
-    document.addEventListener('keydown', event => {
-        if (lightbox.getAttribute('aria-hidden') !== 'false') return;
-        if (event.key === 'Escape') close();
-        if (event.key === 'ArrowLeft') update(current - 1);
-        if (event.key === 'ArrowRight') update(current + 1);
-    });
-    update(0);
-})();
-
 // First-checkout progress: makes each completed part of the delivery and payment form visible.
 (() => {
     const journey = document.querySelector('[data-checkout-journey]');
@@ -854,5 +714,4 @@ document.querySelectorAll('[data-product-rail]').forEach(rail => { const track =
 const drawer = document.querySelector('[data-filter-drawer]'); document.querySelector('[data-filter-open]')?.addEventListener('click', () => { drawer?.classList.add('is-open'); drawer?.setAttribute('aria-hidden', 'false'); }); drawer?.querySelectorAll('[data-filter-close]').forEach(x => x.addEventListener('click', () => { drawer.classList.remove('is-open'); drawer.setAttribute('aria-hidden', 'true'); }));
 document.querySelectorAll('[data-select-all]').forEach(all => all.addEventListener('change', () => all.closest('form')?.querySelectorAll('[data-select-item]').forEach(x => x.checked = all.checked)));
 document.querySelectorAll('[data-notifications-toggle]').forEach(button => button.addEventListener('click', event => { event.stopPropagation(); button.closest('[data-notifications]')?.classList.toggle('is-open'); })); document.addEventListener('click', () => document.querySelectorAll('[data-notifications].is-open').forEach(x => x.classList.remove('is-open')));
-document.querySelectorAll('[data-color-choice]').forEach(input => input.addEventListener('change', () => { const label = document.querySelector('[data-selected-color]'); if (label) label.textContent = input.value; const image = input.dataset.colorImage; const main = document.querySelector('[data-gallery-main]'); if (image && main) main.src = image; })); document.querySelectorAll('input[name="size"]').forEach(input => input.addEventListener('change', () => { const label = document.querySelector('[data-selected-size]'); if (label) label.textContent = input.value; }));
-const sizeGuide = document.querySelector('[data-size-guide]'); document.querySelector('[data-size-guide-open]')?.addEventListener('click', () => { sizeGuide?.classList.add('is-open'); sizeGuide?.setAttribute('aria-hidden', 'false'); }); sizeGuide?.querySelectorAll('[data-size-guide-close]').forEach(x => x.addEventListener('click', () => { sizeGuide.classList.remove('is-open'); sizeGuide.setAttribute('aria-hidden', 'true'); }));
+document.querySelectorAll('input[name="size"]').forEach(input=>input.addEventListener('change',()=>{const label=document.querySelector('[data-selected-size]');if(label)label.textContent=input.value;}));

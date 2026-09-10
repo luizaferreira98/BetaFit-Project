@@ -93,6 +93,7 @@
     </div>
 
     <label class="bf-check"><input asp-for="IsFeatured" type="checkbox" /><span>Produto em destaque na loja</span></label>
+    @await Html.PartialAsync("_ProductExtras",Model)
     <div class="bf-form-actions">
         <a class="bf-btn bf-btn--ghost" asp-controller="Admin" asp-action="Index">Cancelar</a>
         <button class="bf-btn bf-btn--dark" type="submit">Salvar produto <span>→</span></button>

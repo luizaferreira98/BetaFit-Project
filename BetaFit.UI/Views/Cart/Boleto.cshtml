@@ -1,0 +1,10 @@
+@model OrderDto
+@using BetaFit.Application.Services
+@{ViewData["Title"]="Boleto demonstrativo";var digits=Model.BoletoDigits??"";}
+<section class="bf-section"><div class="bf-container"><div class="bf-boleto-actions"><a asp-controller="Orders" asp-action="Details" asp-route-id="@Model.Id">← Voltar ao pedido</a><button type="button" class="bf-btn bf-btn--dark" onclick="window.print()">Imprimir / salvar PDF</button></div>
+<article class="bf-boleto"><header><strong>BETA<span>FIT</span> · BANCO FICTÍCIO 000</strong><b>SIMULAÇÃO — SEM VALOR BANCÁRIO</b></header>
+<h1>Boleto demonstrativo</h1><p>Este documento não pode ser pago em bancos, lotéricas ou aplicativos.</p>
+<div class="bf-boleto-line">@DemoBoleto.Line(digits)</div><div class="bf-boleto-grid"><div><small>Beneficiário</small><strong>Beta Fit · Loja demonstrativa</strong></div><div><small>Vencimento</small><strong>@Model.BoletoDueAt?.ToString("dd/MM/yyyy")</strong></div><div><small>Documento</small><strong>Pedido #@Model.Id</strong></div><div><small>Valor</small><strong>@Model.Total.ToString("C")</strong></div><div><small>Pagador</small><strong>@Model.UserName · CPF @Model.CustomerCpf</strong><p>@Model.ShippingStreet, @Model.ShippingNumber · @Model.ShippingCity/@Model.ShippingState</p></div><div><small>Situação</small><strong>@Model.PaymentStatus</strong></div></div>
+<p>Dados fictícios gerados internamente para demonstração. Sem juros ou multa. Use o botão abaixo para simular a baixa do pagamento.</p><div class="bf-boleto-barcode">@Html.Raw(DemoBoleto.Barcode(digits))</div><small>SIMULAÇÃO · NÃO PAGÁVEL · @DemoBoleto.Line(digits)</small></article>
+@if(Model.Status!="Cancelado" && !Model.PaymentStatus.Contains("Pago",StringComparison.OrdinalIgnoreCase)){<form class="bf-boleto-actions" asp-action="ConfirmBoleto" asp-route-id="@Model.Id" method="post">@Html.AntiForgeryToken()<button class="bf-btn bf-btn--dark">Simular pagamento do boleto</button></form>}
+</div></section>

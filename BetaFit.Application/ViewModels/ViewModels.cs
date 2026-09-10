@@ -74,7 +74,10 @@ namespace BetaFit.Application.ViewModels
         public List<string> KeepImageUrls { get; set; } = new();
         public List<string> AvailableSizes { get; set; } = new();
         public List<string> AvailableColors { get; set; } = new();
-        public Dictionary<string, string> ColorImageUrls { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, List<string>> ColorGalleries { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    public Dictionary<string, Dictionary<string, decimal>> SizeMeasurements { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    public bool MeasurementsAreDemo { get; set; } = true;
+    public Dictionary<string, string> ColorImageUrls { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
         public Gender Gender { get; set; }
 

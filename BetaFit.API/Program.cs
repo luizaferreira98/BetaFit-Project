@@ -14,7 +14,6 @@
 // =============================================================================
 
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BetaFit.Application.Interfaces;
 using BetaFit.Application.Services;
@@ -94,18 +93,7 @@ builder.Services.AddHttpClient("MercadoPago", client => client.BaseAddress = new
 // =====================================================================
 // 4. CONTROLLERS
 // =====================================================================
-builder.Services.AddControllers()
-    .ConfigureApiBehaviorOptions(options =>
-    {
-        options.InvalidModelStateResponseFactory = context =>
-        {
-            var message = context.ModelState.Values
-                .SelectMany(v => v.Errors)
-                .Select(e => string.IsNullOrWhiteSpace(e.ErrorMessage) ? "Verifique os dados informados." : e.ErrorMessage)
-                .FirstOrDefault() ?? "Os dados enviados são inválidos.";
-            return new BadRequestObjectResult(new { message });
-        };
-    });
+builder.Services.AddControllers();
 
 // =====================================================================
 // 5. SWAGGER — Documentação automática da API
@@ -144,16 +132,6 @@ builder.Services.AddCors(options =>
 builder.Services.AddSignalR();
 
 var app = builder.Build();
-
-app.UseExceptionHandler(exceptionApp =>
-{
-    exceptionApp.Run(async context =>
-    {
-        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        context.Response.ContentType = "application/json";
-        await context.Response.WriteAsJsonAsync(new { message = "Ocorreu um erro inesperado no servidor. Tente novamente." });
-    });
-});
 
 // =====================================================================
 // PIPELINE DE MIDDLEWARES

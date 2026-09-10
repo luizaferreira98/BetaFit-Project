@@ -5,6 +5,9 @@ namespace BetaFit.Domain.Entities
     public class Order
     {
         public int Id { get; set; }
+        public string? BoletoDigits { get; set; }
+        public DateTime? BoletoDueAt { get; set; }
+        public int Installments { get; set; } = 1;
 
         public string UserId { get; set; } = string.Empty;
 

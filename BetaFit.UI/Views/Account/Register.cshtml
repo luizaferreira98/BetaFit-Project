@@ -19,7 +19,7 @@
             }
 
             <form asp-controller="Account" asp-action="Register" method="post" class="bf-form" id="register-form">
-                @Html.AntiForgeryToken()
+                @Html.AntiForgeryToken()<input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
                 <label>Nome completo<input asp-for="FullName" autocomplete="name" maxlength="120" placeholder="Seu nome completo" required /><span asp-validation-for="FullName" class="text-danger"></span></label>
                 <label>E-mail<input asp-for="Email" type="email" autocomplete="email" maxlength="256" placeholder="voce@email.com" required /><span asp-validation-for="Email" class="text-danger"></span></label>
                 <p class="bf-form-hint">Endereços do domínio interno @@betafit são reservados para contas criadas pela administração.</p>

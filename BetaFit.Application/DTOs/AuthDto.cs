@@ -39,6 +39,7 @@ namespace BetaFit.Application.DTOs
         public string? CardBrand { get; set; }
         public string? CardLast4 { get; set; }
         public string? CardExpiry { get; set; }
+        public List<SavedCardDto> Cards { get; set; } = new();
         public IList<string> Roles { get; set; } = new List<string>();
     }
 
@@ -73,8 +74,18 @@ namespace BetaFit.Application.DTOs
         [Required, StringLength(2, MinimumLength = 2)] public string State { get; set; } = string.Empty;
     }
 
+    public class SavedCardDto
+    {
+        public string Id { get; set; } = Guid.NewGuid().ToString("N");
+        public string Holder { get; set; } = "";
+        public string Brand { get; set; } = "";
+        public string Last4 { get; set; } = "";
+        public string Expiry { get; set; } = "";
+        public string Type { get; set; } = "Credito";
+    }
     public class PaymentCardDto
     {
+        [Required, RegularExpression("^(Credito|Debito)$")] public string Type { get; set; } = "Credito";
         [Required, StringLength(120, MinimumLength = 3)] public string CardHolderName { get; set; } = string.Empty;
         [Required, RegularExpression(@"^\d{13,19}$", ErrorMessage = "Informe um número de cartão válido.")]
         public string CardNumber { get; set; } = string.Empty;

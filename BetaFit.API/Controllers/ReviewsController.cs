@@ -20,7 +20,7 @@ public class ReviewsController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetByProduct(int productId)
     {
-        var rows=await _db.ProductReviews.Where(x=>x.ProductId==productId).OrderByDescending(x=>x.CreatedAt).Take(50).ToListAsync();
+        var rows=await _db.ProductReviews.Where(x=>x.ProductId==productId && x.ModerationStatus=="Aprovado").OrderByDescending(x=>x.CreatedAt).Take(50).ToListAsync();
         var result=new List<ReviewDto>(); foreach(var row in rows) result.Add(await MapAsync(row)); return Ok(result);
     }
 
@@ -57,6 +57,19 @@ public class ReviewsController : ControllerBase
         }
         return Ok(await MapAsync(review));
     }
+    [Authorize(Roles="Admin"), HttpGet("moderation")]
+    public async Task<IActionResult> Moderation()
+    {
+        var rows=await _db.ProductReviews.OrderByDescending(x=>x.CreatedAt).ToListAsync();
+        var result=new List<ReviewDto>(); foreach(var row in rows)result.Add(await MapAsync(row)); return Ok(result);
+    }
+    [Authorize(Roles="Admin"), HttpPut("{id:int}/moderation")]
+    public async Task<IActionResult> Moderate(int id, [FromBody] string status)
+    {
+        if(status is not ("Aprovado" or "Rejeitado" or "Pendente"))return BadRequest();
+        var row=await _db.ProductReviews.FindAsync(id); if(row is null)return NotFound();
+        row.ModerationStatus=status; await _db.SaveChangesAsync(); return NoContent();
+    }
     private async Task<ReviewDto> MapAsync(ProductReview x)
     {
         var user = await _users.FindByIdAsync(x.UserId);
@@ -64,7 +77,7 @@ public class ReviewsController : ControllerBase
         var displayName = claims.FirstOrDefault(c => c.Type == "FullName")?.Value;
         return new ReviewDto
         {
-            Id=x.Id, OrderId=x.OrderId, ProductId=x.ProductId,
+            ModerationStatus=x.ModerationStatus, Id=x.Id, OrderId=x.OrderId, ProductId=x.ProductId,
             UserName=string.IsNullOrWhiteSpace(displayName) ? "Cliente" : displayName,
             Rating=x.Rating, Comment=x.Comment,
             PhotoUrls=JsonSerializer.Deserialize<List<string>>(x.PhotoUrlsJson)??new(), CreatedAt=x.CreatedAt

@@ -26,3 +26,9 @@ public class ProfileChangeResponseDto
     public string Message { get; set; } = string.Empty;
     public UserDto? User { get; set; }
 }
+
+public class RequestEmailChangeDto
+{
+    [Required,EmailAddress,StringLength(256)] public string Email { get; set; } = "";
+    [Required,StringLength(100)] public string CurrentPassword { get; set; } = "";
+}

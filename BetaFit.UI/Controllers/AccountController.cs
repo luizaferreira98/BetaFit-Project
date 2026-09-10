@@ -64,17 +64,17 @@ namespace BetaFit.UI.Controllers
         }
 
         [HttpGet("Register")]
-        public IActionResult Register()
+        public IActionResult Register(string? returnUrl = null)
         {
-            ViewData["Title"] = "Criar conta";
+            ViewData["Title"] = "Criar conta"; ViewData["ReturnUrl"] = returnUrl;
             return View(new RegisterDto());
         }
 
         [HttpPost("Register")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterDto dto)
+        public async Task<IActionResult> Register(RegisterDto dto, string? returnUrl = null)
         {
-            ViewData["Title"] = "Criar conta";
+            ViewData["Title"] = "Criar conta"; ViewData["ReturnUrl"] = returnUrl;
 
             if (!ModelState.IsValid)
                 return View(dto);
@@ -97,7 +97,7 @@ namespace BetaFit.UI.Controllers
             if (!signedIn)
                 return RedirectToAction(nameof(Login));
 
-            return RedirectToAction("Index", "Home");
+            return !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl) ? LocalRedirect(returnUrl) : RedirectToAction("Index", "Home");
         }
 
         [HttpPost("Logout")]
@@ -155,7 +155,10 @@ namespace BetaFit.UI.Controllers
             var profile = await GetProfileAsync(); if (profile is null) return RedirectToAction(nameof(Login));
             if (string.IsNullOrWhiteSpace(email) || email.Length > 256 || !new System.ComponentModel.DataAnnotations.EmailAddressAttribute().IsValid(email))
                 return await ProfileErrorAsync(profile, "Informe um e-mail válido.");
-            return await SubmitProfileChangeAsync(profile, email.Trim(), currentPassword, null, null);
+            var response=await _apiClient.PostAsJsonAsync("api/profile/email-change",new RequestEmailChangeDto{Email=email.Trim(),CurrentPassword=currentPassword});
+            if(!response.IsSuccessStatusCode)return await ProfileErrorAsync(profile,await ReadApiErrorAsync(response,"Não foi possível enviar o código."));
+            var result=await response.Content.ReadFromJsonAsync<ProfileChangeResponseDto>();
+            TempData["Sucesso"]=result?.Message;return RedirectToAction(nameof(Profile));
         }
 
         [HttpPost("UpdatePassword"), ValidateAntiForgeryToken]
@@ -228,19 +231,22 @@ namespace BetaFit.UI.Controllers
             return RedirectToAction(nameof(Login));
         }
 
-        [HttpGet("ConfirmProfileChange")]
-        public async Task<IActionResult> ConfirmProfileChange(string? token)
+        [HttpPost("ConfirmProfileChange"), ValidateAntiForgeryToken]
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        public async Task<IActionResult> ConfirmProfileChange(string token)
         {
-            if (string.IsNullOrWhiteSpace(token)) return View("ConfirmationResult", "Link inválido ou expirado.");
-            var response = await _authClient.PostAsJsonAsync("api/profile/confirm-change", new ConfirmProfileChangeDto { Token = token });
-            if (!response.IsSuccessStatusCode)
-            {
-                var error = await response.Content.ReadFromJsonAsync<ApiErrorDto>();
-                return View("ConfirmationResult", error?.Message ?? "Link inválido ou expirado.");
-            }
+            var response=await _apiClient.PostAsJsonAsync("api/profile/confirm-change",new ConfirmProfileChangeDto{Token=token??""});
+            if(!response.IsSuccessStatusCode){TempData["Erro"]=await ReadApiErrorAsync(response,"Código inválido ou expirado.");return RedirectToAction(nameof(Profile));}
             Response.Cookies.Delete(".AspNetCore.Identity.Application");
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return View("ConfirmationResult", "Alterações confirmadas. Por segurança, entre novamente na sua conta.");
+            TempData["Sucesso"]="Alterações confirmadas. Entre com os novos dados.";return RedirectToAction(nameof(Login));
+        }
+        [HttpPost("DeleteCard"), ValidateAntiForgeryToken]
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        public async Task<IActionResult> DeleteCard(string id)
+        {
+            var r=await _apiClient.DeleteAsync($"api/profile/cards/{Uri.EscapeDataString(id)}");
+            TempData[r.IsSuccessStatusCode?"Sucesso":"Erro"]=r.IsSuccessStatusCode?"Cartão removido.":"Não foi possível remover o cartão.";return RedirectToAction(nameof(Profile));
         }
 
         [HttpGet("AccessDenied")]

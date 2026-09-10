@@ -22,6 +22,8 @@
                 <h1>Pedido #@Model.Id</h1>
                 <p>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm") · Total <strong>@Model.Total.ToString("C")</strong></p>
                 <p>Status: <strong>@Model.Status</strong> · Pagamento: <strong>@Model.PaymentMethod</strong> (@Model.PaymentStatus)</p>
+                @if(Model.UserId==User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value && Model.PaymentMethod.Contains("Boleto")){<a class="bf-btn bf-btn--outline" asp-controller="Cart" asp-action="Boleto" asp-route-id="@Model.Id">Ver boleto demonstrativo</a>}
+                @if(Model.PaymentMethod.Contains("crédito",StringComparison.OrdinalIgnoreCase)){<p>@Model.PaymentId · @Model.Installments x de @((Model.Total/Model.Installments).ToString("C")) sem juros</p>}
                 @if(Model.UserId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value && Model.PaymentMethod.Contains("Pix",StringComparison.OrdinalIgnoreCase) && !Model.PaymentStatus.Contains("Pago",StringComparison.OrdinalIgnoreCase) && Model.Status!="Cancelado") { <a class="bf-btn bf-btn--outline" asp-controller="Cart" asp-action="Pix" asp-route-id="@Model.Id">Abrir pagamento Pix</a> }
                 @if (Model.UserId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value && (Model.Status == "Pendente" || Model.Status == "Confirmado"))
                 {

@@ -143,6 +143,7 @@ namespace BetaFit.Application.Services
 
         {
 
+            ValidateExtras(dto.ColorGalleries,dto.SizeMeasurements);
             // Garante que o produto está sendo vinculado a uma categoria existente.
 
             var category = await _categoryRepository.GetByIdAsync(dto.CategoryId)
@@ -174,6 +175,9 @@ namespace BetaFit.Application.Services
 
                 AvailableSizesJson = JsonSerializer.Serialize(dto.AvailableSizes.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()),
                 AvailableColorsJson = JsonSerializer.Serialize(dto.AvailableColors.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(20).ToList()),
+                ColorGalleriesJson = JsonSerializer.Serialize(dto.ColorGalleries),
+                SizeMeasurementsJson = JsonSerializer.Serialize(dto.SizeMeasurements),
+                MeasurementsAreDemo = dto.MeasurementsAreDemo,
                 ColorImageUrlsJson = JsonSerializer.Serialize(NormalizeColorImages(dto.AvailableColors, dto.ColorImageUrls)),
 
                 Gender = dto.Gender,
@@ -211,6 +215,7 @@ namespace BetaFit.Application.Services
 
         {
 
+            ValidateExtras(dto.ColorGalleries,dto.SizeMeasurements);
             var product = await _productRepository.GetByIdAsync(id);
 
             if (product == null) return null;
@@ -240,6 +245,9 @@ namespace BetaFit.Application.Services
             product.ImageUrlsJson = JsonSerializer.Serialize(updateImages);
             product.AvailableSizesJson = JsonSerializer.Serialize(dto.AvailableSizes.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList());
             product.AvailableColorsJson = JsonSerializer.Serialize(dto.AvailableColors.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(20).ToList());
+            product.ColorGalleriesJson = JsonSerializer.Serialize(dto.ColorGalleries);
+            product.SizeMeasurementsJson = JsonSerializer.Serialize(dto.SizeMeasurements);
+            product.MeasurementsAreDemo = dto.MeasurementsAreDemo;
             product.ColorImageUrlsJson = JsonSerializer.Serialize(NormalizeColorImages(dto.AvailableColors, dto.ColorImageUrls));
 
             product.Gender = dto.Gender;
@@ -306,6 +314,11 @@ namespace BetaFit.Application.Services
 
         // =====================================================================
 
+        private static void ValidateExtras(Dictionary<string,List<string>> galleries,Dictionary<string,Dictionary<string,decimal>> measurements)
+        {
+            if(galleries is null||galleries.Count>20||galleries.Any(g=>g.Value is null||g.Value.Count>20||g.Value.Any(url=>url.Length>500||!(url.StartsWith("/")&&!url.StartsWith("//")||Uri.TryCreate(url,UriKind.Absolute,out var u)&&u.Scheme=="https"))))throw new InvalidOperationException("Galeria por cor inválida.");
+            if(measurements is null||measurements.Count>30||measurements.Any(s=>s.Value is null||s.Value.Count>12||s.Value.Any(m=>m.Key.Length>80||m.Value<=0||m.Value>500)))throw new InvalidOperationException("Tabela de medidas inválida.");
+        }
         private static List<string> DeserializeList(string? json, params string[] fallback)
         {
             try
@@ -341,6 +354,9 @@ namespace BetaFit.Application.Services
                     : DeserializeList(product.ImageUrlsJson, product.ImageUrl ?? string.Empty),
                 AvailableSizes = DeserializeList(product.AvailableSizesJson),
                 AvailableColors = DeserializeList(product.AvailableColorsJson),
+                ColorGalleries = JsonSerializer.Deserialize<Dictionary<string,List<string>>>(product.ColorGalleriesJson)??new(),
+                SizeMeasurements = JsonSerializer.Deserialize<Dictionary<string,Dictionary<string,decimal>>>(product.SizeMeasurementsJson)??new(),
+                MeasurementsAreDemo = product.MeasurementsAreDemo,
                 ColorImageUrls = DeserializeDictionary(product.ColorImageUrlsJson),
 
                 Gender = product.Gender,

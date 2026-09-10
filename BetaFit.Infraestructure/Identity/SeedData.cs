@@ -344,6 +344,10 @@ namespace BetaFit.Infraestructure.Identity
             foreach (var item in accessories) item.AvailableSizesJson = "[]";
             await context.SaveChangesAsync();
 
+            var clothingIds=await context.Categories.Where(c=>c.Name=="Camisetas"||c.Name=="Leggings"||c.Name=="Moletons"||c.Name=="Shorts").Select(c=>c.Id).ToListAsync();
+            foreach(var p in await context.Products.Where(p=>clothingIds.Contains(p.CategoryId)).ToListAsync())
+                if(string.IsNullOrWhiteSpace(p.AvailableSizesJson)||p.AvailableSizesJson=="[]")p.AvailableSizesJson="[\"P\",\"M\",\"G\",\"GG\",\"XG\"]";
+            await context.SaveChangesAsync();
             // Garante que os produtos antigos também tenham linhas na galeria persistente.
             foreach (var product in await context.Products.Include(p => p.Images).ToListAsync())
             {
@@ -365,6 +369,10 @@ namespace BetaFit.Infraestructure.Identity
                         : name.Contains("verde") || name.Contains("neon") ? new() { "Verde neon" }
                         : new() { "Preto", "Branco" };
                     product.AvailableColorsJson = JsonSerializer.Serialize(currentColors);
+                    if(product.Name.StartsWith("Boné Beta Fit",StringComparison.Ordinal)){
+                        var gallery=new Dictionary<string,List<string>>{{"Preto",new(){"/images/products/betafit_bone_preto.jpg"}},{"Branco",new(){"/images/products/betafit_bone_branco.jpg"}},{"Cinza",new(){"/images/products/betafit_bone_grafite.jpg"}},{"Verde neon",new(){"/images/products/betafit_bone_verde_neon.jpg"}}};
+                        product.ColorGalleriesJson=JsonSerializer.Serialize(gallery);product.ColorImageUrlsJson=JsonSerializer.Serialize(gallery.ToDictionary(x=>x.Key,x=>x.Value[0]));product.AvailableColorsJson=JsonSerializer.Serialize(gallery.Keys);
+                    }
                 }
             }
             await context.SaveChangesAsync();

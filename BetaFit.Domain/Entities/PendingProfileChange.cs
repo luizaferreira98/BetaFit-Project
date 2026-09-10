@@ -4,6 +4,8 @@ public class PendingProfileChange
 {
     public int Id { get; set; }
     public string UserId { get; set; } = string.Empty;
+    public int Attempts { get; set; }
+    public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
     public string TokenHash { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
@@ -23,6 +25,7 @@ public class PendingProfileChange
 
 public class ProductReview
 {
+    public string ModerationStatus { get; set; } = "Pendente";
     public int Id { get; set; }
     public int OrderId { get; set; }
     public int ProductId { get; set; }

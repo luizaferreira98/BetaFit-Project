@@ -146,7 +146,6 @@ namespace BetaFit.UI.Controllers
         /// POST /Catalog/AddToCart
         /// </summary>
         [HttpPost("Catalog/AddToCart")]
-        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToCart(int id, int quantity = 1, string? size = null, string? color = null)
         {

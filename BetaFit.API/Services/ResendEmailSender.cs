@@ -22,7 +22,7 @@ public sealed class ResendEmailSender : IEmailSender
     {
         var key = _configuration["Resend:ApiKey"] ?? Environment.GetEnvironmentVariable("RESEND_API_KEY");
         var from = _configuration["Resend:From"] ?? Environment.GetEnvironmentVariable("RESEND_FROM") ?? "Beta Fit <onboarding@resend.dev>";
-        if (string.IsNullOrWhiteSpace(key))
+        if (string.IsNullOrWhiteSpace(key) || _environment.IsDevelopment() && _configuration["Email:Mode"] == "Outbox")
         {
             if (_environment.IsDevelopment())
             {

@@ -40,7 +40,8 @@ else
     </div><span asp-validation-for="PaymentMethod" class="text-danger"></span>
     <div class="bf-card-checkout" data-card-checkout hidden>
         <div class="bf-card-preview"><span>BETAFIT · PAGAMENTO DEMONSTRATIVO</span><strong data-card-preview-number>•••• •••• •••• ••••</strong><small><b data-card-preview-name>NOME NO CARTÃO</b><b data-card-preview-expiry>MM/AA</b></small></div>
-        @if(Model.HasSavedCard){<label class="bf-check"><input asp-for="UseSavedCard" type="checkbox" data-use-saved-card /><span>Usar cartão salvo: <strong>@Model.SavedCardLabel</strong></span></label>}
+        @if(Model.HasSavedCard){<label class="bf-check"><input asp-for="UseSavedCard" type="checkbox" data-use-saved-card /><span>Escolher um cartão cadastrado</span></label><label data-saved-card-picker>Cartão<select asp-for="SelectedCardId" data-saved-card-select><option value="">Selecione</option>@foreach(var card in Model.SavedCards){<option value="@card.Id" data-card-type="@card.Type" data-card-last="@card.Last4" data-saved-holder="@card.Holder" data-card-exp="@card.Expiry">@(card.Type=="Credito"?"Crédito":"Débito") · @card.Brand •••• @card.Last4 · @card.Expiry · @card.Holder</option>}</select></label>}
+        <label data-installments>Parcelamento<select asp-for="Installments">@for(var i=1;i<=12;i++){<option value="@i">@i x de @((Model.Total/i).ToString("C")) sem juros</option>}</select></label>
         <div class="bf-form-grid" data-new-card-fields>
             <label class="bf-form-grid__full">Nome impresso<input asp-for="CardHolderName" maxlength="120" autocomplete="cc-name" data-card-holder /></label>
             <label>Número do cartão<input asp-for="CardNumber" inputmode="numeric" minlength="13" maxlength="19" autocomplete="cc-number" data-card-number placeholder="4111111111111111" /></label>
