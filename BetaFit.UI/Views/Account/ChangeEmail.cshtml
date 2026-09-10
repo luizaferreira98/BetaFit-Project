@@ -1,0 +1,42 @@
+@using BetaFit.Application.DTOs
+@{
+    var pending = ViewData["PendingChange"] as PendingChangeStatusDto;
+    ViewData["Title"] = pending?.CanConfirm == true && !pending.IsEmailChange ? "Confirmar alteração de senha" : "Trocar e-mail";
+}
+<section class="bf-page-hero bf-page-hero--compact"><div class="bf-container"><h1>@ViewData["Title"]</h1><p>Confirme seus dados para atualizar sua conta.</p></div></section>
+<section class="bf-section"><div class="bf-container bf-profile-page">
+<a class="bf-text-link" asp-action="Profile">← Minha conta</a>
+@if(TempData["Sucesso"] is string ok){<div class="bf-alert" role="status">@ok</div>}
+@if(TempData["Erro"] is string error){<div class="bf-alert bf-alert--error" role="alert">@error</div>}
+@if(pending?.CanConfirm == true)
+{
+    <div class="bf-profile-summary">
+        <h2>Confira sua caixa de entrada</h2>
+        <p>Enviamos um código para <strong>@pending.Email</strong>. Você pode abrir seu e-mail em outra aba e voltar a esta página; sua solicitação continuará aqui.</p>
+        <p>O código vale por 10 minutos. A alteração só será concluída depois da confirmação.</p>
+        <form asp-action="ConfirmProfileChange" method="post" class="bf-form">
+            @Html.AntiForgeryToken()
+            <label>Código recebido<input name="token" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" required placeholder="000000" /></label>
+            <button class="bf-btn bf-btn--dark" type="submit">Confirmar alteração</button>
+        </form>
+    </div>
+}
+else if(pending?.ExpiresAt != null)
+{
+    <p class="bf-alert bf-alert--error" role="alert">O código expirou ou atingiu o limite de tentativas. Solicite uma nova alteração.</p>
+}
+@if(pending?.CanConfirm != true || pending.IsEmailChange)
+{
+    <div class="bf-profile-summary">
+        <h2>@(pending?.CanConfirm == true ? "Solicitar outro código ou corrigir o endereço" : "Informe seus e-mails")</h2>
+        <form asp-action="UpdateEmail" method="post" class="bf-form">
+            @Html.AntiForgeryToken()
+            <label>E-mail atual<input name="currentEmail" type="email" maxlength="256" autocomplete="username" required /></label>
+            <label>Senha atual<input name="currentPassword" type="password" maxlength="100" autocomplete="current-password" required /></label>
+            <label>Novo e-mail<input name="email" type="email" maxlength="256" autocomplete="email" required /></label>
+            <button class="bf-btn bf-btn--dark" type="submit">Enviar código ao novo e-mail</button>
+            <small>Aguarde um minuto entre solicitações. Um novo código substitui o anterior.</small>
+        </form>
+    </div>
+}
+</div></section>

@@ -141,24 +141,47 @@ namespace BetaFit.UI.Controllers
             if(result?.RequiresVerification==true)
             {
                 TempData["Sucesso"]=result.Message;
-                return RedirectToAction(nameof(Profile));
+                return RedirectToAction(nameof(ChangeEmail));
             }
             if(result?.User!=null) await RefreshLocalIdentityAsync(result.User);
             TempData["Sucesso"]=result?.Message??"Perfil atualizado com sucesso.";
             return RedirectToAction(nameof(Profile));
         }
 
+        [HttpGet("Cards"), Microsoft.AspNetCore.Authorization.Authorize]
+        public async Task<IActionResult> Cards()
+        {
+            var profile = await GetProfileAsync();
+            return profile is null ? RedirectToAction(nameof(Login)) : View(profile);
+        }
+
+        [HttpGet("ChangeEmail"), Microsoft.AspNetCore.Authorization.Authorize]
+        public async Task<IActionResult> ChangeEmail()
+        {
+            var profile = await GetProfileAsync();
+            if (profile is null) return RedirectToAction(nameof(Login));
+            ViewData["PendingChange"] = await _apiClient.GetFromJsonAsync<PendingChangeStatusDto>("api/profile/pending-change");
+            return View();
+        }
+
         [HttpPost("UpdateEmail"), ValidateAntiForgeryToken]
         [Microsoft.AspNetCore.Authorization.Authorize]
-        public async Task<IActionResult> UpdateEmail(string email, string currentPassword)
+        public async Task<IActionResult> UpdateEmail(string email, string currentEmail, string currentPassword)
         {
-            var profile = await GetProfileAsync(); if (profile is null) return RedirectToAction(nameof(Login));
-            if (string.IsNullOrWhiteSpace(email) || email.Length > 256 || !new System.ComponentModel.DataAnnotations.EmailAddressAttribute().IsValid(email))
-                return await ProfileErrorAsync(profile, "Informe um e-mail válido.");
-            var response=await _apiClient.PostAsJsonAsync("api/profile/email-change",new RequestEmailChangeDto{Email=email.Trim(),CurrentPassword=currentPassword});
-            if(!response.IsSuccessStatusCode)return await ProfileErrorAsync(profile,await ReadApiErrorAsync(response,"Não foi possível enviar o código."));
-            var result=await response.Content.ReadFromJsonAsync<ProfileChangeResponseDto>();
-            TempData["Sucesso"]=result?.Message;return RedirectToAction(nameof(Profile));
+            var dto = new RequestEmailChangeDto { Email=email?.Trim() ?? "", CurrentEmail=currentEmail?.Trim() ?? "", CurrentPassword=currentPassword ?? "" };
+            ModelState.Clear();
+            if (!TryValidateModel(dto))
+            {
+                TempData["Erro"]="Informe o e-mail atual, a senha e um novo e-mail válido.";
+                return RedirectToAction(nameof(ChangeEmail));
+            }
+            var response=await _apiClient.PostAsJsonAsync("api/profile/email-change",dto);
+            if(!response.IsSuccessStatusCode) TempData["Erro"]=await ReadApiErrorAsync(response,"Não foi possível enviar o código.");
+            else {
+                var result=await response.Content.ReadFromJsonAsync<ProfileChangeResponseDto>();
+                TempData["Sucesso"]=result?.Message;
+            }
+            return RedirectToAction(nameof(ChangeEmail));
         }
 
         [HttpPost("UpdatePassword"), ValidateAntiForgeryToken]
@@ -187,12 +210,23 @@ namespace BetaFit.UI.Controllers
         public async Task<IActionResult> UpdateCard(PaymentCardDto dto)
         {
             var profile = await GetProfileAsync(); if (profile is null) return RedirectToAction(nameof(Login));
-            dto.CardNumber = new string((dto.CardNumber ?? string.Empty).Where(char.IsDigit).ToArray());
-            dto.SecurityCode = new string((dto.SecurityCode ?? string.Empty).Where(char.IsDigit).ToArray());
-            if (!ModelState.IsValid) return await ProfileErrorAsync(profile, "Revise os dados do cartão demonstrativo.");
+            // Revalidate the normalized DTO; MVC's original ModelState predates normalization.
+            dto.CardNumber = (dto.CardNumber ?? "").Replace(" ", "").Replace("-", "");
+            dto.CardHolderName = dto.CardHolderName?.Trim() ?? "";
+            dto.Expiry = dto.Expiry?.Trim() ?? "";
+            dto.SecurityCode = dto.SecurityCode?.Trim() ?? "";
+            ModelState.Clear();
+            ViewData["CardForm"] = dto;
+            if (!TryValidateModel(dto)) return View("Cards", profile);
             var response = await _apiClient.PutAsJsonAsync("api/profile/card", dto);
-            if (!response.IsSuccessStatusCode) return await ProfileErrorAsync(profile, await ReadApiErrorAsync(response, "Não foi possível salvar o cartão."));
-            TempData["Sucesso"] = "Cartão demonstrativo cadastrado. Apenas bandeira, final e validade foram armazenados."; return RedirectToAction(nameof(Profile));
+            if (!response.IsSuccessStatusCode)
+            {
+                ModelState.Clear();
+                ModelState.AddModelError("", await ReadApiErrorAsync(response, "Não foi possível salvar o cartão."));
+                return View("Cards", profile);
+            }
+            TempData["Sucesso"] = "Cartão cadastrado com sucesso.";
+            return RedirectToAction(nameof(Cards));
         }
 
         [HttpGet("ForgotPassword")]
@@ -236,7 +270,7 @@ namespace BetaFit.UI.Controllers
         public async Task<IActionResult> ConfirmProfileChange(string token)
         {
             var response=await _apiClient.PostAsJsonAsync("api/profile/confirm-change",new ConfirmProfileChangeDto{Token=token??""});
-            if(!response.IsSuccessStatusCode){TempData["Erro"]=await ReadApiErrorAsync(response,"Código inválido ou expirado.");return RedirectToAction(nameof(Profile));}
+            if(!response.IsSuccessStatusCode){TempData["Erro"]=await ReadApiErrorAsync(response,"Código inválido ou expirado.");return RedirectToAction(nameof(ChangeEmail));}
             Response.Cookies.Delete(".AspNetCore.Identity.Application");
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             TempData["Sucesso"]="Alterações confirmadas. Entre com os novos dados.";return RedirectToAction(nameof(Login));
@@ -246,7 +280,7 @@ namespace BetaFit.UI.Controllers
         public async Task<IActionResult> DeleteCard(string id)
         {
             var r=await _apiClient.DeleteAsync($"api/profile/cards/{Uri.EscapeDataString(id)}");
-            TempData[r.IsSuccessStatusCode?"Sucesso":"Erro"]=r.IsSuccessStatusCode?"Cartão removido.":"Não foi possível remover o cartão.";return RedirectToAction(nameof(Profile));
+            TempData[r.IsSuccessStatusCode?"Sucesso":"Erro"]=r.IsSuccessStatusCode?"Cartão removido.":"Não foi possível remover o cartão.";return RedirectToAction(nameof(Cards));
         }
 
         [HttpGet("AccessDenied")]
@@ -340,7 +374,7 @@ namespace BetaFit.UI.Controllers
             var response = await _apiClient.PutAsJsonAsync("api/profile", dto);
             if (!response.IsSuccessStatusCode) return await ProfileErrorAsync(profile, await ReadApiErrorAsync(response, "Não foi possível atualizar a conta."));
             var result = await response.Content.ReadFromJsonAsync<ProfileChangeResponseDto>();
-            TempData["Sucesso"] = result?.Message ?? "Solicitação registrada."; return RedirectToAction(nameof(Profile));
+            TempData["Sucesso"] = result?.Message ?? "Solicitação registrada."; return RedirectToAction(result?.RequiresVerification == true ? nameof(ChangeEmail) : nameof(Profile));
         }
 
         private Task<IActionResult> ProfileErrorAsync(UserDto profile, string message)
@@ -350,10 +384,18 @@ namespace BetaFit.UI.Controllers
 
         private static async Task<string> ReadApiErrorAsync(HttpResponseMessage response, string fallback)
         {
-            try { var error=await response.Content.ReadFromJsonAsync<ApiErrorDto>(); return string.IsNullOrWhiteSpace(error?.Message)?fallback:error.Message; }
+            try {
+                var error=await response.Content.ReadFromJsonAsync<ApiErrorDto>();
+                if (!string.IsNullOrWhiteSpace(error?.Message)) return error.Message;
+                var validation = error?.Errors?.Values.SelectMany(messages => messages).Distinct().ToArray();
+                return validation?.Length > 0 ? string.Join(" ", validation) : fallback;
+            }
             catch { return fallback; }
         }
 
-        private sealed class ApiErrorDto { public string Message { get; set; } = string.Empty; }
+        private sealed class ApiErrorDto {
+            public string Message { get; set; } = string.Empty;
+            public Dictionary<string, string[]>? Errors { get; set; }
+        }
     }
 }

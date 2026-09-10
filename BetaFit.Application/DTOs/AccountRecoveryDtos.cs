@@ -29,6 +29,15 @@ public class ProfileChangeResponseDto
 
 public class RequestEmailChangeDto
 {
+    [Required,EmailAddress,StringLength(256)] public string CurrentEmail { get; set; } = "";
     [Required,EmailAddress,StringLength(256)] public string Email { get; set; } = "";
     [Required,StringLength(100)] public string CurrentPassword { get; set; } = "";
+}
+
+public class PendingChangeStatusDto
+{
+    public string Email { get; set; } = "";
+    public DateTime? ExpiresAt { get; set; }
+    public bool IsEmailChange { get; set; }
+    public bool CanConfirm { get; set; }
 }

@@ -28,6 +28,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/storefront.css" asp-append-version="true" /><link rel="stylesheet" href="~/css/management.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/account-theme.css" asp-append-version="true" />
     <script>try{document.documentElement.dataset.theme=localStorage.getItem("betafit-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch{}</script>
 </head>
 <body>
@@ -46,9 +47,11 @@
                 BETA<span>FIT</span>
             </a>
 
-            <nav class="bf-nav" aria-label="Navegação principal">
+            <button type="button" class="bf-menu-toggle bf-icon-link" data-menu-toggle aria-controls="header-navigation header-actions" aria-expanded="false" aria-label="Abrir menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+            <nav id="header-navigation" class="bf-nav" aria-label="Navegação principal">
                 <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "is-active" : "")" asp-controller="Home" asp-action="Index">Início</a>
                 <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Catalog" ? "is-active" : "")" asp-controller="Catalog" asp-action="Index">Catálogo</a>
+                @if (isAuthenticated) { <a asp-controller="Orders" asp-action="MyOrders">Minhas compras</a> }
                 @foreach(var link in siteSettings.HeaderLinks.Where(x=>!string.IsNullOrWhiteSpace(x.Label)&&!string.IsNullOrWhiteSpace(x.Url))){<a href="@link.Url">@link.Label</a>}
                 @if (isAdmin || isStaff)
                 {
@@ -56,8 +59,8 @@
                 }
             </nav>
 
-            <form class="bf-header-search" action="/Catalog" method="get"><input name="searchTerm" placeholder="Buscar produtos" aria-label="Buscar produtos"/><button aria-label="Buscar">⌕</button></form><div class="bf-header__actions">
-                <button type="button" class="bf-icon-link bf-icon-button" data-theme-toggle aria-label="Ativar modo escuro" title="Alternar tema"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14A8 8 0 0 1 10 4a8 8 0 1 0 10 10Z"/></svg></button>
+            <div id="header-actions" class="bf-header__actions">
+                <button type="button" class="bf-icon-link bf-icon-button" data-theme-toggle aria-label="Ativar modo escuro" title="Alternar tema"><svg class="bf-theme-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14A8 8 0 0 1 10 4a8 8 0 1 0 10 10Z"/></svg><svg class="bf-theme-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button>
                 <a class="bf-icon-link" asp-controller="Favorites" asp-action="Index" aria-label="Favoritos" title="Favoritos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 5c-3-3-6-1-8 1-2-2-5-4-8-1-4 4 2 9 8 14 6-5 12-10 8-14Z"/></svg></a>
                 <a class="bf-icon-link" asp-controller="Cart" asp-action="Index" aria-label="Carrinho" title="Carrinho"><b class="bf-cart-count">@cartCount</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l1 14H4L5 7ZM8 7V5a4 4 0 0 1 8 0v2"/></svg></a>
                 @if (isAuthenticated)
@@ -131,3 +134,4 @@
 <script src="~/js/management.js" asp-append-version="true"></script>
 </body>
 </html>
+

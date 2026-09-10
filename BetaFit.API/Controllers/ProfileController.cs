@@ -26,10 +26,23 @@ public class ProfileController : ControllerBase
     public async Task<ActionResult<UserDto>> Get()
     { var user=await _users.GetUserAsync(User); return user is null ? Unauthorized() : Ok(await Map(user)); }
 
+    [HttpGet("pending-change")]
+    public async Task<ActionResult<PendingChangeStatusDto>> PendingChange()
+    {
+        var user = await _users.GetUserAsync(User); if (user is null) return Unauthorized();
+        var pending = await _db.PendingProfileChanges.AsNoTracking().FirstOrDefaultAsync(x => x.UserId == user.Id);
+        return Ok(new PendingChangeStatusDto {
+            Email = pending?.Email ?? "", ExpiresAt = pending?.ExpiresAt,
+            IsEmailChange = pending != null && !string.Equals(user.Email, pending.Email, StringComparison.OrdinalIgnoreCase),
+            CanConfirm = pending != null && pending.ExpiresAt > DateTime.UtcNow && pending.Attempts < 5
+        });
+    }
+
     [HttpPost("email-change")]
     public async Task<ActionResult<ProfileChangeResponseDto>> RequestEmailChange(RequestEmailChangeDto dto)
     {
         var user=await _users.GetUserAsync(User);if(user is null)return Unauthorized();
+        if (!string.Equals(dto.CurrentEmail.Trim(), user.Email, StringComparison.OrdinalIgnoreCase)) return BadRequest(new { message="O e-mail atual informado não corresponde à sua conta." });
         if(string.Equals(dto.Email.Trim(),user.Email,StringComparison.OrdinalIgnoreCase))return BadRequest(new{message="Informe um e-mail diferente do atual."});
         var profile=await Map(user);
         // Sensitive changes depend on the existing server profile, not unrelated client fields.
@@ -62,6 +75,9 @@ public class ProfileController : ControllerBase
             _db.PendingProfileChanges.Add(pending); await _db.SaveChangesAsync();
             var target=emailChanged?dto.Email.Trim():user.Email!;
             var html=$"<h2>Beta Fit</h2><p>Seu código de confirmação é:</p><p style='font-size:32px;font-weight:bold'>{raw}</p><p>Válido por 10 minutos. Se não solicitou, ignore esta mensagem.</p>";
+            var baseUrl = _config["App:PublicBaseUrl"]?.TrimEnd('/');
+            if (Uri.TryCreate(baseUrl, UriKind.Absolute, out var publicUri) && (publicUri.Scheme == "https" || publicUri.Scheme == "http"))
+                html += $"<p><a href='{System.Net.WebUtility.HtmlEncode(baseUrl + "/Account/ChangeEmail")}'>Voltar à página de confirmação</a></p>";
             try { await _email.SendAsync(target,"Confirme uma alteração de segurança — Beta Fit",html); }
             catch(InvalidOperationException ex){_db.PendingProfileChanges.Remove(pending);await _db.SaveChangesAsync();return StatusCode(503,new{message=ex.Message});}
             return Ok(new ProfileChangeResponseDto{RequiresVerification=true,Message=_config["Email:Mode"]=="Outbox"?"Modo de teste: nenhuma mensagem foi enviada. Consulte o código no terminal da API. Seu e-mail ainda não foi alterado.":"Código enviado ao novo e-mail. Confira a caixa de entrada e o spam. Seu e-mail atual permanece até a confirmação."});
@@ -98,7 +114,7 @@ public class ProfileController : ControllerBase
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
         var user = await _users.GetUserAsync(User); if (user is null) return Unauthorized();
         var number = new string(dto.CardNumber.Where(char.IsDigit).ToArray());
-        if (!PassesLuhn(number)) return BadRequest(new { message = "O número do cartão demonstrativo não passou na validação." });
+        if (!PassesLuhn(number)) return BadRequest(new { message = "Número de cartão inválido. Confira os dígitos ou use a opção Preencher cartão de teste (4111 1111 1111 1111)." });
         if (!IsFutureExpiry(dto.Expiry)) return BadRequest(new { message = "A validade do cartão deve estar no futuro." });
         var claims = await _users.GetClaimsAsync(user);
         if(BetaFit.Application.Services.DemoWallet.Read(claims).Count>=20) return BadRequest(new{message="Limite de 20 cartões. Remova um cartão para adicionar outro."});

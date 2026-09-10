@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const themeButton = document.querySelector('[data-theme-toggle]');
-  function updateThemeLabel() { const dark=document.documentElement.dataset.theme==='dark';themeButton?.setAttribute('aria-label',dark?'Ativar modo claro':'Ativar modo escuro');themeButton?.setAttribute('aria-pressed',String(dark)); }
+  function updateThemeLabel() { const dark=document.documentElement.dataset.theme==='dark';themeButton?.setAttribute('aria-label',dark?'Ativar modo claro':'Ativar modo escuro');themeButton?.setAttribute('aria-pressed',String(dark));themeButton?.setAttribute('title',dark?'Ativar modo claro':'Ativar modo escuro'); }
   themeButton?.addEventListener('click',()=>{const theme=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=theme;try{localStorage.setItem('betafit-theme',theme)}catch{}updateThemeLabel();});updateThemeLabel();
   document.querySelectorAll('dialog').forEach(dialog=>{
     dialog.querySelectorAll('[data-dialog-close]').forEach(b=>b.addEventListener('click',()=>dialog.close()));
@@ -67,3 +67,35 @@
     };document.querySelectorAll('[name="AvailableSizes"]').forEach(c=>c.addEventListener('change',render));document.querySelector('#product-category')?.addEventListener('change',()=>{values={};render();});render();
   }
 })();
+
+// The same navigation and account actions are available in the mobile menu.
+(() => {
+  const header = document.querySelector('.bf-header');
+  const button = document.querySelector('[data-menu-toggle]');
+  if (!header || !button) return;
+  const setOpen = open => {
+    header.classList.toggle('is-menu-open', open);
+    button.setAttribute('aria-expanded', String(open));
+    button.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+  };
+  button.addEventListener('click', () => setOpen(button.getAttribute('aria-expanded') !== 'true'));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') { setOpen(false); button.focus(); } });
+  document.addEventListener('click', e => { if (!header.contains(e.target)) setOpen(false); });
+  header.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
+  matchMedia('(max-width: 1100px)').addEventListener('change', () => setOpen(false));
+})();
+
+// Demo data is filled only on an explicit click; never substitute submitted data.
+document.querySelectorAll('[data-card-form]').forEach(form => {
+  form.querySelector('[data-fill-demo-card]')?.addEventListener('click', () => {
+    const values = {
+      CardHolderName: 'CLIENTE TESTE', CardNumber: '4111111111111111',
+      Expiry: `12/${String(new Date().getFullYear() + 3).slice(-2)}`, SecurityCode: '123'
+    };
+    Object.entries(values).forEach(([name, value]) => {
+      const input = form.elements.namedItem(name);
+      if (input) { input.value = value; input.dispatchEvent(new Event('input', { bubbles: true })); }
+    });
+    form.querySelector('[data-card-number]')?.focus();
+  });
+});
