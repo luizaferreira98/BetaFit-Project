@@ -11,7 +11,7 @@ public static class ProductCatalogRules
     {
         var values = (sizes ?? Enumerable.Empty<string>()).Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
         if (IsShoeCategory(categoryName)) return values.Where(s => int.TryParse(s, out var n) && n >= 20 && n <= 55).OrderBy(int.Parse).Select(x => x.ToString()).ToList();
-        if (!RequiresSize(categoryName)) return new();
+        if (!RequiresSize(categoryName)) return values.Where(s => s.Length <= 8).ToList();
         return values.Where(s => s.Length <= 8 && !int.TryParse(s, out _)).ToList();
     }
 }

@@ -1,4 +1,4 @@
-﻿
+
 
 using BetaFit.Domain.Entities;
 using Microsoft.EntityFrameworkCore;

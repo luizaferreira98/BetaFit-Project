@@ -1,4 +1,4 @@
-﻿using BetaFit.Application.DTOs;
+using BetaFit.Application.DTOs;
 
 
 namespace BetaFit.Application.Interfaces

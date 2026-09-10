@@ -22,6 +22,9 @@ namespace BetaFit.UI.Controllers
 {
     public class CatalogController : Controller
     {
+        [HttpGet("categoria/{slug}")]
+        public async Task<IActionResult> CategorySlug(string slug){var c=(await _categoryService.GetAllAsync()).FirstOrDefault(c=>c.IsVisible&&c.Slug==slug);return c==null?NotFound():await Index(null,c.Id,null,null,null);}
+
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly HttpReviewService _reviewService;
@@ -58,13 +61,13 @@ namespace BetaFit.UI.Controllers
             try
             {
                 var categories = await _categoryService.GetAllAsync();
-                viewModel.Categories = categories.Where(c => c.IsActive).ToList();
+                viewModel.Categories = categories.Where(c => c.IsVisible).OrderBy(c=>c.SortOrder).ToList();
 
                 var products = categoryId.HasValue
                     ? await _productService.GetByCategoryAsync(categoryId.Value)
                     : await _productService.GetAllAsync();
 
-                var query = products.Where(p => p.IsActive);
+                var visibleCategories=viewModel.Categories.Select(c=>c.Id).ToHashSet();var query = products.Where(p => p.IsActive&&visibleCategories.Contains(p.CategoryId));
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
@@ -82,8 +85,8 @@ namespace BetaFit.UI.Controllers
 
                 query = viewModel.SortBy switch
                 {
-                    "price_asc" => query.OrderBy(p => p.Price),
-                    "price_desc" => query.OrderByDescending(p => p.Price),
+                    "price_asc" => query.OrderBy(p => p.EffectivePrice),
+                    "price_desc" => query.OrderByDescending(p => p.EffectivePrice),
                     "newest" => query.OrderByDescending(p => p.CreatedAt),
                     _ => query.OrderBy(p => p.Name)
                 };
@@ -102,7 +105,7 @@ namespace BetaFit.UI.Controllers
             }
 
             ViewData["ApiUnavailable"] = apiUnavailable;
-            return View(viewModel);
+            return View("Index", viewModel);
         }
 
         /// <summary>

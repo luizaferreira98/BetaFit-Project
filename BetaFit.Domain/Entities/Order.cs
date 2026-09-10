@@ -8,6 +8,15 @@ namespace BetaFit.Domain.Entities
         public string? BoletoDigits { get; set; }
         public DateTime? BoletoDueAt { get; set; }
         public int Installments { get; set; } = 1;
+        public string? TrackingCode {get;set;}
+        public string? TrackingDescription {get;set;}
+        public DateTime? DeliveredAt {get;set;}
+        public int? ExperienceRating {get;set;}
+        public string? ExperienceComment {get;set;}
+        public string? ReviewCoupon {get;set;}
+        public string? CouponCode {get;set;}
+        public decimal Discount {get;set;}
+
 
         public string UserId { get; set; } = string.Empty;
 

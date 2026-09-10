@@ -1,4 +1,4 @@
-﻿using BetaFit.Application.DTOs;
+using BetaFit.Application.DTOs;
 using BetaFit.Application.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
@@ -61,7 +61,8 @@ namespace BetaFit.Application.Services
                 return (false, null, "As senhas não coincidem.");
 
             // Criar o modelo base do Identity (username = email, já que não há campo "Nome")
-            var user = new IdentityUser { UserName = dto.Email, Email = dto.Email };
+            var role = NormalizeRole(dto.Role);
+            var user = new IdentityUser { UserName = dto.Email.Trim(), Email = dto.Email.Trim() };
 
             // Aqui a mágica do Hash de senha acontece
             var result = await _userManager.CreateAsync(user, dto.Password);
@@ -72,11 +73,11 @@ namespace BetaFit.Application.Services
             }
 
             // Adiciona o perfil (ex: "Admin" ou "Usuario")
-            var role = NormalizeRole(dto.Role);
             if (!await _roleManager.RoleExistsAsync(role))
                 await _roleManager.CreateAsync(new IdentityRole(role));
 
             await _userManager.AddToRoleAsync(user, role);
+            await _userManager.AddClaimAsync(user,new System.Security.Claims.Claim("FullName",dto.UserName.Trim()));
 
             var createdUser = new UsuarioDto
             {
@@ -94,8 +95,8 @@ namespace BetaFit.Application.Services
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return (false, null, "Usuário não encontrado.");
 
-            user.UserName = dto.Email;
-            user.Email = dto.Email;
+            if (!string.Equals(user.Email,dto.Email.Trim(),StringComparison.OrdinalIgnoreCase))
+                return (false,null,"O e-mail deve ser alterado pelo titular em Meu perfil, com código de confirmação.");
 
             var updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
@@ -135,6 +136,7 @@ namespace BetaFit.Application.Services
                 await _userManager.AddToRoleAsync(user, requestedRole);
             }
 
+            await _userManager.UpdateSecurityStampAsync(user);
             var rolesAtualizadas = await _userManager.GetRolesAsync(user);
             var updatedUser = new UsuarioDto
             {
@@ -162,13 +164,13 @@ namespace BetaFit.Application.Services
         {
             // Retorna a lista de nomes dos perfis cadastrados no Identity
             await Task.CompletedTask;
-            return new List<string> { "Admin", "Funcionario", "Usuario" };
+            return new List<string> { "Admin", "Estoquista", "Usuario" };
         }
 
         private static string NormalizeRole(string? role) => role?.Trim().ToLowerInvariant() switch
         {
             "admin" => "Admin",
-            "funcionario" or "funcionário" => "Funcionario",
+            "estoquista" or "funcionario" or "funcionário" => "Estoquista",
             "usuario" or "usuário" or null or "" => "Usuario",
             _ => throw new InvalidOperationException("Selecione uma função válida: Admin, Funcionario ou Usuario.")
         };

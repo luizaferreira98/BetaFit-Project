@@ -51,7 +51,7 @@ else
         <p class="bf-form-hint">Para testar, use 4111111111111111, uma validade futura e qualquer CVV de 3 dígitos. O sistema guarda somente bandeira, final e validade.</p>
     </div>
 </div>
-<div class="bf-form-actions"><a class="bf-btn bf-btn--ghost" asp-action="Index">Voltar ao carrinho</a><button class="bf-btn bf-btn--dark" type="submit">Confirmar pedido <span>→</span></button></div></form>
+<label>Cupom de avaliação (opcional)<input asp-for="CouponCode" maxlength="60" placeholder="BF5-..."/><small>5% aplicado ao confirmar o pedido, se o cupom pertencer à sua conta e ainda não tiver sido usado.</small></label><div class="bf-form-actions"><a class="bf-btn bf-btn--ghost" asp-action="Index">Voltar ao carrinho</a><button class="bf-btn bf-btn--dark" type="submit">Confirmar pedido <span>→</span></button></div></form>
 <aside class="bf-cart-summary"><span>Resumo da compra</span>@foreach(var item in Model.Items){<div class="bf-cart-summary__items"><span>@item.Name × @item.Quantity</span><strong>@((item.Price*item.Quantity).ToString("C"))</strong></div>}<div class="bf-cart-summary__total"><strong>Total</strong><strong>@Model.Total.ToString("C")</strong></div><small>Pedido criado apenas para demonstração, sem pagamento real.</small></aside>
 </div></div></section>
 

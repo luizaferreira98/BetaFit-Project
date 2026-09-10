@@ -9,6 +9,11 @@ public class ProductDto
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public decimal Price { get; set; }
+    [System.ComponentModel.DataAnnotations.StringLength(80)] public string Sku { get; set; } = "";
+        [System.ComponentModel.DataAnnotations.Range(0.01,999999.99)] public decimal? SalePrice { get; set; }
+        [System.ComponentModel.DataAnnotations.Range(0,100000)] public int LowStockThreshold { get; set; } = 5;
+public List<BetaFit.Domain.Entities.ProductVariant> Variants {get;set;}=new();
+    public decimal EffectivePrice => SalePrice ?? Price;
     public int Stock { get; set; }
     public string? ImageUrl { get; set; }
     public List<string> ImageUrls { get; set; } = new();
@@ -28,12 +33,18 @@ public class ProductDto
 
 public class CreateProductDto
 {
+    public bool IsActive {get;set;}=true;
     [Required, StringLength(200)]
     public string Name { get; set; } = string.Empty;
     [Required, StringLength(2000)]
     public string Description { get; set; } = string.Empty;
     [Range(0, 999999.99)]
     public decimal Price { get; set; }
+    [System.ComponentModel.DataAnnotations.StringLength(80)] public string Sku { get; set; } = "";
+        [System.ComponentModel.DataAnnotations.Range(0.01,999999.99)] public decimal? SalePrice { get; set; }
+        [System.ComponentModel.DataAnnotations.Range(0,100000)] public int LowStockThreshold { get; set; } = 5;
+public List<BetaFit.Domain.Entities.ProductVariant> Variants {get;set;}=new();
+    public decimal EffectivePrice => SalePrice ?? Price;
     [Range(0, 100000)]
     public int Stock { get; set; } = 999;
     [StringLength(500)]
@@ -58,6 +69,11 @@ public class UpdateProductDto
     public string Description { get; set; } = string.Empty;
     [Range(0, 999999.99)]
     public decimal Price { get; set; }
+    [System.ComponentModel.DataAnnotations.StringLength(80)] public string Sku { get; set; } = "";
+        [System.ComponentModel.DataAnnotations.Range(0.01,999999.99)] public decimal? SalePrice { get; set; }
+        [System.ComponentModel.DataAnnotations.Range(0,100000)] public int LowStockThreshold { get; set; } = 5;
+public List<BetaFit.Domain.Entities.ProductVariant> Variants {get;set;}=new();
+    public decimal EffectivePrice => SalePrice ?? Price;
     [Range(0, 100000)]
     public int Stock { get; set; } = 999;
     [StringLength(500)]

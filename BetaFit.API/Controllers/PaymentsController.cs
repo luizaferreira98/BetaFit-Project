@@ -22,7 +22,7 @@ public class PaymentsController : ControllerBase
         var userId=User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         var order=await _db.Orders.Include(x=>x.Items).FirstOrDefaultAsync(x=>x.Id==orderId);
         if(order is null)return NotFound();
-        if(order.UserId!=userId&&!User.IsInRole("Admin")&&!User.IsInRole("Funcionario"))return Forbid();
+        if(order.UserId!=userId&&!User.IsInRole("Admin")&&!(User.IsInRole("Funcionario") || User.IsInRole("Estoquista")))return Forbid();
         if(order.PaymentStatus=="Paid")return BadRequest(new{message="Este pedido já foi pago."});
         var token=_config["MercadoPago:AccessToken"];
         if(string.IsNullOrWhiteSpace(token))return StatusCode(503,new{message="Gateway de pagamento não configurado. Defina MercadoPago:AccessToken."});

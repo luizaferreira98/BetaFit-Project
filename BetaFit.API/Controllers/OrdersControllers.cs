@@ -1,4 +1,4 @@
-﻿using BetaFit.Application.DTOs;
+using BetaFit.Application.DTOs;
 using BetaFit.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +7,7 @@ using BetaFit.API.Services;
 
 namespace BetaFit.API.Controllers
 {
-    [ApiController]
+    [ApiController,OrderTransaction]
     [Route("api/[controller]")]
     [Authorize]
     public class OrdersController : ControllerBase
@@ -27,7 +27,7 @@ namespace BetaFit.API.Controllers
 
         // GET /api/orders -> usado pelo Desktop (Admin vê todos)
         [HttpGet]
-        [Authorize(Roles = "Admin,Funcionario")]
+        [Authorize(Roles = "Admin,Funcionario,Estoquista")]
         public async Task<IActionResult> GetAll()
             => Ok(await _orderService.GetAllAsync());
 
@@ -38,7 +38,7 @@ namespace BetaFit.API.Controllers
             var order = await _orderService.GetByIdAsync(id);
             if (order is null) return NotFound();
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            if (order.UserId != userId && !User.IsInRole("Admin") && !User.IsInRole("Funcionario")) return Forbid();
+            if (order.UserId != userId && !User.IsInRole("Admin") && !(User.IsInRole("Funcionario") || User.IsInRole("Estoquista"))) return Forbid();
             return Ok(order);
         }
 
@@ -102,7 +102,7 @@ namespace BetaFit.API.Controllers
 
         // PATCH /api/orders/{id}/status -> Desktop altera o status
         [HttpPatch("{id:int}/status")]
-        [Authorize(Roles = "Admin,Funcionario")]
+        [Authorize(Roles = "Admin,Funcionario,Estoquista")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] string status)
         {
             var ok = await _orderService.UpdateStatusAsync(id, status);

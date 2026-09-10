@@ -144,6 +144,7 @@ namespace BetaFit.Application.Services
         {
 
             ValidateExtras(dto.ColorGalleries,dto.SizeMeasurements);
+            ValidateInventory(dto.Price,dto.SalePrice,dto.Sku,dto.Variants,dto.AvailableSizes,dto.AvailableColors);
             // Garante que o produto está sendo vinculado a uma categoria existente.
 
             var category = await _categoryRepository.GetByIdAsync(dto.CategoryId)
@@ -165,9 +166,9 @@ namespace BetaFit.Application.Services
 
                 Description = dto.Description,
 
-                Price = dto.Price,
+                Price = dto.Price, SalePrice=dto.SalePrice,Sku=dto.Sku.Trim(),LowStockThreshold=dto.LowStockThreshold,VariantsJson=JsonSerializer.Serialize(dto.Variants),
 
-                Stock = Math.Max(0, dto.Stock),
+                Stock = dto.Variants.Count>0?dto.Variants.Sum(v=>v.Stock):Math.Max(0, dto.Stock),
 
                 ImageUrl = dto.ImageUrl ?? dto.ImageUrls.FirstOrDefault(),
 
@@ -186,7 +187,7 @@ namespace BetaFit.Application.Services
 
                 IsFeatured = dto.IsFeatured,
 
-                IsActive = true,
+                IsActive = dto.IsActive,
 
                 CreatedAt = DateTime.Now
 
@@ -216,6 +217,7 @@ namespace BetaFit.Application.Services
         {
 
             ValidateExtras(dto.ColorGalleries,dto.SizeMeasurements);
+            ValidateInventory(dto.Price,dto.SalePrice,dto.Sku,dto.Variants,dto.AvailableSizes,dto.AvailableColors);
             var product = await _productRepository.GetByIdAsync(id);
 
             if (product == null) return null;
@@ -235,8 +237,8 @@ namespace BetaFit.Application.Services
 
             product.Description = dto.Description;
 
-            product.Price = dto.Price;
-            product.Stock = Math.Max(0, dto.Stock);
+            product.Price = dto.Price;product.SalePrice=dto.SalePrice;product.Sku=dto.Sku.Trim();product.LowStockThreshold=dto.LowStockThreshold;product.VariantsJson=JsonSerializer.Serialize(dto.Variants);
+            product.Stock = dto.Variants.Count>0?dto.Variants.Sum(v=>v.Stock):Math.Max(0, dto.Stock);
 
             var updateImages = (dto.ImageUrls.Any() ? dto.ImageUrls : (dto.ImageUrl is null ? new List<string>() : new List<string> { dto.ImageUrl }))
                 .Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
@@ -314,7 +316,14 @@ namespace BetaFit.Application.Services
 
         // =====================================================================
 
-        private static void ValidateExtras(Dictionary<string,List<string>> galleries,Dictionary<string,Dictionary<string,decimal>> measurements)
+        private static void ValidateInventory(decimal price,decimal? sale,string sku,List<ProductVariant> variants,List<string> sizes,List<string> colors){
+ if(sale.HasValue&&(sale<=0||sale>=price))throw new InvalidOperationException("O preço de oferta deve ser positivo e menor que o preço original.");
+ if(variants.Count>600||variants.Any(v=>v.Stock<0||v.Stock>100000||v.Sku.Length>80)||variants.Sum(v=>(long)v.Stock)>100000)throw new InvalidOperationException("Estoque das variações inválido.");
+ if(variants.Select(v=>(v.Size+"|"+v.Color).ToLowerInvariant()).Distinct().Count()!=variants.Count)throw new InvalidOperationException("Há variações repetidas.");
+ if(variants.Any(v=>sizes.Count>0?!sizes.Contains(v.Size):v.Size!="")||variants.Any(v=>colors.Count>0?!colors.Contains(v.Color):v.Color!=""))throw new InvalidOperationException("A variação deve usar os tamanhos e cores cadastrados.");
+ if(variants.Count>0&&variants.Count!=Math.Max(1,sizes.Count)*Math.Max(1,colors.Count))throw new InvalidOperationException("Preencha o estoque de todas as combinações de tamanho e cor.");
+ }
+ private static void ValidateExtras(Dictionary<string,List<string>> galleries,Dictionary<string,Dictionary<string,decimal>> measurements)
         {
             if(galleries is null||galleries.Count>20||galleries.Any(g=>g.Value is null||g.Value.Count>20||g.Value.Any(url=>url.Length>500||!(url.StartsWith("/")&&!url.StartsWith("//")||Uri.TryCreate(url,UriKind.Absolute,out var u)&&u.Scheme=="https"))))throw new InvalidOperationException("Galeria por cor inválida.");
             if(measurements is null||measurements.Count>30||measurements.Any(s=>s.Value is null||s.Value.Count>12||s.Value.Any(m=>m.Key.Length>80||m.Value<=0||m.Value>500)))throw new InvalidOperationException("Tabela de medidas inválida.");
@@ -344,7 +353,7 @@ namespace BetaFit.Application.Services
 
                 Description = product.Description,
 
-                Price = product.Price,
+                Price = product.Price, SalePrice=product.SalePrice,Sku=product.Sku,LowStockThreshold=product.LowStockThreshold,Variants=VariantInventory.Read(product),
 
                 Stock = product.Stock,
 

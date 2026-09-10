@@ -20,9 +20,10 @@ public sealed class ResendEmailSender : IEmailSender
 
     public async Task SendAsync(string to, string subject, string html, CancellationToken cancellationToken = default)
     {
-        var key = _configuration["Resend:ApiKey"] ?? Environment.GetEnvironmentVariable("RESEND_API_KEY");
+        var key = _configuration["Resend:ApiKey"];
+        if (string.IsNullOrWhiteSpace(key)) key = Environment.GetEnvironmentVariable("RESEND_API_KEY");
         var from = _configuration["Resend:From"] ?? Environment.GetEnvironmentVariable("RESEND_FROM") ?? "Beta Fit <onboarding@resend.dev>";
-        if (string.IsNullOrWhiteSpace(key) || _environment.IsDevelopment() && _configuration["Email:Mode"] == "Outbox")
+        if (_environment.IsDevelopment() && _configuration["Email:Mode"] == "Outbox")
         {
             if (_environment.IsDevelopment())
             {
@@ -31,6 +32,7 @@ public sealed class ResendEmailSender : IEmailSender
             }
             throw new InvalidOperationException("O envio de e-mail está temporariamente indisponível.");
         }
+        if (string.IsNullOrWhiteSpace(key)) throw new InvalidOperationException("Envio de e-mail não configurado. A alteração não foi realizada. Configure a chave Resend e um remetente autorizado na API.");
         using var request = new HttpRequestMessage(HttpMethod.Post, "emails");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", key);
         request.Content = JsonContent.Create(new { from, to = new[] { to }, subject, html });

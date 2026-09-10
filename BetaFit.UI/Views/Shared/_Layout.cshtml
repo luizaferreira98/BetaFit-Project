@@ -1,16 +1,18 @@
+@inject BetaFit.UI.Services.HttpCartService HeaderCart
 @inject BetaFit.UI.Services.HttpSiteSettingsService SiteSettingsService
 @inject BetaFit.UI.Services.HttpNotificationService NotificationService
 @{
     var isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
     var userName = User?.Identity?.Name;
     var isAdmin = User?.IsInRole("Admin") ?? false;
-    var isStaff = User?.IsInRole("Funcionario") ?? false;
+    var isStaff = (User?.IsInRole("Funcionario") ?? false)||(User?.IsInRole("Estoquista") ?? false);
     var displayName = User?.FindFirst("FullName")?.Value ?? userName ?? "U";
     var userInitial = displayName.Length > 0 ? displayName[..1].ToUpperInvariant() : "U";
     SiteSettingsDto siteSettings;
     try { siteSettings = await SiteSettingsService.GetAsync(); } catch { siteSettings = new SiteSettingsDto(); }
     var notifications = isAuthenticated ? await NotificationService.GetAsync() : new List<NotificationDto>();
     var adminArea=(isAdmin||isStaff) && (ViewContext.RouteData.Values["controller"]?.ToString()?.StartsWith("Admin")==true || ViewContext.RouteData.Values["controller"]?.ToString()=="Orders" && (ViewContext.RouteData.Values["action"]?.ToString()=="Staff" || Context.Request.Query["admin"]=="true"));
+    var cartCount=0;try{cartCount=(await HeaderCart.GetAsync()).Sum(i=>i.Quantity);}catch{}
     var unreadNotifications = notifications.Count(x => !x.IsRead);
 }
 <!DOCTYPE html>
@@ -25,7 +27,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/storefront.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/storefront.css" asp-append-version="true" /><link rel="stylesheet" href="~/css/management.css" asp-append-version="true" />
     <script>try{document.documentElement.dataset.theme=localStorage.getItem("betafit-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch{}</script>
 </head>
 <body>
@@ -54,10 +56,10 @@
                 }
             </nav>
 
-            <div class="bf-header__actions">
+            <form class="bf-header-search" action="/Catalog" method="get"><input name="searchTerm" placeholder="Buscar produtos" aria-label="Buscar produtos"/><button aria-label="Buscar">⌕</button></form><div class="bf-header__actions">
                 <button type="button" class="bf-icon-link bf-icon-button" data-theme-toggle aria-label="Ativar modo escuro" title="Alternar tema"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14A8 8 0 0 1 10 4a8 8 0 1 0 10 10Z"/></svg></button>
                 <a class="bf-icon-link" asp-controller="Favorites" asp-action="Index" aria-label="Favoritos" title="Favoritos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 5c-3-3-6-1-8 1-2-2-5-4-8-1-4 4 2 9 8 14 6-5 12-10 8-14Z"/></svg></a>
-                <a class="bf-icon-link" asp-controller="Cart" asp-action="Index" aria-label="Carrinho" title="Carrinho"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l1 14H4L5 7ZM8 7V5a4 4 0 0 1 8 0v2"/></svg></a>
+                <a class="bf-icon-link" asp-controller="Cart" asp-action="Index" aria-label="Carrinho" title="Carrinho"><b class="bf-cart-count">@cartCount</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l1 14H4L5 7ZM8 7V5a4 4 0 0 1 8 0v2"/></svg></a>
                 @if (isAuthenticated)
                 {
                     <div class="bf-notifications" data-notifications><button class="bf-notifications__trigger" type="button" data-notifications-toggle aria-label="Notificações">♢@if(unreadNotifications>0){<b>@unreadNotifications</b>}</button><div class="bf-notifications__panel"><div class="bf-notifications__head"><strong>Notificações</strong>@if(unreadNotifications>0){<form asp-controller="Notifications" asp-action="ReadAll" method="post">@Html.AntiForgeryToken()<input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" /><button>Marcar como lidas</button></form>}</div>@foreach(var n in notifications.Take(8)){<a class="@(!n.IsRead?"is-unread":"")" href="@(n.LinkUrl??"#")"><strong>@n.Title</strong><span>@n.Message</span><small>@n.CreatedAt.ToLocalTime().ToString("dd/MM HH:mm")</small></a>}@if(!notifications.Any()){<p>Nenhuma notificação.</p>}</div></div>
@@ -126,5 +128,6 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/storefront.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+<script src="~/js/management.js" asp-append-version="true"></script>
 </body>
 </html>

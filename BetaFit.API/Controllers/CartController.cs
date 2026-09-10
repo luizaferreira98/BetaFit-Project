@@ -45,9 +45,9 @@ public class CartController : ControllerBase
             _db.CartItems.Add(item);
         }
         else item.Quantity = Math.Clamp(item.Quantity + quantity, 1, 99);
-        if (item.Quantity > product.Stock) return BadRequest(new { message = $"Estoque insuficiente. Disponível: {product.Stock}." });
+        if (item.Quantity > Available(product,size,color)) return BadRequest(new { message = $"Estoque insuficiente. Disponível: {product.Stock}." });
         await _db.SaveChangesAsync();
-        return Ok(new CartItemDto { ProductId=product.Id, Name=product.Name, Price=product.Price, ImageUrl=GetImage(product), Size=item.Size, Color=item.Color, Quantity=item.Quantity });
+        return Ok(new CartItemDto { ProductId=product.Id, Name=product.Name, Price=product.SalePrice??product.Price, ImageUrl=GetImage(product), Size=item.Size, Color=item.Color, Quantity=item.Quantity });
     }
 
     [HttpPut("{productId:int}")]
@@ -56,7 +56,7 @@ public class CartController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var product = await _db.Products.FirstOrDefaultAsync(p => p.Id == productId && p.IsActive);
         if (product is null) return NotFound(new { message = "Produto não encontrado." });
-        if (dto.Quantity > product.Stock) return BadRequest(new { message = $"Estoque insuficiente. Disponível: {product.Stock}." });
+        if (dto.Quantity > Available(product,dto.Size,dto.Color)) return BadRequest(new { message = $"Estoque insuficiente. Disponível: {product.Stock}." });
         var size = NormalizeAndValidateSize(product.AvailableSizesJson, dto.Size, product.Name);
         if (size == InvalidSize) return BadRequest(new { message = "Tamanho inválido ou obrigatório para este produto." });
         var color = NormalizeAndValidateColor(product.AvailableColorsJson, dto.Color);
@@ -85,6 +85,7 @@ public class CartController : ControllerBase
         return NoContent();
     }
 
+    private static int Available(Domain.Entities.Product p,string? size,string? color){var variants=Domain.Entities.VariantInventory.Read(p);return variants.Count==0?p.Stock:Domain.Entities.VariantInventory.Find(variants,size,color)?.Stock??0;}
     private static readonly string InvalidSize = "\u0000";
     private static string? NormalizeAndValidateSize(string json, string? requested, string productName)
     {
@@ -102,5 +103,5 @@ public class CartController : ControllerBase
         return colors.FirstOrDefault(x => string.Equals(x.Trim(), requested.Trim(), StringComparison.OrdinalIgnoreCase)) ?? InvalidSize;
     }
     private static string? GetImage(Domain.Entities.Product p) => p.Images.OrderBy(x => x.SortOrder).Select(x => x.Url).FirstOrDefault() ?? p.ImageUrl;
-    private static CartItemDto Map(Domain.Entities.CartItem x) => new() { ProductId=x.ProductId, Name=x.Product!.Name, Price=x.Product.Price, ImageUrl=GetImage(x.Product), Size=x.Size, Color=x.Color, Quantity=x.Quantity };
+    private static CartItemDto Map(Domain.Entities.CartItem x) => new() { ProductId=x.ProductId, Name=x.Product!.Name, Price=x.Product.SalePrice??x.Product.Price, ImageUrl=GetImage(x.Product), Size=x.Size, Color=x.Color, Quantity=x.Quantity };
 }

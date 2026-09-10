@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BetaFit.Infraestructure.Migrations
 {
     /// <inheritdoc />
-    public partial class banco1 : Migration
+    public partial class Banco1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -56,6 +56,10 @@ namespace BetaFit.Infraestructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Slug = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ParentId = table.Column<int>(type: "int", nullable: true),
+                    SortOrder = table.Column<int>(type: "int", nullable: false),
+                    HideWhenOutOfStock = table.Column<bool>(type: "bit", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
@@ -65,6 +69,12 @@ namespace BetaFit.Infraestructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Categories_Categories_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -73,6 +83,17 @@ namespace BetaFit.Infraestructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    BoletoDigits = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BoletoDueAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Installments = table.Column<int>(type: "int", nullable: false),
+                    TrackingCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TrackingDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeliveredAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ExperienceRating = table.Column<int>(type: "int", nullable: true),
+                    ExperienceComment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReviewCoupon = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CouponCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Discount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CustomerCpf = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: true),
                     ShippingCep = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: true),
@@ -101,6 +122,8 @@ namespace BetaFit.Infraestructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    Attempts = table.Column<int>(type: "int", nullable: false),
+                    RequestedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TokenHash = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
@@ -128,6 +151,7 @@ namespace BetaFit.Infraestructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    ModerationStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     OrderId = table.Column<int>(type: "int", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
@@ -291,11 +315,18 @@ namespace BetaFit.Infraestructure.Migrations
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    Sku = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
+                    SalePrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true),
+                    LowStockThreshold = table.Column<int>(type: "int", nullable: false),
+                    VariantsJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Stock = table.Column<int>(type: "int", nullable: false, defaultValue: 999),
                     ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     ImageUrlsJson = table.Column<string>(type: "nvarchar(max)", maxLength: 8000, nullable: false),
                     AvailableSizesJson = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     AvailableColorsJson = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    ColorGalleriesJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SizeMeasurementsJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MeasurementsAreDemo = table.Column<bool>(type: "bit", nullable: false),
                     ColorImageUrlsJson = table.Column<string>(type: "nvarchar(max)", maxLength: 12000, nullable: false),
                     Gender = table.Column<int>(type: "int", nullable: false),
                     IsFeatured = table.Column<bool>(type: "bit", nullable: false),
@@ -312,6 +343,29 @@ namespace BetaFit.Infraestructure.Migrations
                         principalTable: "Categories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderMessages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsStaff = table.Column<bool>(type: "bit", nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderMessages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderMessages_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -367,6 +421,8 @@ namespace BetaFit.Infraestructure.Migrations
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    OriginalPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Size = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
                     Color = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true)
@@ -462,6 +518,18 @@ namespace BetaFit.Infraestructure.Migrations
                 filter: "[Size] IS NOT NULL AND [Color] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Categories_ParentId",
+                table: "Categories",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_Slug",
+                table: "Categories",
+                column: "Slug",
+                unique: true,
+                filter: "[Slug] <> ''");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Favorites_ProductId",
                 table: "Favorites",
                 column: "ProductId");
@@ -481,6 +549,11 @@ namespace BetaFit.Infraestructure.Migrations
                 name: "IX_OrderItems_ProductId",
                 table: "OrderItems",
                 column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderMessages_OrderId",
+                table: "OrderMessages",
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PendingProfileChanges_TokenHash",
@@ -541,6 +614,9 @@ namespace BetaFit.Infraestructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "OrderItems");
+
+            migrationBuilder.DropTable(
+                name: "OrderMessages");
 
             migrationBuilder.DropTable(
                 name: "PendingProfileChanges");

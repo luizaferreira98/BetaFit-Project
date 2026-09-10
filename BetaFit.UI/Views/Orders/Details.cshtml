@@ -1,12 +1,13 @@
 @model BetaFit.Application.DTOs.OrderDto
 @{
     ViewData["Title"] = $"Pedido #{Model.Id}";
+    var adminContext=ViewData["AdminContext"] as bool?==true;var owner=Model.UserId==User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
     var reviews = ViewData["Reviews"] as IEnumerable<BetaFit.Application.DTOs.ReviewDto> ?? Array.Empty<BetaFit.Application.DTOs.ReviewDto>();
 }
 
 <section class="bf-section">
     <div class="bf-container">
-        <a class="bf-back-link" asp-controller="Orders" asp-action="MyOrders">← Voltar para Meus Pedidos</a>
+        <a class="bf-back-link" href="@(adminContext?"/Orders/Staff":"/Orders/MyOrders")">← @(adminContext?"Voltar para pedidos da administração":"Voltar para minhas compras")</a>
 
         @if (TempData["Success"] is string success)
         {
@@ -48,6 +49,20 @@
                 <details class="bf-order-editor"><summary><span><strong>Editar endereço deste pedido</strong><small>Disponível até o início da preparação.</small></span><b>+</b></summary><form asp-action="UpdateDelivery" method="post" class="bf-form bf-form--admin" data-address-form>@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" /><div class="bf-form-grid"><label>CEP<input name="ShippingCep" value="@Model.ShippingCep" maxlength="9" data-cep-mask data-viacep required /><small class="bf-field-status" data-viacep-status></small></label><label class="bf-form-grid__full">Rua<input name="ShippingStreet" value="@Model.ShippingStreet" maxlength="180" data-address-street required /></label><label>Número<input name="ShippingNumber" value="@Model.ShippingNumber" maxlength="20" data-address-number required /></label><label>Complemento<input name="ShippingComplement" value="@Model.ShippingComplement" maxlength="120" data-address-complement /></label><label>Bairro<input name="ShippingNeighborhood" value="@Model.ShippingNeighborhood" maxlength="120" data-address-neighborhood required /></label><label>Cidade<input name="ShippingCity" value="@Model.ShippingCity" maxlength="120" data-address-city required /></label><label>Estado<input name="ShippingState" value="@Model.ShippingState" maxlength="2" data-address-state required /></label></div><button class="bf-btn bf-btn--dark" type="submit">Salvar endereço do pedido</button></form></details>
             }
 
+            <section class="bf-journey-info" id="rastreamento"><h3>Rastreamento</h3><p>@(Model.TrackingDescription??"Aguardando atualização da loja.")</p>@if(!string.IsNullOrEmpty(Model.TrackingCode)){<p>Código: <strong>@Model.TrackingCode</strong></p>}@if(Model.DeliveredAt.HasValue){<p>Entrega: @Model.DeliveredAt.Value.ToString("dd/MM/yyyy HH:mm")</p>}
+            @if(adminContext){<form asp-action="Journey" method="post" class="bf-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id"/><input type="hidden" name="action" value="tracking"/><input type="hidden" name="admin" value="true"/><label>Código de rastreio<input name="code" maxlength="80" required value="@Model.TrackingCode"/></label><label>Atualização<input name="comment" maxlength="250" required value="@Model.TrackingDescription"/></label><button class="bf-btn bf-btn--dark">Atualizar rastreio</button></form>}
+            @if(owner&&Model.Status=="Enviado"){<form asp-action="Journey" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id"/><input type="hidden" name="action" value="received"/><button class="bf-btn bf-btn--dark">Confirmar recebimento</button></form>}
+            @if(owner&&Model.Status=="Entregue"){<form asp-action="Journey" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id"/><input type="hidden" name="action" value="refund"/><button class="bf-btn bf-btn--ghost">Solicitar reembolso</button></form>}
+            </section>
+            @if(owner&&!string.IsNullOrEmpty(Model.ReviewCoupon)){<p class="bf-alert">Cupom de avaliação: <strong>@Model.ReviewCoupon</strong> · 5% em uma próxima compra. Válido uma vez nesta conta.</p>}
+            @if(Model.Discount>0){<p>Desconto aplicado: @Model.Discount.ToString("C")</p>}
+            @if(owner&&Model.Status=="Entregue"){
+              <section class="bf-review-box"><h3>Experiência com entrega e atendimento</h3>@if(Model.ExperienceRating.HasValue){<p>Experiência já avaliada: @Model.ExperienceRating / 5</p><p>@Model.ExperienceComment</p>}else{<form asp-action="Journey" method="post" class="bf-form bf-review-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id"/><input type="hidden" name="action" value="experience"/><fieldset class="bf-stars" aria-label="Nota da experiência">@for(int star=5;star>=1;star--){<input type="radio" name="rating" value="@star" id="experience-@star" required/><label for="experience-@star">★</label>}</fieldset><label>Comentário<textarea name="comment" minlength="10" maxlength="500" required data-review-comment></textarea><small data-review-count>0/500</small></label><button class="bf-btn bf-btn--dark">Avaliar experiência</button></form>}</section>
+            }
+            @if(owner && Model.PaymentMethod.Contains("Cartão") && !Model.PaymentStatus.Contains("Pago") && Model.Status=="Pendente")
+            {
+                <form asp-controller="Cart" asp-action="ConfirmPix" asp-route-id="@Model.Id" method="post">@Html.AntiForgeryToken()<button class="bf-btn bf-btn--dark">Simular pagamento do cartão</button></form>
+            }
             <h3>Itens</h3>
             <div class="bf-order-items">
                 @foreach (var item in Model.Items)
@@ -79,7 +94,7 @@
                             <span>Quantidade: @item.Quantity</span>
                             <span>@item.UnitPrice.ToString("C") cada · @item.Subtotal.ToString("C")</span>
 
-                            @if (Model.Status == "Entregue")
+                            @if (Model.Status == "Entregue" && owner)
                             {
                                 @if (existing is null)
                                 {
@@ -89,20 +104,11 @@
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="orderId" value="@Model.Id" />
                                             <input type="hidden" name="productId" value="@item.ProductId" />
-                                            <label>Nota
-                                                <select name="rating" required>
-                                                    <option value="5">★★★★★ — 5</option>
-                                                    <option value="4">★★★★☆ — 4</option>
-                                                    <option value="3">★★★☆☆ — 3</option>
-                                                    <option value="2">★★☆☆☆ — 2</option>
-                                                    <option value="1">★☆☆☆☆ — 1</option>
-                                                </select>
-                                            </label>
-                                            <label>Comentário<textarea name="comment" maxlength="1000"></textarea></label>
-                                            <label>Foto do produto
-                                                <input type="file" name="photos" accept="image/jpeg,image/png,image/webp" />
-                                                <small>Opcional · até 5 MB.</small>
-                                            </label>
+                                            <fieldset class="bf-stars" aria-label="Nota do produto">@for(int star=5;star>=1;star--){<input type="radio" name="rating" value="@star" id="rating-@item.ProductId-@star" required/><label for="rating-@item.ProductId-@star" title="@star estrelas">★</label>}</fieldset>
+                                            <div class="bf-review-chips">@foreach(var chip in new[]{"Ótima qualidade","Tecido confortável","Tamanho perfeito","Chegou rápido"}){<button type="button" data-review-chip="@chip">@chip</button>}</div>
+                                            <label>Conte sua experiência<textarea name="comment" minlength="10" maxlength="500" required data-review-comment></textarea><small data-review-count>0/500</small></label>
+                                            <label class="bf-drop-zone"><span>＋ Anexar fotos</span><input type="file" name="photos" accept="image/jpeg,image/png,image/webp" multiple data-review-photos/><small>Até 5 fotos · 5 MB cada</small></label><div class="bf-review-previews"></div>
+                                            <p>Avalie e ganhe um cupom de 5% na próxima compra. Um cupom por pedido, qualquer nota, uso único nesta conta.</p>
                                             <button class="bf-btn bf-btn--dark" type="submit">Enviar avaliação</button>
                                         </form>
                                     </div>
@@ -110,7 +116,7 @@
                                 else
                                 {
                                     <div class="bf-review-existing">
-                                        <strong>Sua avaliação</strong>
+                                        <strong>Produto já avaliado · @existing.ModerationStatus</strong>
                                         <div aria-label="@rating de 5">@stars@emptyStars</div>
                                         @if (!string.IsNullOrWhiteSpace(existing.Comment))
                                         {
@@ -135,3 +141,5 @@
         </div>
     </div>
 </section>
+
+<section class="bf-section" id="chat"><div class="bf-container"><h3>Atendimento Beta Fit · pedido #@Model.Id</h3><p>Mensagens deste pedido, visíveis ao cliente e à equipe da loja.</p>@foreach(var message in ViewData["Messages"] as List<OrderMessageDto>??new()){<article class="bf-message"><strong>@(message.IsStaff?"Equipe Beta Fit":"Cliente")</strong><small>@message.CreatedAt.ToLocalTime().ToString("dd/MM HH:mm")</small><p>@message.Text</p></article>}<form asp-action="Journey" method="post" class="bf-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id"/><input type="hidden" name="admin" value="@adminContext.ToString().ToLowerInvariant()"/><input type="hidden" name="action" value="messages"/><label>Mensagem<textarea name="comment" minlength="10" maxlength="500" required></textarea></label><button class="bf-btn bf-btn--dark">Enviar mensagem</button></form></div></section>

@@ -127,7 +127,7 @@ public class CartController : Controller
         var dto = new CreateOrderDto
         {
             Items = vm.Items.Select(c => new CreateOrderItemDto { ProductId=c.ProductId, Quantity=c.Quantity, Size=c.Size, Color=c.Color }).ToList(),
-            PaymentMethod = vm.PaymentMethod, CustomerCpf = new string(vm.Cpf.Where(char.IsDigit).ToArray()),
+            CouponCode=vm.CouponCode,PaymentMethod = vm.PaymentMethod, CustomerCpf = new string(vm.Cpf.Where(char.IsDigit).ToArray()),
             ShippingCep = new string(vm.Cep.Where(char.IsDigit).ToArray()), ShippingStreet = vm.Street.Trim(),
             ShippingNumber = vm.Number.Trim(), ShippingComplement = vm.Complement?.Trim(),
             ShippingNeighborhood = vm.Neighborhood.Trim(), ShippingCity = vm.City.Trim(), ShippingState = vm.State.Trim().ToUpperInvariant(),

@@ -5,6 +5,7 @@ namespace BetaFit.UI.Models;
 
 public class CheckoutViewModel
 {
+    [StringLength(60)] public string? CouponCode {get;set;}
     [Required, RegularExpression(@"^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$", ErrorMessage="Informe um CPF válido.")]
     public string Cpf { get; set; } = string.Empty;
     [Required, RegularExpression(@"^\d{5}-?\d{3}$", ErrorMessage="Informe um CEP válido.")]

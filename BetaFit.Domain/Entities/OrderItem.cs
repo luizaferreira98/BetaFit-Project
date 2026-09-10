@@ -11,6 +11,8 @@ namespace BetaFit.Domain.Entities
         public string ProductName { get; set; } = string.Empty;
 
         public decimal UnitPrice { get; set; }
+        public decimal? OriginalPrice {get;set;}
+        public string? ImageUrl {get;set;}
 
         public int Quantity { get; set; }
 

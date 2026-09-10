@@ -9,7 +9,7 @@ public class AdminUsersController : Controller
     private readonly HttpClient _api;
     public AdminUsersController(IHttpClientFactory factory)=>_api=factory.CreateClient("ApiClient");
     [HttpGet("")]
-    public async Task<IActionResult> Index()=>View(await _api.GetFromJsonAsync<List<UsuarioDto>>("api/usuarios")??new());
+    public async Task<IActionResult> Index(string list="customers",string? search=null){var all=await _api.GetFromJsonAsync<List<UsuarioDto>>("api/usuarios")??new();ViewData["List"]=list;ViewData["Search"]=search;ViewData["Customers"]=all.Count(u=>!u.Roles.Any(r=>r is "Admin" or "Funcionario" or "Estoquista"));ViewData["Team"]=all.Count-(int)ViewData["Customers"]!;return View(all.Where(u=>(list=="team")==u.Roles.Any(r=>r is "Admin" or "Funcionario" or "Estoquista")).Where(u=>string.IsNullOrWhiteSpace(search)||u.Email.Contains(search,StringComparison.OrdinalIgnoreCase)||u.UserName.Contains(search,StringComparison.OrdinalIgnoreCase)).ToList());}
     [HttpPost("Create"),ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateUsuarioDto dto)
     {

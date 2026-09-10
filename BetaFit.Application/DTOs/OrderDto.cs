@@ -12,6 +12,15 @@ namespace BetaFit.Application.DTOs
         public string? BoletoDigits { get; set; }
         public DateTime? BoletoDueAt { get; set; }
         public int Installments { get; set; } = 1;
+        public string? TrackingCode {get;set;}
+        public string? TrackingDescription {get;set;}
+        public DateTime? DeliveredAt {get;set;}
+        public int? ExperienceRating {get;set;}
+        public string? ExperienceComment {get;set;}
+        public string? ReviewCoupon {get;set;}
+        public string? CouponCode {get;set;}
+        public decimal Discount {get;set;}
+
         public int Id { get; set; }
         public string UserName { get; set; } = string.Empty;
         public string UserId { get; set; } = string.Empty;
@@ -37,6 +46,8 @@ namespace BetaFit.Application.DTOs
         public int ProductId { get; set; }
         public string ProductName { get; set; } = string.Empty;
         public decimal UnitPrice { get; set; }
+        public decimal? OriginalPrice {get;set;}
+        public bool Reviewed {get;set;}
         public int Quantity { get; set; }
         public string? Size { get; set; }
         public string? Color { get; set; }
@@ -46,6 +57,7 @@ namespace BetaFit.Application.DTOs
 
     public class CreateOrderDto
     {
+        [StringLength(60)] public string? CouponCode {get;set;}
         [StringLength(40)] public string? SavedCardId { get; set; }
         [Range(1,12)] public int Installments { get; set; } = 1;
         public List<CreateOrderItemDto> Items { get; set; } = new();

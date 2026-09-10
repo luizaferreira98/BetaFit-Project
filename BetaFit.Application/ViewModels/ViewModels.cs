@@ -58,6 +58,10 @@ namespace BetaFit.Application.ViewModels
     /// </summary>
     public class ProductFormViewModel
     {
+        [System.ComponentModel.DataAnnotations.StringLength(80)] public string Sku { get; set; } = "";
+        [System.ComponentModel.DataAnnotations.Range(0.01,999999.99)] public decimal? SalePrice { get; set; }
+        [System.ComponentModel.DataAnnotations.Range(0,100000)] public int LowStockThreshold { get; set; } = 5;
+public List<BetaFit.Domain.Entities.ProductVariant> Variants {get;set;}=new();
         public int Id { get; set; }
         [Required(ErrorMessage = "Informe o nome do produto.")]
         [StringLength(200)]

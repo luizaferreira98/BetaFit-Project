@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BetaFit.API - ProductsController
 // =============================================================================
 //  CONCEITO IMPORTANTE: API Controller
@@ -94,7 +94,7 @@ namespace BetaFit.API.Controllers
         /// Requer autenticação (somente admin pode criar produtos).
         /// </summary>
         [HttpPost]
-        [Authorize(Roles = "Admin,Funcionario")]
+        [Authorize(Roles = "Admin,Funcionario,Estoquista")]
         public async Task<ActionResult<ProductDto>> Create([FromBody] CreateProductDto dto)
         {
             try
@@ -113,7 +113,7 @@ namespace BetaFit.API.Controllers
         /// PUT /api/products/{id}
         /// </summary>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Funcionario")]
+        [Authorize(Roles = "Admin,Funcionario,Estoquista")]
         public async Task<ActionResult<ProductDto>> Update(int id, [FromBody] UpdateProductDto dto)
         {
             try
@@ -133,7 +133,7 @@ namespace BetaFit.API.Controllers
         /// DELETE /api/products/{id}
         /// </summary>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,Funcionario")]
+        [Authorize(Roles = "Admin,Funcionario,Estoquista")]
         public async Task<ActionResult> Delete(int id)
         {
             var deleted = await _productService.DeleteAsync(id);

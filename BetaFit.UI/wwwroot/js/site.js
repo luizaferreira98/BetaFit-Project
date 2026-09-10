@@ -289,19 +289,19 @@
             const requires = option?.dataset.requiresSize === "true";
             const category = (option?.textContent || "").toLowerCase();
             const shoe = /tênis|tenis|calçado|calcado|calçados/.test(category);
-            picker.classList.toggle("is-not-required", !requires);
+            picker.classList.remove("is-not-required");
             picker.querySelectorAll('input[name="AvailableSizes"]').forEach((input) => {
                 const value = input.value;
                 const numeric = /^\d+$/.test(value);
-                const show = requires && (shoe ? numeric : !numeric);
+                const show = shoe ? numeric : (!requires || !numeric);
                 input.disabled = !show;
                 input.closest(".bf-size-option")?.classList.toggle("is-hidden", !show);
                 if (!show) input.checked = false;
             });
             const status = document.getElementById("size-status");
             const helper = document.getElementById("size-helper");
-            if (status) status.textContent = !requires ? "Não se aplica" : shoe ? "Numeração do calçado" : "Tamanho da peça";
-            if (helper) helper.textContent = !requires ? "A seleção de tamanho não será exibida para este tipo de produto." : shoe ? "Selecione a numeração disponível (ex.: 37, 38, 39, 40)." : "Selecione os tamanhos que o cliente poderá escolher.";
+            if (status) status.textContent = !requires ? "Opcional" : shoe ? "Numeração do calçado" : "Tamanho da peça";
+            if (helper) helper.textContent = !requires ? "Selecione se o produto usa tamanhos. Deixe vazio para produtos sem tamanho." : shoe ? "Selecione a numeração disponível (ex.: 37, 38, 39, 40)." : "Selecione os tamanhos que o cliente poderá escolher.";
         });
     };
     document.getElementById("product-category")?.addEventListener("change", updateSizePicker);

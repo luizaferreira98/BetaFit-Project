@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BetaFit.API - CategoriesController
 // =============================================================================
 // Controller REST para operações com Categorias.
@@ -60,10 +60,10 @@ namespace BetaFit.API.Controllers
         /// POST /api/categories
         /// </summary>
         [HttpPost]
-        [Authorize(Roles = "Admin,Funcionario")]
+        [Authorize(Roles = "Admin,Funcionario,Estoquista")]
         public async Task<ActionResult<CategoryDto>> Create([FromBody] CreateCategoryDto dto)
         {
-            var category = await _categoryService.CreateAsync(dto);
+            CategoryDto? category;try{category = await _categoryService.CreateAsync(dto);}catch(InvalidOperationException ex){return BadRequest(new{message=ex.Message});}
             return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
         }
 
@@ -72,10 +72,10 @@ namespace BetaFit.API.Controllers
         /// PUT /api/categories/{id}
         /// </summary>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Funcionario")]
+        [Authorize(Roles = "Admin,Funcionario,Estoquista")]
         public async Task<ActionResult<CategoryDto>> Update(int id, [FromBody] UpdateCategoryDto dto)
         {
-            var category = await _categoryService.UpdateAsync(id, dto);
+            CategoryDto? category;try{category = await _categoryService.UpdateAsync(id,dto);}catch(InvalidOperationException ex){return BadRequest(new{message=ex.Message});}
 
             if (category == null)
                 return NotFound(new { message = "Categoria não encontrada." });
@@ -88,7 +88,7 @@ namespace BetaFit.API.Controllers
         /// DELETE /api/categories/{id}
         /// </summary>
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,Funcionario")]
+        [Authorize(Roles = "Admin,Funcionario,Estoquista")]
         public async Task<ActionResult> Delete(int id)
         {
             var deleted = await _categoryService.DeleteAsync(id);

@@ -28,17 +28,19 @@ public class ReviewsController : ControllerBase
     public async Task<IActionResult> GetByOrder(int orderId)
     {
         var userId=_users.GetUserId(User)!;
-        var isStaff=User.IsInRole("Admin")||User.IsInRole("Funcionario");
+        var isStaff=User.IsInRole("Admin")||(User.IsInRole("Funcionario") || User.IsInRole("Estoquista"));
         var query=_db.ProductReviews.Where(x=>x.OrderId==orderId);
         if(!isStaff)query=query.Where(x=>x.UserId==userId);
         var rows=await query.OrderByDescending(x=>x.CreatedAt).ToListAsync();
         var result = new List<ReviewDto>(); foreach (var row in rows) result.Add(await MapAsync(row)); return Ok(result);
     }
 
-    [HttpPost("order/{orderId:int}/product/{productId:int}")]
+    [BetaFit.API.Services.OrderTransaction,HttpPost("order/{orderId:int}/product/{productId:int}")]
     public async Task<IActionResult> Create(int orderId,int productId,CreateReviewDto dto)
     {
         if(!ModelState.IsValid)return ValidationProblem(ModelState);
+        var validation=BetaFit.Application.Services.ReviewPolicy.Validate(dto.Comment,HttpContext.RequestServices.GetRequiredService<IConfiguration>().GetSection("Reviews:BlockedWords").Get<string[]>());if(validation!=null)return BadRequest(new{message=validation});
+        if(dto.PhotoUrls.Count>5||dto.PhotoUrls.Any(u=>!u.StartsWith("/images/reviews/")||u.Contains("..")))return BadRequest(new{message="Mídia inválida."});
         var userId=_users.GetUserId(User)!;
         var order=await _db.Orders.Include(x=>x.Items).FirstOrDefaultAsync(x=>x.Id==orderId && x.UserId==userId);
         if(order is null)return Forbid();
@@ -55,6 +57,7 @@ public class ReviewsController : ControllerBase
         {
             return Conflict(new { message = "Esta avaliação já foi registrada para este produto neste pedido." });
         }
+        if(string.IsNullOrEmpty(order.ReviewCoupon)){order.ReviewCoupon="BF5-"+Guid.NewGuid().ToString("N")[..12].ToUpperInvariant();var owner=await _users.FindByIdAsync(userId);await _users.AddClaimAsync(owner!,new System.Security.Claims.Claim("ReviewCoupon",order.ReviewCoupon));await _db.SaveChangesAsync();}
         return Ok(await MapAsync(review));
     }
     [Authorize(Roles="Admin"), HttpGet("moderation")]

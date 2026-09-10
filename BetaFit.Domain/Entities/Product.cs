@@ -40,6 +40,10 @@ namespace BetaFit.Domain.Entities
         /// Preço do produto.
         /// </summary>
         public decimal Price { get; set; }
+        [System.ComponentModel.DataAnnotations.StringLength(80)] public string Sku { get; set; } = "";
+        [System.ComponentModel.DataAnnotations.Range(0.01,999999.99)] public decimal? SalePrice { get; set; }
+        [System.ComponentModel.DataAnnotations.Range(0,100000)] public int LowStockThreshold { get; set; } = 5;
+public string VariantsJson {get;set;}="[]";
 
         public int Stock { get; set; } = 999;
 

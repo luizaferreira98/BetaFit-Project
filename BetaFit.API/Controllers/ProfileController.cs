@@ -64,7 +64,7 @@ public class ProfileController : ControllerBase
             var html=$"<h2>Beta Fit</h2><p>Seu código de confirmação é:</p><p style='font-size:32px;font-weight:bold'>{raw}</p><p>Válido por 10 minutos. Se não solicitou, ignore esta mensagem.</p>";
             try { await _email.SendAsync(target,"Confirme uma alteração de segurança — Beta Fit",html); }
             catch(InvalidOperationException ex){_db.PendingProfileChanges.Remove(pending);await _db.SaveChangesAsync();return StatusCode(503,new{message=ex.Message});}
-            return Ok(new ProfileChangeResponseDto{RequiresVerification=true,Message="Enviamos um código de 6 dígitos para o e-mail informado. Digite-o abaixo em até 10 minutos."});
+            return Ok(new ProfileChangeResponseDto{RequiresVerification=true,Message=_config["Email:Mode"]=="Outbox"?"Modo de teste: nenhuma mensagem foi enviada. Consulte o código no terminal da API. Seu e-mail ainda não foi alterado.":"Código enviado ao novo e-mail. Confira a caixa de entrada e o spam. Seu e-mail atual permanece até a confirmação."});
         }
         await ApplyAsync(user,dto,null); return Ok(new ProfileChangeResponseDto{User=await Map(user),Message="Perfil atualizado com sucesso."});
     }

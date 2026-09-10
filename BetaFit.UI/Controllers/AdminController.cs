@@ -9,9 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BetaFit.UI.Controllers;
 
-[Authorize(Roles = "Admin,Funcionario"), Route("Admin")]
+[Authorize(Roles = "Admin,Funcionario,Estoquista"), Route("Admin")]
 public class AdminController : Controller
 {
+    private readonly HttpClient _api;
     private readonly HttpReviewService _reviews;
     private readonly IProductService _products;
     private readonly ICategoryService _categories;
@@ -19,22 +20,22 @@ public class AdminController : Controller
     private readonly HttpSiteSettingsService _site;
     private readonly IWebHostEnvironment _env;
 
-    public AdminController(IProductService products, ICategoryService categories, IDashboardService dashboard, HttpSiteSettingsService site, IWebHostEnvironment env, HttpReviewService reviews)
-    { _reviews=reviews; _products=products; _categories=categories; _dashboard=dashboard; _site=site; _env=env; }
+    public AdminController(IProductService products, ICategoryService categories, IDashboardService dashboard, HttpSiteSettingsService site, IWebHostEnvironment env, HttpReviewService reviews,IHttpClientFactory factory)
+    { _api=factory.CreateClient("ApiClient"); _reviews=reviews; _products=products; _categories=categories; _dashboard=dashboard; _site=site; _env=env; }
 
     [HttpGet("")]
-    public async Task<IActionResult> Index(string? search, int? categoryId, string? status)
+    public async Task<IActionResult> Index(string? search, int? categoryId, string? status,int page=1,int pageSize=20)
     {
         ViewData["Title"]="Administração"; ViewData["Search"]=search; ViewData["SelectedCategoryId"]=categoryId; ViewData["SelectedStatus"]=status;
         try { if (User.IsInRole("Admin")) ViewData["Dashboard"] = await _dashboard.GetSummaryAsync(); } catch { }
         try
         {
             var categories=(await _categories.GetAllAsync()).ToList(); ViewData["Categories"]=categories;
-            var query=(await _products.GetAllAsync()).AsEnumerable();
+            var all=(await _products.GetAllAsync()).ToList();ViewData["TotalProducts"]=all.Count;ViewData["OutCount"]=all.Count(p=>p.Stock==0);ViewData["LowCount"]=all.Count(p=>p.Stock>0&&p.Stock<=p.LowStockThreshold);var query=all.AsEnumerable();
             if (!string.IsNullOrWhiteSpace(search)) query=query.Where(p=>p.Name.Contains(search,StringComparison.OrdinalIgnoreCase)||p.Description.Contains(search,StringComparison.OrdinalIgnoreCase));
             if(categoryId.HasValue) query=query.Where(p=>p.CategoryId==categoryId.Value);
-            query=status?.ToLowerInvariant() switch { "active"=>query.Where(p=>p.IsActive&&p.Stock>0),"inactive"=>query.Where(p=>!p.IsActive),"out"=>query.Where(p=>p.Stock<=0),_=>query };
-            return View(query.OrderByDescending(p=>p.CreatedAt).ToList());
+            query=status?.ToLowerInvariant() switch { "active"=>query.Where(p=>p.IsActive&&p.Stock>0),"inactive"=>query.Where(p=>!p.IsActive),"out"=>query.Where(p=>p.Stock<=0),"low"=>query.Where(p=>p.Stock>0&&p.Stock<=p.LowStockThreshold),_=>query };
+            var filtered=query.OrderByDescending(p=>p.CreatedAt).ToList();pageSize=new[]{10,20,50}.Contains(pageSize)?pageSize:20;var pages=Math.Max(1,(int)Math.Ceiling(filtered.Count/(double)pageSize));page=Math.Clamp(page,1,pages);ViewData["Filtered"]=filtered.Count;ViewData["Page"]=page;ViewData["Pages"]=pages;ViewData["PageSize"]=pageSize;return View(filtered.Skip((page-1)*pageSize).Take(pageSize).ToList());
         }
         catch(HttpRequestException) { ViewData["Message"]="Não foi possível carregar os produtos."; return View(new List<ProductDto>()); }
     }
@@ -47,28 +48,29 @@ public class AdminController : Controller
         foreach(var id in selectedIds.Distinct().Take(200))
         {
             var p=await _products.GetByIdAsync(id); if(p is null) continue;
-            if(action=="delete" && User.IsInRole("Admin")) { if(await _products.DeleteAsync(id)) count++; continue; }
+            if(action=="delete") { if(await _products.DeleteAsync(id)) count++; continue; }
             var stock=action=="out"?0:p.Stock; var active=action switch { "activate"=>true,"deactivate"=>false,_=>p.IsActive };
-            if(await _products.UpdateAsync(id,new UpdateProductDto{Name=p.Name,Description=p.Description,Price=p.Price,Stock=stock,ImageUrl=p.ImageUrl,ImageUrls=p.ImageUrls,AvailableSizes=p.AvailableSizes,AvailableColors=p.AvailableColors,ColorGalleries=p.ColorGalleries,SizeMeasurements=p.SizeMeasurements,MeasurementsAreDemo=p.MeasurementsAreDemo,ColorImageUrls=p.ColorImageUrls,Gender=p.Gender,CategoryId=p.CategoryId,IsFeatured=p.IsFeatured,IsActive=active}) is not null) count++;
+            if(action=="out") foreach(var variant in p.Variants) variant.Stock=0;
+            if(await _products.UpdateAsync(id,new UpdateProductDto{Name=p.Name,Description=p.Description,Price=p.Price,SalePrice=p.SalePrice,Sku=p.Sku,LowStockThreshold=p.LowStockThreshold,Variants=p.Variants,Stock=stock,ImageUrl=p.ImageUrl,ImageUrls=p.ImageUrls,AvailableSizes=p.AvailableSizes,AvailableColors=p.AvailableColors,ColorGalleries=p.ColorGalleries,SizeMeasurements=p.SizeMeasurements,MeasurementsAreDemo=p.MeasurementsAreDemo,ColorImageUrls=p.ColorImageUrls,Gender=p.Gender,CategoryId=p.CategoryId,IsFeatured=p.IsFeatured,IsActive=active}) is not null) count++;
         }
         TempData["Success"]=$"Ação aplicada em {count} produto(s)."; return RedirectToAction(nameof(Index));
     }
 
-    [HttpGet("NewProduct")] public async Task<IActionResult> NewProduct() => View(new ProductFormViewModel{Categories=await _categories.GetAllAsync()});
+    [HttpGet("NewProduct")] public async Task<IActionResult> NewProduct() => View(new ProductFormViewModel{IsActive=true,Categories=await _categories.GetAllAsync()});
     [HttpGet("EditProduct/{id:int}")]
     public async Task<IActionResult> EditProduct(int id)
     {
         var p=await _products.GetByIdAsync(id); if(p is null)return NotFound();
-        return View(new ProductFormViewModel{Id=p.Id,Name=p.Name,Description=p.Description,Price=p.Price,Stock=p.Stock,ImageUrl=p.ImageUrl,ImageUrls=p.ImageUrls,KeepImageUrls=p.ImageUrls.ToList(),AvailableSizes=p.AvailableSizes.ToList(),AvailableColors=p.AvailableColors.ToList(),ColorGalleries=p.ColorGalleries,SizeMeasurements=p.SizeMeasurements,MeasurementsAreDemo=p.MeasurementsAreDemo,ColorImageUrls=p.ColorImageUrls,CategoryId=p.CategoryId,IsFeatured=p.IsFeatured,IsActive=p.IsActive,Categories=await _categories.GetAllAsync(),Gender=p.Gender});
+        return View(new ProductFormViewModel{Id=p.Id,Name=p.Name,Description=p.Description,Price=p.Price,SalePrice=p.SalePrice,Sku=p.Sku,LowStockThreshold=p.LowStockThreshold,Variants=p.Variants,Stock=p.Stock,ImageUrl=p.ImageUrl,ImageUrls=p.ImageUrls,KeepImageUrls=p.ImageUrls.ToList(),AvailableSizes=p.AvailableSizes.ToList(),AvailableColors=p.AvailableColors.ToList(),ColorGalleries=p.ColorGalleries,SizeMeasurements=p.SizeMeasurements,MeasurementsAreDemo=p.MeasurementsAreDemo,ColorImageUrls=p.ColorImageUrls,CategoryId=p.CategoryId,IsFeatured=p.IsFeatured,IsActive=p.IsActive,Categories=await _categories.GetAllAsync(),Gender=p.Gender});
     }
 
     [HttpPost("NewProduct"),ValidateAntiForgeryToken]
     public async Task<IActionResult> NewProduct(ProductFormViewModel vm, Gender gender, List<IFormFile>? images)
     {
         vm.Categories=await _categories.GetAllAsync(); vm.AvailableColors=NormalizeColors(vm.AvailableColors);
-        var urls=await SaveImagesAsync(images, vm); vm.ColorImageUrls=await ReadColorImagesAsync(new()); vm.ColorGalleries=await ReadColorGalleriesAsync(new(),vm.ColorImageUrls); PrepareProductForm(vm);
+        var urls=await ReadMediaAsync(vm,null); PrepareProductForm(vm);
         if(!ModelState.IsValid){vm.ImageUrls=urls;vm.KeepImageUrls=urls;return View(vm);}
-        var dto=new CreateProductDto{Name=vm.Name.Trim(),Description=vm.Description.Trim(),Price=vm.Price,Stock=vm.Stock,ImageUrl=urls.FirstOrDefault(),ImageUrls=urls,AvailableSizes=vm.AvailableSizes,AvailableColors=vm.AvailableColors,ColorGalleries=vm.ColorGalleries,SizeMeasurements=vm.SizeMeasurements,MeasurementsAreDemo=vm.MeasurementsAreDemo,ColorImageUrls=vm.ColorImageUrls,Gender=gender,CategoryId=vm.CategoryId,IsFeatured=vm.IsFeatured};
+        var dto=new CreateProductDto{Name=vm.Name.Trim(),Description=vm.Description.Trim(),Price=vm.Price,SalePrice=vm.SalePrice,Sku=vm.Sku,LowStockThreshold=vm.LowStockThreshold,Variants=vm.Variants,Stock=vm.Stock,ImageUrl=urls.FirstOrDefault(),ImageUrls=urls,AvailableSizes=vm.AvailableSizes,AvailableColors=vm.AvailableColors,ColorGalleries=vm.ColorGalleries,SizeMeasurements=vm.SizeMeasurements,MeasurementsAreDemo=vm.MeasurementsAreDemo,ColorImageUrls=vm.ColorImageUrls,Gender=gender,CategoryId=vm.CategoryId,IsFeatured=vm.IsFeatured,IsActive=vm.IsActive};
         try{await _products.CreateAsync(dto);}catch(InvalidOperationException ex){ModelState.AddModelError(string.Empty,ex.Message);vm.ImageUrls=urls;return View(vm);}
         TempData["Success"]="Produto cadastrado e clientes notificados.";return RedirectToAction(nameof(Index));
     }
@@ -78,10 +80,9 @@ public class AdminController : Controller
     {
         vm.Categories=await _categories.GetAllAsync(); vm.AvailableColors=NormalizeColors(vm.AvailableColors);
         var current=await _products.GetByIdAsync(id); if(current is null)return NotFound();
-        var urls=(keepImageUrls??new()).Where(x=>current.ImageUrls.Contains(x)).Distinct().ToList(); urls.AddRange(await SaveImagesAsync(images,vm));
-        vm.ColorImageUrls=await ReadColorImagesAsync(current.ColorImageUrls); vm.ColorGalleries=await ReadColorGalleriesAsync(current.ColorGalleries,vm.ColorImageUrls); PrepareProductForm(vm);
+        var urls=await ReadMediaAsync(vm,current); PrepareProductForm(vm);
         if(!ModelState.IsValid){vm.ImageUrls=urls;vm.KeepImageUrls=urls;return View(vm);}
-        var dto=new UpdateProductDto{Name=vm.Name.Trim(),Description=vm.Description.Trim(),Price=vm.Price,Stock=vm.Stock,ImageUrl=urls.FirstOrDefault(),ImageUrls=urls,AvailableSizes=vm.AvailableSizes,AvailableColors=vm.AvailableColors,ColorGalleries=vm.ColorGalleries,SizeMeasurements=vm.SizeMeasurements,MeasurementsAreDemo=vm.MeasurementsAreDemo,ColorImageUrls=vm.ColorImageUrls,Gender=gender,CategoryId=vm.CategoryId,IsFeatured=vm.IsFeatured,IsActive=vm.IsActive};
+        var dto=new UpdateProductDto{Name=vm.Name.Trim(),Description=vm.Description.Trim(),Price=vm.Price,SalePrice=vm.SalePrice,Sku=vm.Sku,LowStockThreshold=vm.LowStockThreshold,Variants=vm.Variants,Stock=vm.Stock,ImageUrl=urls.FirstOrDefault(),ImageUrls=urls,AvailableSizes=vm.AvailableSizes,AvailableColors=vm.AvailableColors,ColorGalleries=vm.ColorGalleries,SizeMeasurements=vm.SizeMeasurements,MeasurementsAreDemo=vm.MeasurementsAreDemo,ColorImageUrls=vm.ColorImageUrls,Gender=gender,CategoryId=vm.CategoryId,IsFeatured=vm.IsFeatured,IsActive=vm.IsActive};
         try{if(await _products.UpdateAsync(id,dto) is null)return NotFound();}catch(InvalidOperationException ex){ModelState.AddModelError(string.Empty,ex.Message);vm.ImageUrls=urls;return View(vm);}
         TempData["Success"]="Produto atualizado.";return RedirectToAction(nameof(Index));
     }
@@ -90,17 +91,22 @@ public class AdminController : Controller
     public async Task<IActionResult> MarkOutOfStock(int id)
     {
         var p=await _products.GetByIdAsync(id); if(p is null)return NotFound();
-        await _products.UpdateAsync(id,new UpdateProductDto{Name=p.Name,Description=p.Description,Price=p.Price,Stock=0,ImageUrl=p.ImageUrl,ImageUrls=p.ImageUrls,AvailableSizes=p.AvailableSizes,AvailableColors=p.AvailableColors,ColorGalleries=p.ColorGalleries,SizeMeasurements=p.SizeMeasurements,MeasurementsAreDemo=p.MeasurementsAreDemo,ColorImageUrls=p.ColorImageUrls,Gender=p.Gender,CategoryId=p.CategoryId,IsFeatured=p.IsFeatured,IsActive=p.IsActive});
+        foreach(var variant in p.Variants) variant.Stock=0;
+        await _products.UpdateAsync(id,new UpdateProductDto{Name=p.Name,Description=p.Description,Price=p.Price,SalePrice=p.SalePrice,Sku=p.Sku,LowStockThreshold=p.LowStockThreshold,Variants=p.Variants,Stock=0,ImageUrl=p.ImageUrl,ImageUrls=p.ImageUrls,AvailableSizes=p.AvailableSizes,AvailableColors=p.AvailableColors,ColorGalleries=p.ColorGalleries,SizeMeasurements=p.SizeMeasurements,MeasurementsAreDemo=p.MeasurementsAreDemo,ColorImageUrls=p.ColorImageUrls,Gender=p.Gender,CategoryId=p.CategoryId,IsFeatured=p.IsFeatured,IsActive=p.IsActive});
         TempData["Success"]="Produto marcado como esgotado.";return RedirectToAction(nameof(Index));
     }
 
-    [Authorize(Roles="Admin"), HttpGet("DeleteProduct/{id:int}")] public async Task<IActionResult> DeleteProduct(int id){var p=await _products.GetByIdAsync(id);return p is null?NotFound():View(p);}
-    [Authorize(Roles="Admin"), HttpPost("DeleteProduct/{id:int}"),ValidateAntiForgeryToken] public async Task<IActionResult> DeleteProductConfirmed(int id){if(!await _products.DeleteAsync(id))return NotFound();TempData["Success"]="Produto excluído.";return RedirectToAction(nameof(Index));}
+    [HttpGet("DeleteProduct/{id:int}")] public async Task<IActionResult> DeleteProduct(int id){var p=await _products.GetByIdAsync(id);return p is null?NotFound():View(p);}
+    [HttpPost("DeleteProduct/{id:int}"),ValidateAntiForgeryToken] public async Task<IActionResult> DeleteProductConfirmed(int id){if(!await _products.DeleteAsync(id))return NotFound();TempData["Success"]="Produto excluído.";return RedirectToAction(nameof(Index));}
 
-    [HttpGet("Categories")] public async Task<IActionResult> Categories()=>View((await _categories.GetAllAsync()).OrderBy(x=>x.Name).ToList());
-    [HttpPost("Categories/Create"),ValidateAntiForgeryToken] public async Task<IActionResult> CreateCategory(string name){if(string.IsNullOrWhiteSpace(name)||name.Trim().Length is <2 or >100)TempData["Error"]="Informe um nome entre 2 e 100 caracteres.";else{await _categories.CreateAsync(new CreateCategoryDto{Name=name.Trim(),IsActive=true});TempData["Success"]="Categoria criada.";}return RedirectToAction(nameof(Categories));}
-    [HttpPost("Categories/{id:int}/Update"),ValidateAntiForgeryToken] public async Task<IActionResult> UpdateCategory(int id,string name,bool isActive){var updated=await _categories.UpdateAsync(id,new UpdateCategoryDto{Name=(name??"").Trim(),IsActive=isActive});TempData[updated is null?"Error":"Success"]=updated is null?"Categoria não encontrada.":"Categoria atualizada.";return RedirectToAction(nameof(Categories));}
-    [Authorize(Roles="Admin"),HttpPost("Categories/{id:int}/Delete"),ValidateAntiForgeryToken] public async Task<IActionResult> DeleteCategory(int id){var deleted=await _categories.DeleteAsync(id);TempData[deleted?"Success":"Error"]=deleted?"Categoria excluída.":"Não é possível excluir uma categoria que possui produtos.";return RedirectToAction(nameof(Categories));}
+    [HttpGet("Categories")] public async Task<IActionResult> Categories(string? search,string? status){var all=(await _categories.GetAllAsync()).ToList();ViewData["AllCategories"]=all;ViewData["Search"]=search;ViewData["SelectedStatus"]=status;return View(all.Where(c=>string.IsNullOrWhiteSpace(search)||c.Name.Contains(search,StringComparison.OrdinalIgnoreCase)).Where(c=>status switch{"active"=>c.IsActive,"inactive"=>!c.IsActive,"out"=>c.TotalStock==0,_=>true}).ToList());}
+    [HttpPost("Categories/Create"),ValidateAntiForgeryToken] public async Task<IActionResult> CreateCategory(CreateCategoryDto dto){try{await _categories.CreateAsync(dto);TempData["Success"]="Categoria criada.";}catch(HttpRequestException){TempData["Error"]="Não foi possível criar: confira nome, slug único e categoria pai.";}return RedirectToAction(nameof(Categories));}
+    [HttpPost("Categories/{id:int}/Update"),ValidateAntiForgeryToken] public async Task<IActionResult> UpdateCategory(int id,UpdateCategoryDto dto){var result=await _categories.UpdateAsync(id,dto);TempData[result==null?"Error":"Success"]=result==null?"Confira nome, slug único e hierarquia sem ciclos.":"Categoria atualizada.";return RedirectToAction(nameof(Categories));}
+    [HttpPost("Categories/Bulk"),ValidateAntiForgeryToken] public async Task<IActionResult> BulkCategories(List<int> selectedIds,string action){int count=0;foreach(var id in selectedIds.Distinct().Take(200)){if(action=="delete"){if(await _categories.DeleteAsync(id))count++;}else if(action is "activate" or "deactivate"){if((await _api.PostAsJsonAsync($"api/management/categories/{id}/toggle",action=="activate")).IsSuccessStatusCode)count++;}}TempData["Success"]=$"{count} categoria(s) alterada(s). Categorias com produtos ou subcategorias não são excluídas.";return RedirectToAction(nameof(Categories));}
+    [HttpPost("Categories/Reorder"),ValidateAntiForgeryToken] public async Task<IActionResult> ReorderCategories(List<int> ids)=>await Relay(await _api.PostAsJsonAsync("api/management/categories/reorder",ids));
+    [HttpPost("Categories/{id:int}/Toggle"),ValidateAntiForgeryToken] public async Task<IActionResult> ToggleCategory(int id,bool active)=>await Relay(await _api.PostAsJsonAsync($"api/management/categories/{id}/toggle",active));
+    [HttpPost("Products/{id:int}/Quick"),ValidateAntiForgeryToken] public async Task<IActionResult> QuickProduct(int id,string field,string value){object dto;if(field=="price"&&decimal.TryParse(value.Replace(',','.'),System.Globalization.NumberStyles.Number,System.Globalization.CultureInfo.InvariantCulture,out var price))dto=new{price};else if(field=="stock"&&int.TryParse(value,out var stock))dto=new{stock};else return BadRequest(new{message="Valor inválido."});return await Relay(await _api.PostAsJsonAsync($"api/management/products/{id}/quick",dto));}
+    private async Task<IActionResult> Relay(HttpResponseMessage response){if(response.IsSuccessStatusCode)return Ok(new{ok=true});return StatusCode((int)response.StatusCode,new{message=await response.Content.ReadAsStringAsync()});}
 
     [Authorize(Roles="Admin"),HttpGet("Site")] public async Task<IActionResult> Site()=>View(await _site.GetAsync());
     [Authorize(Roles="Admin"),HttpPost("Site"),ValidateAntiForgeryToken]
@@ -116,8 +122,22 @@ public class AdminController : Controller
     public async Task<IActionResult> ModerateReview(int id,string status)
     {var ok=await _reviews.ModerateAsync(id,status);TempData[ok?"Success":"Error"]=ok?"Visibilidade da avaliação atualizada.":"Não foi possível moderar a avaliação.";return RedirectToAction(nameof(Reviews));}
 
+    private sealed class MediaRow {public string Url{get;set;}="";public string Color{get;set;}="";public string FileKey{get;set;}="";}
+    private async Task<List<string>> ReadMediaAsync(ProductFormViewModel vm,ProductDto? current){
+      List<MediaRow> rows;try{rows=System.Text.Json.JsonSerializer.Deserialize<List<MediaRow>>(Request.Form["mediaJson"].ToString(),new System.Text.Json.JsonSerializerOptions{PropertyNameCaseInsensitive=true})??new();}catch{ModelState.AddModelError("","Galeria inválida.");return new();}
+      if(rows.Count>40){ModelState.AddModelError("","Use no máximo 40 fotos.");return new();}
+      var allowed=current==null?new HashSet<string>():current.ImageUrls.Concat(current.ColorGalleries.Values.SelectMany(x=>x)).Concat(current.ColorImageUrls.Values).ToHashSet();
+      var pending=System.Text.Json.JsonSerializer.Deserialize<List<string>>(HttpContext.Session.GetString("ProductDraftMedia")??"[]")??new();allowed.UnionWith(pending);
+      vm.ColorGalleries=new(StringComparer.OrdinalIgnoreCase);vm.ColorImageUrls=new(StringComparer.OrdinalIgnoreCase);var urls=new List<string>();
+      foreach(var row in rows){string? url=row.Url;if(!string.IsNullOrWhiteSpace(row.FileKey)){var file=Request.Form.Files.GetFile(row.FileKey);url=file==null?null:await SaveProductImageAsync(file);}else if(!allowed.Contains(url))url=null;
+        if(url==null){ModelState.AddModelError("","Uma foto não é válida ou excede 5 MB.");continue;}urls.Add(url);if(!pending.Contains(url))pending.Add(url);HttpContext.Session.SetString("ProductDraftMedia",System.Text.Json.JsonSerializer.Serialize(pending.TakeLast(100)));
+        if(!string.IsNullOrWhiteSpace(row.Color)){if(!vm.AvailableColors.Contains(row.Color)){ModelState.AddModelError("","Selecione a cor da foto nas cores disponíveis.");continue;}if(!vm.ColorGalleries.ContainsKey(row.Color))vm.ColorGalleries[row.Color]=new();vm.ColorGalleries[row.Color].Add(url);vm.ColorImageUrls.TryAdd(row.Color,url);}
+      }
+      vm.ImageUrls=urls.Distinct().ToList();return vm.ImageUrls;
+    }
     private void PrepareProductForm(ProductFormViewModel vm)
     {
+        try{vm.Variants=System.Text.Json.JsonSerializer.Deserialize<List<BetaFit.Domain.Entities.ProductVariant>>(Request.Form["variantsJson"].ToString(),new System.Text.Json.JsonSerializerOptions{PropertyNameCaseInsensitive=true})??new();}catch{ModelState.AddModelError("","Variações inválidas.");}
         var category = vm.Categories.FirstOrDefault(c => c.Id == vm.CategoryId)?.Name;
 
         vm.AvailableSizes = ProductCatalogRules.NormalizeSizes(category, vm.AvailableSizes);
@@ -135,26 +155,6 @@ public class AdminController : Controller
             if(!vm.MeasurementsAreDemo && vm.AvailableSizes.Any(x=>!vm.SizeMeasurements.TryGetValue(x,out var rows)||rows.Count==0))ModelState.AddModelError(string.Empty,"Preencha as medidas de todos os tamanhos antes de marcar como medidas reais.");
         } catch(System.Text.Json.JsonException){ModelState.AddModelError(string.Empty,"Tabela de medidas inválida. Use valores em cm maiores que zero, no formato indicado.");}
     }
-    private async Task<List<string>> SaveImagesAsync(IEnumerable<IFormFile>? images,ProductFormViewModel vm){var list=new List<string>();foreach(var file in images??Array.Empty<IFormFile>()){var url=await SaveProductImageAsync(file);if(url is null)ModelState.AddModelError(string.Empty,"Cada foto deve ser JPG, PNG ou WEBP válida e ter até 5 MB.");else list.Add(url);}return list;}
-    private async Task<Dictionary<string,string>> ReadColorImagesAsync(Dictionary<string,string> existing){var result=existing.Where(x=>Request.Form[$"keepColor_{Slug(x.Key)}"]=="true").ToDictionary(x=>x.Key,x=>x.Value,StringComparer.OrdinalIgnoreCase);foreach(var raw in Request.Form["AvailableColors"].ToArray()){var color=raw??string.Empty;if(string.IsNullOrWhiteSpace(color))continue;var file=Request.Form.Files.GetFile($"colorImage_{Slug(color)}");if(file is null||file.Length==0)continue;var url=await SaveProductImageAsync(file);if(url is null)ModelState.AddModelError(string.Empty,$"A foto da cor {color} é inválida.");else result[color]=url;}return result.Where(x=>Request.Form["AvailableColors"].Any(c=>string.Equals(c,x.Key,StringComparison.OrdinalIgnoreCase))).ToDictionary(x=>x.Key,x=>x.Value,StringComparer.OrdinalIgnoreCase);}
-    private async Task<Dictionary<string,List<string>>> ReadColorGalleriesAsync(Dictionary<string,List<string>> existing,Dictionary<string,string> thumbnails)
-    {
-        var result=new Dictionary<string,List<string>>(StringComparer.OrdinalIgnoreCase);
-        foreach(var raw in Request.Form["AvailableColors"])
-        {
-            if(string.IsNullOrWhiteSpace(raw))continue;
-            var retained=Request.Form[$"keepGallery_{Slug(raw)}"].ToArray();
-            var urls=existing.GetValueOrDefault(raw,new()).Where(x=>retained.Contains(x)).ToList();
-            foreach(var file in Request.Form.Files.GetFiles($"colorGallery_{Slug(raw)}").Take(20)){
-                var url=await SaveProductImageAsync(file);if(url is null)ModelState.AddModelError(string.Empty,$"Foto inválida para a cor {raw}.");else urls.Add(url);
-            }
-            if(urls.Count==0&&thumbnails.TryGetValue(raw,out var primary))urls.Add(primary);
-            result[raw]=urls.Distinct().Take(20).ToList();
-            if(urls.Count>0)thumbnails[raw]=urls[0];
-        }
-        return result;
-    }
-    private static string Slug(string value)=>new string(value.ToLowerInvariant().Normalize(System.Text.NormalizationForm.FormD).Where(c=>System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c)!=System.Globalization.UnicodeCategory.NonSpacingMark&&char.IsLetterOrDigit(c)).ToArray());
     private static List<string> NormalizeColors(IEnumerable<string>? values)=>(values??Array.Empty<string>()).Where(x=>!string.IsNullOrWhiteSpace(x)).Select(x=>x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(20).ToList();
     private async Task<string?> SaveProductImageAsync(IFormFile image)=>await SaveMediaAsync(image,"products",5*1024*1024,new[]{".jpg",".jpeg",".png",".webp"});
     private async Task<string?> SaveSiteMediaAsync(IFormFile media)=>await SaveMediaAsync(media,"site",25*1024*1024,new[]{".jpg",".jpeg",".png",".webp",".mp4",".webm"});
