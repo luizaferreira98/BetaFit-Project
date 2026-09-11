@@ -22,7 +22,6 @@
         <a class="bf-back-link" asp-controller="Catalog" asp-action="Index">← Voltar ao catálogo</a>
         <div class="bf-product-detail bf-product-detail--store">
             <div class="bf-product-gallery" data-product-gallery>
-                @if (Model.IsFeatured) { <span class="bf-product-card__badge">Destaque</span> }
                 @if (images.Any())
                 {
                     <div class="bf-product-gallery__thumbs" aria-label="Fotos do produto">
