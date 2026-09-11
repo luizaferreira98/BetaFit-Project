@@ -39,6 +39,23 @@ namespace BetaFit.Desktop.Helpers
         public bool IsAdmin => CurrentUser?.IsAdmin ?? false;
 
         ///<summary>
+        ///indica se o usuário autenticado é Gerente.
+        ///</summary>
+        public bool IsGerente => CurrentUser?.IsGerente ?? false;
+
+        ///<summary>
+        ///indica se o usuário autenticado é Estoquista.
+        ///</summary>
+        public bool IsEstoquista => CurrentUser?.IsEstoquista ?? false;
+
+        ///<summary>
+        ///indica se o usuário autenticado é algum tipo de funcionário
+        ///(Admin, Gerente ou Estoquista) — usado pelo LoginForm pra decidir
+        ///quem pode abrir o Desktop. "Usuario" (cliente) retorna false aqui.
+        ///</summary>
+        public bool IsFuncionario => CurrentUser?.IsFuncionario ?? false;
+
+        ///<summary>
         /// Define o usuário autenticado na sessão
         /// Chamado após o login bem-sucediso na API.
         /// <param name="user">Dados do usuário retornados pela API</param>

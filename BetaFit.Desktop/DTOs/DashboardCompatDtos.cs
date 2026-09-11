@@ -29,4 +29,17 @@ public class UsersResponseDto
     public bool IsAdmin =>
         Roles.Any(r =>
             string.Equals(r, "Admin", StringComparison.OrdinalIgnoreCase));
+
+    public bool IsGerente =>
+        Roles.Any(r =>
+            string.Equals(r, "Gerente", StringComparison.OrdinalIgnoreCase));
+
+    public bool IsEstoquista =>
+        Roles.Any(r =>
+            string.Equals(r, "Estoquista", StringComparison.OrdinalIgnoreCase));
+
+    // Qualquer um dos 3 papéis de equipe interna — usado pelo LoginForm
+    // pra decidir quem pode abrir o app Desktop (o papel "Usuario", de
+    // cliente, nunca cai aqui).
+    public bool IsFuncionario => IsAdmin || IsGerente || IsEstoquista;
 }
