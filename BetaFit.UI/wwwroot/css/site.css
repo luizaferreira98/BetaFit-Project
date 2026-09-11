@@ -881,11 +881,12 @@ button, input, select, textarea {
 }
 
 .bf-header__inner {
-    min-height: 78px;
-    display: grid;
+    display: grid; /* O display:grid já está sobrescrevendo o display:flex anterior */
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     gap: 24px;
+    min-height: 78px;
+    /* Remova a linha justify-items: center; */
 }
 
 .bf-logo {
@@ -893,42 +894,44 @@ button, input, select, textarea {
     line-height: 1;
     font-weight: 900;
     letter-spacing: -.08em;
+    justify-self: start;
 }
 
-    .bf-logo span {
-        color: var(--bf-lime-dark);
-    }
+.bf-logo span {
+    color: var(--bf-lime-dark);
+}
 
 .bf-nav {
+    justify-self: center;
+    width: auto; /* Remova o width: 100% para não esticar demais */
     display: flex;
-    align-items: center;
     justify-content: center;
     gap: 30px;
 }
 
-    .bf-nav a {
-        position: relative;
-        padding: 30px 0 27px;
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-        color: #343432;
-        white-space: nowrap;
-    }
+.bf-nav a {
+    position: relative;
+    padding: 30px 0 27px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #343432;
+    white-space: nowrap;
+}
 
-        .bf-nav a::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 19px;
-            height: 2px;
-            background: var(--bf-lime-dark);
-            transform: scaleX(0);
-            transform-origin: center;
-            transition: transform .2s;
-        }
+.bf-nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 19px;
+    height: 2px;
+    background: var(--bf-lime-dark);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform .2s;
+}
 
         .bf-nav a:hover::after, .bf-nav a.is-active::after {
             transform: scaleX(1);
@@ -1018,7 +1021,7 @@ button, input, select, textarea {
     gap: 8px;
     margin-bottom: 13px;
     color: var(--bf-lime);
-    font-size: 10px;
+    font-size: 15px;
     font-weight: 900;
     letter-spacing: .16em;
     text-transform: uppercase;
@@ -2895,6 +2898,7 @@ button, input, select, textarea {
         }
 
     .bf-header__actions {
+        justify-self: end;
         gap: 8px;
     }
 
@@ -3240,6 +3244,9 @@ button, input, select, textarea {
         }
 
 .bf-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     transition: min-height 320ms var(--bf-ease-out);
 }
 
