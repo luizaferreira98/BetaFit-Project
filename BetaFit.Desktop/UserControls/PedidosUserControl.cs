@@ -205,8 +205,7 @@ namespace BetaFit.Desktop.UserControls
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar pedidos: {ex.Message}",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                BetaFitMessageBox.Erro(this, $"Erro ao carregar pedidos: {ex.Message}");
             }
         }
 
@@ -732,15 +731,13 @@ namespace BetaFit.Desktop.UserControls
             var pedido = ObterPedidoSelecionado();
             if (pedido == null)
             {
-                MessageBox.Show("Selecione um pedido na lista.", "Aviso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Selecione um pedido na lista.");
                 return;
             }
 
             if (cboStatusPedido.SelectedItem is not StatusItem statusSelecionado)
             {
-                MessageBox.Show("Selecione o novo status.", "Aviso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Selecione o novo status.");
                 return;
             }
 
@@ -749,14 +746,12 @@ namespace BetaFit.Desktop.UserControls
             var (success, error) = await _ordersApiService.UpdateStatusAsync(pedido.Id, novoStatus);
             if (success)
             {
-                MessageBox.Show("✅ Status atualizado com sucesso!", "Sucesso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                BetaFitMessageBox.Sucesso(this, "Status atualizado com sucesso!");
                 await CarregarDadosAsync();
             }
             else
             {
-                MessageBox.Show($"❌ {error}", "Erro",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                BetaFitMessageBox.Erro(this, error);
             }
         }
     }

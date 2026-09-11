@@ -107,8 +107,7 @@ namespace BetaFit.Desktop.UserControls
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar categorias: {ex.Message}", "Erro",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Erro(this, $"Erro ao carregar categorias: {ex.Message}");
             }
         }
 
@@ -311,13 +310,12 @@ namespace BetaFit.Desktop.UserControls
                 var (success, _, error) = await _categoriesService.CreateAsync(form.CategoryDto);
                 if (success)
                 {
-                    MessageBox.Show("✅ Categoria criada com sucesso!", "Sucesso",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    BetaFitMessageBox.Sucesso(this, "Categoria criada com sucesso!");
                     await CarregarDadosAsync();
                 }
                 else
                 {
-                    MessageBox.Show($"❌ {error}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    BetaFitMessageBox.Erro(this, error);
                 }
             }
         }
@@ -330,8 +328,7 @@ namespace BetaFit.Desktop.UserControls
             var categoria = ObterCategoriaSelecionada();
             if (categoria == null)
             {
-                MessageBox.Show("Selecione uma categoria para editar.", "Aviso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Selecione uma categoria para editar.");
                 return;
             }
 
@@ -341,13 +338,12 @@ namespace BetaFit.Desktop.UserControls
                 var (success, _, error) = await _categoriesService.UpdateAsync(categoria.Id, form.UpdateDto);
                 if (success)
                 {
-                    MessageBox.Show("✅ Categoria atualizada com sucesso!", "Sucesso",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    BetaFitMessageBox.Sucesso(this, "Categoria atualizada com sucesso!");
                     await CarregarDadosAsync();
                 }
                 else
                 {
-                    MessageBox.Show($"❌ {error}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    BetaFitMessageBox.Erro(this, error);
                 }
             }
         }
@@ -374,29 +370,26 @@ namespace BetaFit.Desktop.UserControls
             var category = ObterCategoriaSelecionada();
             if (category == null)
             {
-                MessageBox.Show("Selecione uma categoria para excluir.", "Aviso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Selecione uma categoria para excluir.");
                 return;
             }
 
-            var conf = MessageBox.Show(
+            bool conf = BetaFitMessageBox.Confirmar(
+                this,
                 $"Tem certeza que deseja excluir essa categoria:\n\"{category.Name}\"?",
-                "Confirmar Exclusão",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning);
+                "Confirmar Exclusão");
 
-            if (conf != DialogResult.Yes) return;
+            if (!conf) return;
 
             var (success, error) = await _categoriesService.DeleteAsync(category.Id);
             if (success)
             {
-                MessageBox.Show("✅ Categoria excluída com sucesso!", "Sucesso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                BetaFitMessageBox.Sucesso(this, "Categoria excluída com sucesso!");
                 await CarregarDadosAsync();
             }
             else
             {
-                MessageBox.Show($"❌ {error}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                BetaFitMessageBox.Erro(this, error);
             }
         }
 

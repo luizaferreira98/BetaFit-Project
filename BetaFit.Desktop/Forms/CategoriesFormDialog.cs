@@ -92,11 +92,7 @@ namespace BetaFit.Desktop.Forms
         {
             if (string.IsNullOrWhiteSpace(txtNomeCategoria.Text))
             {
-                MessageBox.Show(
-                    "Informe o nome da categoria.",
-                    "Validação",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Informe o nome da categoria.", "Validação");
                 return;
             }
 

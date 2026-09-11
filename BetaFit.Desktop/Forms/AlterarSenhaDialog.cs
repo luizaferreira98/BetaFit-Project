@@ -25,22 +25,19 @@ namespace BetaFit.Desktop.Forms
         {
             if (string.IsNullOrWhiteSpace(txtSenhaAtual.Text))
             {
-                MessageBox.Show(this, "Informe sua senha atual.", "Aviso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Informe sua senha atual.");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtNovaSenha.Text))
             {
-                MessageBox.Show(this, "Informe a nova senha.", "Aviso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Informe a nova senha.");
                 return;
             }
 
             if (txtNovaSenha.Text != txtConfirmarSenha.Text)
             {
-                MessageBox.Show(this, "A nova senha e a confirmação não coincidem.", "Aviso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "A nova senha e a confirmação não coincidem.");
                 return;
             }
 
@@ -56,6 +53,11 @@ namespace BetaFit.Desktop.Forms
             txtNovaSenha.UseSystemPasswordChar = !mostrar;
             txtConfirmarSenha.UseSystemPasswordChar = !mostrar;
         }
-    }
-    }
 
+        private void btnFecharSenha_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
+    }
+}

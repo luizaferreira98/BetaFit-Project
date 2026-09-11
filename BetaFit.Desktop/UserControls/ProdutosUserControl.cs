@@ -233,8 +233,7 @@ namespace BetaFit.Desktop.UserControls
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar dados: {ex.Message}",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                BetaFitMessageBox.Erro(this, $"Erro ao carregar dados: {ex.Message}");
             }
         }
 
@@ -627,13 +626,12 @@ namespace BetaFit.Desktop.UserControls
                 var (success, _, error) = await _productsApiService.CreateAsync(form.ProductDto);
                 if (success)
                 {
-                    MessageBox.Show("✅ Produto criado com sucesso!", "Sucesso",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    BetaFitMessageBox.Sucesso(this, "Produto criado com sucesso!");
                     await CarregarDadosAsync();
                 }
                 else
                 {
-                    MessageBox.Show($"❌ {error}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    BetaFitMessageBox.Erro(this, error);
                 }
             }
         }
@@ -646,8 +644,7 @@ namespace BetaFit.Desktop.UserControls
             var produto = ObterProdutoSelecionado();
             if (produto == null)
             {
-                MessageBox.Show("Selecione um produto para editar.", "Aviso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Selecione um produto para editar.");
                 return;
             }
 
@@ -657,13 +654,12 @@ namespace BetaFit.Desktop.UserControls
                 var (success, _, error) = await _productsApiService.UpdateAsync(produto.Id, form.UpdateDto);
                 if (success)
                 {
-                    MessageBox.Show("✅ Produto atualizado com sucesso!", "Sucesso",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    BetaFitMessageBox.Sucesso(this, "Produto atualizado com sucesso!");
                     await CarregarDadosAsync();
                 }
                 else
                 {
-                    MessageBox.Show($"❌ {error}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    BetaFitMessageBox.Erro(this, error);
                 }
             }
         }
@@ -688,30 +684,27 @@ namespace BetaFit.Desktop.UserControls
             var produto = ObterProdutoSelecionado();
             if (produto == null)
             {
-                MessageBox.Show("Selecione um produto para excluir.", "Aviso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Selecione um produto para excluir.");
                 return;
             }
 
-            var conf = MessageBox.Show(
+            bool conf = BetaFitMessageBox.Confirmar(
+                this,
                 $"Tem certeza que deseja excluir o produto:\n\"{produto.Name}\"?",
-                "Confirmar Exclusão",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning);
+                "Confirmar Exclusão");
 
-            if (conf != DialogResult.Yes) return;
+            if (!conf) return;
 
             var (success, error) = await _productsApiService.DeleteAsync(produto.Id);
             if (success)
             {
                 _idsSelecionados.Remove(produto.Id);
-                MessageBox.Show("✅ Produto excluído com sucesso!", "Sucesso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                BetaFitMessageBox.Sucesso(this, "Produto excluído com sucesso!");
                 await CarregarDadosAsync();
             }
             else
             {
-                MessageBox.Show($"❌ {error}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                BetaFitMessageBox.Erro(this, error);
             }
         }
 

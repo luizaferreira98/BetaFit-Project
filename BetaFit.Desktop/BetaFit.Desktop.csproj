@@ -10,6 +10,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\academia.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\academia.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
 
     <PackageReference Include="Guna.UI2.WinForms" Version="2.0.4.8" />
 

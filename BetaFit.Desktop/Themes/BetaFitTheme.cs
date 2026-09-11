@@ -511,6 +511,52 @@ namespace BetaFit.Desktop.Themes
             public static Color BadgeInativoFundo => Color.FromArgb(40, 40, 40);
             public static Color BadgeInativoTexto => Color.FromArgb(150, 150, 150);
             public static Color IdBadgeFundo => Color.FromArgb(35, 40, 15);
+
+            // =================================================================
+            // MODAIS/DIÁLOGOS ESCUROS — padrão único para TODOS os popups do
+            // desktop (Novo/Editar Produto, Nova Categoria, Alterar Senha,
+            // Detalhes do Pedido). Antes cada Designer.cs usava cores "cruas"
+            // do Guna (DimGray, GreenYellow, Silver, SystemColors.*...), o que
+            // deixava cada janela com uma paleta diferente. Esses valores
+            // centralizam o visual do mockup de referência ("Novo Produto"):
+            // fundo preto, campos em cinza-quase-preto, foco/destaque em lima.
+            // =================================================================
+
+            /// <summary>Fundo do campo de formulário (input, combobox, textarea)</summary>
+            public static Color CampoFundo => Color.FromArgb(24, 24, 24);
+
+            /// <summary>Borda padrão (repousada) de um campo de formulário</summary>
+            public static Color CampoBorda => Borda;
+
+            /// <summary>Borda do campo em foco/hover — mesma cor de destaque (lima)</summary>
+            public static Color CampoBordaFoco => Lima;
+
+            /// <summary>Texto digitado dentro do campo</summary>
+            public static Color CampoTexto => Color.White;
+
+            /// <summary>Placeholder / texto de exemplo dentro do campo</summary>
+            public static Color CampoPlaceholder => Color.FromArgb(140, 140, 140);
+
+            /// <summary>Fundo do botão secundário ("fantasma") — ex.: Cancelar</summary>
+            public static Color BotaoSecundarioFundo => Color.FromArgb(30, 30, 30);
+
+            /// <summary>Borda do botão secundário</summary>
+            public static Color BotaoSecundarioBorda => Color.FromArgb(60, 60, 60);
+
+            /// <summary>Texto do botão secundário</summary>
+            public static Color BotaoSecundarioTexto => Color.White;
+
+            /// <summary>Fundo do botão primário (Salvar/Confirmar) — sempre lima</summary>
+            public static Color BotaoPrimarioFundo => Lima;
+
+            /// <summary>Texto do botão primário — sempre preto, para contraste com o lima</summary>
+            public static Color BotaoPrimarioTexto => PretoPrimario;
+
+            /// <summary>Estado "desligado" de um toggle/switch dentro de um modal escuro</summary>
+            public static Color ToggleDesligadoFundo => Color.FromArgb(70, 70, 70);
+
+            /// <summary>Raio de borda padrão dos modais escuros (inputs, botões) — levemente arredondado, igual ao mockup</summary>
+            public static int ModalBorderRadius => 8;
         }
 
         /// <summary>

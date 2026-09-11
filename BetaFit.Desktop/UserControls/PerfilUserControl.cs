@@ -51,9 +51,7 @@ namespace BetaFit.Desktop.UserControls
                 var perfil = await _profileApiService.GetAsync();
                 if (perfil == null)
                 {
-                    MessageBox.Show(
-                        "Não foi possível carregar os dados do seu perfil.",
-                        "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    BetaFitMessageBox.Erro(this, "Não foi possível carregar os dados do seu perfil.");
                     return;
                 }
 
@@ -62,8 +60,7 @@ namespace BetaFit.Desktop.UserControls
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar perfil: {ex.Message}",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                BetaFitMessageBox.Erro(this, $"Erro ao carregar perfil: {ex.Message}");
             }
         }
 
@@ -96,22 +93,19 @@ namespace BetaFit.Desktop.UserControls
         {
             if (string.IsNullOrWhiteSpace(txtNome.Text))
             {
-                MessageBox.Show("Informe seu nome completo.", "Aviso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Informe seu nome completo.");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtEmail.Text))
             {
-                MessageBox.Show("Informe seu e-mail.", "Aviso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Informe seu e-mail.");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtTelefone.Text))
             {
-                MessageBox.Show("Informe seu telefone.", "Aviso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Informe seu telefone.");
                 return;
             }
 
@@ -129,13 +123,11 @@ namespace BetaFit.Desktop.UserControls
                 _perfilAtual = perfilAtualizado;
                 PreencherCampos(perfilAtualizado);
 
-                MessageBox.Show("✅ Perfil atualizado com sucesso!",
-                    "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                BetaFitMessageBox.Sucesso(this, "Perfil atualizado com sucesso!");
             }
             else
             {
-                MessageBox.Show($"❌ {error}", "Erro",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                BetaFitMessageBox.Erro(this, error);
             }
         }
 
@@ -146,8 +138,7 @@ namespace BetaFit.Desktop.UserControls
         {
             if (_perfilAtual == null)
             {
-                MessageBox.Show("Aguarde o carregamento do perfil e tente novamente.",
-                    "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Aguarde o carregamento do perfil e tente novamente.");
                 return;
             }
 
@@ -158,10 +149,11 @@ namespace BetaFit.Desktop.UserControls
             // a validar a senha — então avisamos e paramos aqui.
             if (string.IsNullOrWhiteSpace(_perfilAtual.PhoneNumber))
             {
-                MessageBox.Show(
+                BetaFitMessageBox.Aviso(
+                    this,
                     "Antes de alterar a senha, preencha e salve seu telefone na aba " +
                     "\"Dados Pessoais\". A API exige esse campo em toda atualização de perfil.",
-                    "Complete seu perfil", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    "Complete seu perfil");
                 return;
             }
 
@@ -184,13 +176,11 @@ namespace BetaFit.Desktop.UserControls
             var (success, _, error) = await _profileApiService.UpdateAsync(dto);
             if (success)
             {
-                MessageBox.Show("✅ Senha alterada com sucesso!",
-                    "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                BetaFitMessageBox.Sucesso(this, "Senha alterada com sucesso!");
             }
             else
             {
-                MessageBox.Show($"❌ {error}", "Erro",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                BetaFitMessageBox.Erro(this, error);
             }
         }
 
@@ -202,30 +192,26 @@ namespace BetaFit.Desktop.UserControls
             var userId = SessionManager.Instance.CurrentUser?.Id;
             if (string.IsNullOrWhiteSpace(userId))
             {
-                MessageBox.Show("Não foi possível identificar o usuário logado.",
-                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                BetaFitMessageBox.Erro(this, "Não foi possível identificar o usuário logado.");
                 return;
             }
 
-            var conf = MessageBox.Show(
+            bool conf = BetaFitMessageBox.Confirmar(
+                this,
                 "Tem certeza que deseja excluir sua conta?\n" +
                 "Todos os seus dados serão removidos permanentemente. Esta ação não pode ser desfeita.",
-                "Confirmar Exclusão de Conta",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning);
+                "Confirmar Exclusão de Conta");
 
-            if (conf != DialogResult.Yes) return;
+            if (!conf) return;
 
             var (success, error) = await _usersApiService.DeleteAsync(userId);
             if (!success)
             {
-                MessageBox.Show($"❌ {error}", "Erro",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                BetaFitMessageBox.Erro(this, error);
                 return;
             }
 
-            MessageBox.Show("Sua conta foi excluída. Você será desconectado.",
-                "Conta Excluída", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            BetaFitMessageBox.Sucesso(this, "Sua conta foi excluída. Você será desconectado.", "Conta Excluída");
 
             SessionManager.Instance.Clear();
 

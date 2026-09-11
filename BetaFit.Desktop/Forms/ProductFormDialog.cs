@@ -152,25 +152,25 @@ namespace BetaFit.Desktop.Forms
             // 1. Validações de Entrada
             if (string.IsNullOrWhiteSpace(txtNomeProduto.Text))
             {
-                MessageBox.Show("Informe o nome do produto.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Informe o nome do produto.", "Validação");
                 return;
             }
 
             if (!decimal.TryParse(txtPrecoProduto.Text, out decimal preco) || preco <= 0)
             {
-                MessageBox.Show("Informe um preço válido maior que zero.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Informe um preço válido maior que zero.", "Validação");
                 return;
             }
 
             if (cboCategoriaProduto.SelectedIndex <= 0)
             {
-                MessageBox.Show("Selecione uma categoria.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Selecione uma categoria.", "Validação");
                 return;
             }
 
             if (cboGenero.SelectedIndex <= 0)
             {
-                MessageBox.Show("Selecione um gênero.", "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                BetaFitMessageBox.Aviso(this, "Selecione um gênero.", "Validação");
                 return;
             }
 
@@ -218,6 +218,13 @@ namespace BetaFit.Desktop.Forms
         // FECHAR O FORMULÁRIO (CANCELAR)
         // =====================================================================
         private void btnCancelarProduto_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+        // =====================================================================
+        // FECHAR O FORMULÁRIO (X)
+        // =====================================================================
+        private void btnFecharNovoProduto_Click(object sender, EventArgs e)
         {
             this.Close();
         }

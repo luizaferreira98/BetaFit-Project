@@ -1,4 +1,6 @@
-﻿namespace BetaFit.Desktop.Forms
+﻿using BetaFit.Desktop.Themes;
+
+namespace BetaFit.Desktop.Forms
 {
     partial class OrderDetailsFormDialog
     {
@@ -85,7 +87,7 @@
             // 
             // pnlInfo
             // 
-            pnlInfo.BackColor = Color.FromArgb(246, 246, 243);
+            pnlInfo.BackColor = Color.FromArgb(24, 24, 24);
             pnlInfo.Controls.Add(lblData);
             pnlInfo.Controls.Add(lblCliente);
             pnlInfo.CustomizableEdges = customizableEdges3;
@@ -100,7 +102,7 @@
             // 
             lblData.BackColor = Color.Transparent;
             lblData.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblData.ForeColor = Color.FromArgb(111, 112, 108);
+            lblData.ForeColor = Color.FromArgb(150, 150, 150);
             lblData.Location = new Point(20, 20);
             lblData.Name = "lblData";
             lblData.Size = new Size(14, 15);
@@ -110,17 +112,16 @@
             // lblCliente
             // 
             lblCliente.BackColor = Color.Transparent;
-            lblCliente.ForeColor = Color.FromArgb(17, 17, 17);
+            lblCliente.ForeColor = Color.White;
             lblCliente.Location = new Point(20, 6);
             lblCliente.Name = "lblCliente";
             lblCliente.Size = new Size(40, 17);
             lblCliente.TabIndex = 0;
             lblCliente.Text = "Cliente";
-            
             // 
             // pnlFooter
             // 
-            pnlFooter.BackColor = Color.FromArgb(11, 11, 11);
+            pnlFooter.BackColor = Color.FromArgb(10, 10, 10);
             pnlFooter.Controls.Add(lblTotalValor);
             pnlFooter.Controls.Add(lblTotalLabel);
             pnlFooter.Controls.Add(lblQndItens);
@@ -137,7 +138,7 @@
             lblTotalValor.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblTotalValor.BackColor = Color.Transparent;
             lblTotalValor.Font = new Font("Segoe UI", 20.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblTotalValor.ForeColor = Color.FromArgb(201, 255, 34);
+            lblTotalValor.ForeColor = Color.FromArgb(198, 255, 40);
             lblTotalValor.Location = new Point(100, 30);
             lblTotalValor.Name = "lblTotalValor";
             lblTotalValor.Size = new Size(99, 39);
@@ -159,7 +160,7 @@
             // 
             lblQndItens.BackColor = Color.Transparent;
             lblQndItens.Font = new Font("Segoe UI", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblQndItens.ForeColor = Color.FromArgb(111, 112, 108);
+            lblQndItens.ForeColor = Color.FromArgb(150, 150, 150);
             lblQndItens.Location = new Point(20, 14);
             lblQndItens.Name = "lblQndItens";
             lblQndItens.Size = new Size(61, 15);
@@ -168,7 +169,7 @@
             // 
             // pnlHeader
             // 
-            pnlHeader.BackColor = Color.FromArgb(11, 11, 11);
+            pnlHeader.BackColor = Color.FromArgb(10, 10, 10);
             pnlHeader.Controls.Add(btnFechar);
             pnlHeader.Controls.Add(lblTitulo);
             pnlHeader.Controls.Add(pnlStatusBadge);
@@ -188,7 +189,7 @@
             btnFechar.DisabledState.CustomBorderColor = Color.DarkGray;
             btnFechar.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
             btnFechar.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            btnFechar.FillColor = Color.FromArgb(22, 22, 22);
+            btnFechar.FillColor = Color.Transparent;
             btnFechar.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnFechar.ForeColor = Color.White;
             btnFechar.Location = new Point(410, 14);
@@ -213,7 +214,7 @@
             // 
             // pnlStatusBadge
             // 
-            pnlStatusBadge.BackColor = Color.FromArgb(201, 255, 34);
+            pnlStatusBadge.BackColor = Color.FromArgb(198, 255, 40);
             pnlStatusBadge.BorderRadius = 2;
             pnlStatusBadge.Controls.Add(lblStatusBadge);
             pnlStatusBadge.CustomizableEdges = customizableEdges8;
@@ -238,7 +239,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.White;
+            BackColor = Color.FromArgb(15, 15, 15);
             ClientSize = new Size(460, 560);
             Controls.Add(pnlItensWrapper);
             Controls.Add(pnlInfo);
@@ -247,7 +248,7 @@
             FormBorderStyle = FormBorderStyle.None;
             Name = "OrderDetailsFormDialog";
             ShowInTaskbar = false;
-            StartPosition = FormStartPosition.CenterParent;
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Detalhes do Pedido";
             pnlItensWrapper.ResumeLayout(false);
             pnlInfo.ResumeLayout(false);

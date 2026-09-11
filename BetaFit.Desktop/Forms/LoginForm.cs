@@ -34,6 +34,8 @@ namespace BetaFit.Desktop.Forms
             //Guard: não executa em tempo de design
             if (DesignMode) return; //Filtro de seguranca: ela verifica se o form está em tempo de design, se estiver, ele não executa o código abaixo
 
+
+
             //Instancia o serviço de autenticação da API
             _authService = new AuthApiService(); //Criando um objeto apartir da classe AuthApiService
 
@@ -111,10 +113,11 @@ namespace BetaFit.Desktop.Forms
                         await _authService.LogoutAsync();
 
                         ExibirErro("⛔ Acesso restrito à equipe BetaFit.");
-                        MessageBox.Show(
-                            "⛔ Este aplicativo é de uso exclusivo da equipe BetaFit.\n" +
+                        BetaFitMessageBox.Aviso(
+                            this,
+                            "Este aplicativo é de uso exclusivo da equipe BetaFit.\n" +
                             "Sua conta não tem permissão de funcionário (Admin, Gerente ou Estoquista).",
-                            "Acesso negado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            "Acesso negado");
                         return;
                     }
 
@@ -134,7 +137,7 @@ namespace BetaFit.Desktop.Forms
                 else
                 {
                     ExibirErro($"❌ {errorMessage}");
-                    MessageBox.Show($"❌ {errorMessage}");
+                    BetaFitMessageBox.Erro(this, errorMessage ?? "Não foi possível fazer login.");
                 }
 
             }
@@ -142,14 +145,14 @@ namespace BetaFit.Desktop.Forms
             catch (HttpRequestException exHttp)
             {
                 ExibirErro($"❌ Não foi possível conectar à API. \nVerifique se a API está em execução erro do sistema: {exHttp.Message}");
-                MessageBox.Show($"❌ Não foi possível conectar à API. \nVerifique se a API está em execução erro do sistema: {exHttp.Message}");
+                BetaFitMessageBox.Erro(this, $"Não foi possível conectar à API.\nVerifique se a API está em execução. Erro do sistema: {exHttp.Message}");
             }
 
             //Caso 2 de erro
             catch (Exception ex)
             {
                 ExibirErro($"❌ Erro inesperado: {ex.Message}");
-                MessageBox.Show($"❌ Erro inesperado: {ex.Message}");
+                BetaFitMessageBox.Erro(this, $"Erro inesperado: {ex.Message}");
             }
             finally
             {
@@ -192,5 +195,7 @@ namespace BetaFit.Desktop.Forms
             }
 
         }
+
+
     }
 }

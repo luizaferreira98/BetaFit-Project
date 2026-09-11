@@ -1,4 +1,6 @@
-﻿namespace BetaFit.Desktop.Forms
+﻿using BetaFit.Desktop.Themes;
+
+namespace BetaFit.Desktop.Forms
 {
     partial class CategoriesFormDialog
     {
@@ -47,7 +49,7 @@
             // 
             lblTituloNovaCategoria.BackColor = Color.Transparent;
             lblTituloNovaCategoria.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblTituloNovaCategoria.ForeColor = SystemColors.ControlLightLight;
+            lblTituloNovaCategoria.ForeColor = Color.White;
             lblTituloNovaCategoria.Location = new Point(12, 12);
             lblTituloNovaCategoria.Name = "lblTituloNovaCategoria";
             lblTituloNovaCategoria.Size = new Size(180, 34);
@@ -57,32 +59,33 @@
             // lblNomeCategoria
             // 
             lblNomeCategoria.BackColor = Color.Transparent;
-            lblNomeCategoria.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold);
-            lblNomeCategoria.ForeColor = SystemColors.ControlLightLight;
+            lblNomeCategoria.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblNomeCategoria.ForeColor = Color.White;
             lblNomeCategoria.Location = new Point(12, 61);
             lblNomeCategoria.Name = "lblNomeCategoria";
-            lblNomeCategoria.Size = new Size(146, 17);
+            lblNomeCategoria.Size = new Size(127, 17);
             lblNomeCategoria.TabIndex = 1;
             lblNomeCategoria.Text = "NOME DA CATEGORIA";
             // 
             // txtNomeCategoria
             // 
-            txtNomeCategoria.BackColor = SystemColors.ButtonShadow;
-            txtNomeCategoria.BorderColor = Color.FromArgb(224, 224, 224);
-            txtNomeCategoria.BorderRadius = 5;
+            txtNomeCategoria.BackColor = Color.FromArgb(24, 24, 24);
+            txtNomeCategoria.BorderColor = Color.FromArgb(45, 45, 45);
+            txtNomeCategoria.BorderRadius = 8;
             txtNomeCategoria.CustomizableEdges = customizableEdges1;
             txtNomeCategoria.DefaultText = "";
             txtNomeCategoria.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
             txtNomeCategoria.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
             txtNomeCategoria.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
             txtNomeCategoria.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
-            txtNomeCategoria.FillColor = Color.DimGray;
-            txtNomeCategoria.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtNomeCategoria.FillColor = Color.FromArgb(24, 24, 24);
+            txtNomeCategoria.FocusedState.BorderColor = Color.FromArgb(198, 255, 40);
             txtNomeCategoria.Font = new Font("Segoe UI", 9F);
-            txtNomeCategoria.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtNomeCategoria.ForeColor = Color.White;
+            txtNomeCategoria.HoverState.BorderColor = Color.FromArgb(198, 255, 40);
             txtNomeCategoria.Location = new Point(12, 85);
             txtNomeCategoria.Name = "txtNomeCategoria";
-            txtNomeCategoria.PlaceholderForeColor = Color.LightGray;
+            txtNomeCategoria.PlaceholderForeColor = Color.FromArgb(140, 140, 140);
             txtNomeCategoria.PlaceholderText = "Ex: Suplementos, Roupas, Acessórios...";
             txtNomeCategoria.SelectedText = "";
             txtNomeCategoria.ShadowDecoration.CustomizableEdges = customizableEdges2;
@@ -110,8 +113,8 @@
             // 
             // btnCancelarCategoria
             // 
-            btnCancelarCategoria.BorderColor = Color.Silver;
-            btnCancelarCategoria.BorderRadius = 5;
+            btnCancelarCategoria.BorderColor = Color.FromArgb(60, 60, 60);
+            btnCancelarCategoria.BorderRadius = 8;
             btnCancelarCategoria.BorderThickness = 1;
             btnCancelarCategoria.Cursor = Cursors.Hand;
             btnCancelarCategoria.CustomizableEdges = customizableEdges4;
@@ -119,7 +122,7 @@
             btnCancelarCategoria.DisabledState.CustomBorderColor = Color.DarkGray;
             btnCancelarCategoria.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
             btnCancelarCategoria.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            btnCancelarCategoria.FillColor = Color.Gray;
+            btnCancelarCategoria.FillColor = Color.FromArgb(30, 30, 30);
             btnCancelarCategoria.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnCancelarCategoria.ForeColor = Color.White;
             btnCancelarCategoria.Location = new Point(14, 148);
@@ -132,14 +135,14 @@
             // 
             // btnSalvarCategoria
             // 
-            btnSalvarCategoria.BorderRadius = 5;
+            btnSalvarCategoria.BorderRadius = 8;
             btnSalvarCategoria.Cursor = Cursors.Hand;
             btnSalvarCategoria.CustomizableEdges = customizableEdges6;
             btnSalvarCategoria.DisabledState.BorderColor = Color.DarkGray;
             btnSalvarCategoria.DisabledState.CustomBorderColor = Color.DarkGray;
             btnSalvarCategoria.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
             btnSalvarCategoria.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            btnSalvarCategoria.FillColor = Color.GreenYellow;
+            btnSalvarCategoria.FillColor = Color.FromArgb(198, 255, 40);
             btnSalvarCategoria.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnSalvarCategoria.ForeColor = Color.Black;
             btnSalvarCategoria.Location = new Point(237, 148);
@@ -154,7 +157,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(64, 64, 64);
+            BackColor = Color.FromArgb(15, 15, 15);
             ClientSize = new Size(412, 214);
             Controls.Add(btnSalvarCategoria);
             Controls.Add(btnCancelarCategoria);
@@ -164,6 +167,7 @@
             Controls.Add(lblTituloNovaCategoria);
             FormBorderStyle = FormBorderStyle.None;
             Name = "CategoriesFormDialog";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "CategoriesFormDialog";
             Load += CategoriesFormDialog_Load;
             ResumeLayout(false);

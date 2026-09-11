@@ -157,13 +157,12 @@ namespace BetaFit.Desktop.Forms
         private async void btnLogout_Click(object sender, EventArgs e)
         {
             //Mensagem para ver se o usuario deseja realmente sair do sistema
-            var resposta = MessageBox.Show(
+            bool confirmou = BetaFitMessageBox.Confirmar(
+                this,
                 "Deseja realmente sair do sistema?",
-                "Confirmar Logout",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
+                "Confirmar Logout");
 
-            if (resposta != DialogResult.Yes) return;
+            if (!confirmou) return;
 
             try
             {

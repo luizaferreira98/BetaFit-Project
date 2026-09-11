@@ -1,4 +1,5 @@
 ﻿using BetaFit.Desktop.Forms;
+
 using BetaFit.Desktop.Helpers;
 using BetaFit.Desktop.Services;
 using BetaFit.Desktop.Themes;
@@ -45,13 +46,6 @@ namespace BetaFit.Desktop.UserControls
             // Tema escuro do grid (mesmo usado em Pedidos/Produtos/Categorias)
             BetaFitTheme.AplicarEstiloGridEscuro(gridUltimosPedidos);
 
-            // Pintura customizada de célula — mesma técnica usada em
-            // PedidosUserControl (avatar+nome do cliente, pílula colorida
-            // de status). Trocado de AplicarBadgeStatusNoGrid porque esse
-            // método usa a paleta "clara" (CorStatusPedido) e deixava esse
-            // grid com uma cara diferente do de Pedidos.
-            gridUltimosPedidos.CellPainting += gridUltimosPedidos_CellPainting;
-
             // Ícones dos 4 cards de estatística — desenhados via GDI+ (não
             // emoji), mesmo motivo do estado vazio: emoji grande em
             // Guna2HtmlLabel/Guna2PictureBox não renderiza direito.
@@ -87,7 +81,7 @@ namespace BetaFit.Desktop.UserControls
                 var categorias = await _categoriesApiService.GetAllAsync();
                 var produtos = await _productsApiService.GetAllAsync();
                 var usuarios = await _usersApiService.GetAllAsync();
-                // Carrega pedidos recentes
+                // Carrega pedidos para calcular os itens mais pedidos
                 _todosPedidos = await _ordersApiService.GetAllAsync();
                 // Atualiza os labels com os contadores
                 lblValorCategorias.Text = categorias.Count.ToString();
@@ -101,55 +95,65 @@ namespace BetaFit.Desktop.UserControls
                     .Sum(p => p.Total);
                 lblValorFaturamento.Text = faturamento.ToString("C");
 
-                // Popular grid de últimos pedidos (exibe os 5 mais recentes)
-                PopularUltimosPedidos(_todosPedidos);
+                // Popular grid com os 5 itens mais pedidos
+                PopularItensMaisPedidos(_todosPedidos);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erro ao carregar dados do dashboard: {ex.Message}",
-                "Erro",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+                BetaFitMessageBox.Erro(this, $"Erro ao carregar dados do dashboard: {ex.Message}");
             }
         }
 
-        private void PopularUltimosPedidos(List<BetaFit.Desktop.DTOs.OrderResponseDto> pedidos)
+        private void PopularItensMaisPedidos(List<BetaFit.Desktop.DTOs.OrderResponseDto> pedidos)
         {
-            // Limpa linhas existentes
             gridUltimosPedidos.Rows.Clear();
 
-            var ultimos5 = pedidos.OrderByDescending(p => p.CreatedAt).Take(5).ToList();
+            // Considera apenas pedidos entregues para representar vendas
+            // efetivamente concluídas no ranking.
+            var itensMaisPedidos = pedidos
+                .Where(p => string.Equals(
+                    p.Status,
+                    "Entregue",
+                    StringComparison.OrdinalIgnoreCase))
+                .SelectMany(p => p.Items ?? new List<BetaFit.Desktop.DTOs.OrderItemResponseDto>())
+                .Where(i => i.Quantity > 0)
+                .GroupBy(i => new { i.ProductId, i.ProductName })
+                .Select(g => new
+                {
+                    Produto = string.IsNullOrWhiteSpace(g.Key.ProductName)
+                        ? $"Produto #{g.Key.ProductId}"
+                        : g.Key.ProductName,
+                    Unidades = g.Sum(i => i.Quantity),
+                    Pedidos = g.Count()
+                })
+                .OrderByDescending(x => x.Unidades)
+                .ThenByDescending(x => x.Pedidos)
+                .Take(5)
+                .ToList();
 
-            foreach (var pedido in ultimos5)
+            foreach (var item in itensMaisPedidos)
             {
                 gridUltimosPedidos.Rows.Add(
-                    pedido.Id,
-                    pedido.UserName,
-                    pedido.CreatedAt.ToString("dd/MM/yyyy HH:mm"),
-                    pedido.Status,
-                    pedido.Total.ToString("C")
+                    item.Produto,
+                    item.Unidades,
+                    item.Pedidos
                 );
             }
 
-            AtualizarRodapePaginacaoDashboard(pedidos.Count, ultimos5.Count);
-            AtualizarEstadoVazioDashboard();
+            AtualizarRodapePaginacaoDashboard(itensMaisPedidos.Count, itensMaisPedidos.Count);
+            AtualizarEstadoVazioDashboard(itensMaisPedidos.Count == 0);
         }
 
-        // Alterna entre o grid (pnlTabela) e o estado vazio (PnlPedidosVazios)
-        // — sem isso os dois ficam visíveis ao mesmo tempo, sobrepostos.
-        private void AtualizarEstadoVazioDashboard()
+        // Alterna entre o grid e o estado vazio.
+        private void AtualizarEstadoVazioDashboard(bool semResultados)
         {
-            bool semResultados = _todosPedidos.Count == 0;
             pnlTabela.Visible = !semResultados;
             PnlPedidosVazios.Visible = semResultados;
         }
 
-        // Rodapé estático: o Dashboard sempre mostra só os 5 pedidos mais
-        // recentes, não pagina de verdade — por isso os botões ‹ › ficam
-        // sempre desabilitados (já fixado no Designer) e só o texto muda.
-        private void AtualizarRodapePaginacaoDashboard(int totalPedidos, int exibidos)
+        private void AtualizarRodapePaginacaoDashboard(int exibidos, int totalItens)
         {
-            lblResumoPag.Text = $"Exibindo {exibidos} de {totalPedidos} pedidos";
+            lblResumoPag.Text = $"Exibindo {exibidos} de {totalItens} itens";
         }
 
         private async void btnAtualizarPedidos_Click(object sender, EventArgs e)
@@ -157,117 +161,10 @@ namespace BetaFit.Desktop.UserControls
             await CarregarDadosAsync();
         }
 
-        // Botão "VER PEDIDOS" do estado vazio — leva pra tela de Pedidos
-        // (mesma técnica do btnIrParaProdutos_Click da PedidosUserControl,
-        // trocando o destino).
+        // Botão do estado vazio — leva para a tela de Pedidos.
         private void btnIrParaProdutos_Click(object sender, EventArgs e)
         {
             (this.FindForm() as MainForm)?.NavegarParaPedidos();
-        }
-
-        // =====================================================================
-        // PINTURA CUSTOMIZADA DO GRID — mesma técnica de PedidosUserControl,
-        // pra os dois grids ficarem visualmente idênticos (avatar do cliente
-        // e pílula colorida de status, com rótulo traduzido).
-        // =====================================================================
-
-        private void gridUltimosPedidos_CellPainting(object? sender, DataGridViewCellPaintingEventArgs e)
-        {
-            if (e.ColumnIndex < 0 || e.RowIndex < 0) return;
-            var nomeColuna = gridUltimosPedidos.Columns[e.ColumnIndex].Name;
-
-            switch (nomeColuna)
-            {
-                case "colClienteUP":
-                    PintarCelulaClienteDashboard(e);
-                    break;
-                case "colStatusUP":
-                    PintarCelulaStatusDashboard(e);
-                    break;
-            }
-        }
-
-        // Avatar (bolinha com iniciais) + nome do cliente
-        private void PintarCelulaClienteDashboard(DataGridViewCellPaintingEventArgs e)
-        {
-            e.PaintBackground(e.CellBounds, true);
-            var nome = e.Value?.ToString() ?? "";
-            if (string.IsNullOrWhiteSpace(nome)) { e.Handled = true; return; }
-
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-
-            const int diametro = 28;
-            int x = e.CellBounds.Left + 8;
-            int y = e.CellBounds.Top + (e.CellBounds.Height - diametro) / 2;
-
-            using (var brush = new SolidBrush(BetaFitTheme.CorAvatar(nome)))
-                e.Graphics.FillEllipse(brush, x, y, diametro, diametro);
-
-            string iniciais = ObterIniciaisDashboard(nome);
-            using var fonteIniciais = new Font("Segoe UI", 8.5F, FontStyle.Bold);
-            var tamIniciais = e.Graphics.MeasureString(iniciais, fonteIniciais);
-            using (var brushTexto = new SolidBrush(Color.White))
-                e.Graphics.DrawString(iniciais, fonteIniciais, brushTexto,
-                    x + (diametro - tamIniciais.Width) / 2, y + (diametro - tamIniciais.Height) / 2);
-
-            using var fonteNome = new Font("Segoe UI", 9F);
-            var tamNome = e.Graphics.MeasureString(nome, fonteNome);
-            using (var brushNome = new SolidBrush(BetaFitTheme.Admin.TextoPrincipal))
-                e.Graphics.DrawString(nome, fonteNome, brushNome,
-                    x + diametro + 10, e.CellBounds.Top + (e.CellBounds.Height - tamNome.Height) / 2);
-
-            e.Handled = true;
-        }
-
-        private static string ObterIniciaisDashboard(string nomeCompleto)
-        {
-            var partes = nomeCompleto.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            if (partes.Length == 0) return "?";
-            if (partes.Length == 1) return partes[0][..1].ToUpper();
-            return $"{partes[0][0]}{partes[^1][0]}".ToUpper();
-        }
-
-        // Badge preenchido (pílula) com o rótulo traduzido do status —
-        // exatamente igual ao PintarCelulaStatus da tela de Pedidos.
-        private void PintarCelulaStatusDashboard(DataGridViewCellPaintingEventArgs e)
-        {
-            e.PaintBackground(e.CellBounds, true);
-            var status = e.Value?.ToString() ?? "";
-            if (string.IsNullOrEmpty(status)) { e.Handled = true; return; }
-
-            var (fundo, texto) = BetaFitTheme.CorBadgeStatusPedidoAdmin(status);
-            var rotulo = BetaFitTheme.RotuloStatusPedido(status);
-
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            using var fonte = new Font("Segoe UI", 9F, FontStyle.Bold);
-            var tam = e.Graphics.MeasureString(rotulo, fonte);
-
-            int largura = (int)tam.Width + 24;
-            int altura = 26;
-            int x = e.CellBounds.Left + 8;
-            int y = e.CellBounds.Top + (e.CellBounds.Height - altura) / 2;
-
-            using (var path = RetanguloArredondadoDashboard(new Rectangle(x, y, largura, altura), altura / 2))
-            using (var brush = new SolidBrush(fundo))
-                e.Graphics.FillPath(brush, path);
-
-            using (var brushTexto = new SolidBrush(texto))
-                e.Graphics.DrawString(rotulo, fonte, brushTexto,
-                    x + (largura - tam.Width) / 2, y + (altura - tam.Height) / 2);
-
-            e.Handled = true;
-        }
-
-        private static GraphicsPath RetanguloArredondadoDashboard(Rectangle bounds, int raio)
-        {
-            var path = new GraphicsPath();
-            int d = raio * 2;
-            path.AddArc(bounds.X, bounds.Y, d, d, 180, 90);
-            path.AddArc(bounds.Right - d, bounds.Y, d, d, 270, 90);
-            path.AddArc(bounds.Right - d, bounds.Bottom - d, d, d, 0, 90);
-            path.AddArc(bounds.X, bounds.Bottom - d, d, d, 90, 90);
-            path.CloseFigure();
-            return path;
         }
 
         // =====================================================================

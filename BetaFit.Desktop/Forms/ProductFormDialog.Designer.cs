@@ -1,4 +1,6 @@
-﻿namespace BetaFit.Desktop.Forms
+﻿using BetaFit.Desktop.Themes;
+
+namespace BetaFit.Desktop.Forms
 {
     partial class ProductFormDialog
     {
@@ -72,7 +74,7 @@
             // 
             lblTituloFromProduto.BackColor = Color.Transparent;
             lblTituloFromProduto.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblTituloFromProduto.ForeColor = SystemColors.ControlLightLight;
+            lblTituloFromProduto.ForeColor = Color.White;
             lblTituloFromProduto.Location = new Point(15, 15);
             lblTituloFromProduto.Name = "lblTituloFromProduto";
             lblTituloFromProduto.Size = new Size(166, 34);
@@ -106,12 +108,13 @@
             btnFecharNovoProduto.Size = new Size(40, 28);
             btnFecharNovoProduto.TabIndex = 2;
             btnFecharNovoProduto.Text = "X";
+            btnFecharNovoProduto.Click += btnFecharNovoProduto_Click;
             // 
             // lblNomeProduto
             // 
             lblNomeProduto.BackColor = Color.Transparent;
             lblNomeProduto.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblNomeProduto.ForeColor = SystemColors.ButtonFace;
+            lblNomeProduto.ForeColor = Color.White;
             lblNomeProduto.Location = new Point(15, 65);
             lblNomeProduto.Name = "lblNomeProduto";
             lblNomeProduto.Size = new Size(120, 17);
@@ -120,23 +123,23 @@
             // 
             // txtNomeProduto
             // 
-            txtNomeProduto.BackColor = SystemColors.ButtonShadow;
-            txtNomeProduto.BorderColor = Color.FromArgb(224, 224, 224);
-            txtNomeProduto.BorderRadius = 5;
+            txtNomeProduto.BackColor = Color.FromArgb(24, 24, 24);
+            txtNomeProduto.BorderColor = Color.FromArgb(45, 45, 45);
+            txtNomeProduto.BorderRadius = 8;
             txtNomeProduto.CustomizableEdges = customizableEdges2;
             txtNomeProduto.DefaultText = "";
             txtNomeProduto.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
             txtNomeProduto.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
             txtNomeProduto.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
             txtNomeProduto.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
-            txtNomeProduto.FillColor = Color.DimGray;
-            txtNomeProduto.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtNomeProduto.FillColor = Color.FromArgb(24, 24, 24);
+            txtNomeProduto.FocusedState.BorderColor = Color.FromArgb(198, 255, 40);
             txtNomeProduto.Font = new Font("Segoe UI", 9F);
             txtNomeProduto.ForeColor = Color.White;
-            txtNomeProduto.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtNomeProduto.HoverState.BorderColor = Color.FromArgb(198, 255, 40);
             txtNomeProduto.Location = new Point(15, 90);
             txtNomeProduto.Name = "txtNomeProduto";
-            txtNomeProduto.PlaceholderForeColor = Color.LightGray;
+            txtNomeProduto.PlaceholderForeColor = Color.FromArgb(140, 140, 140);
             txtNomeProduto.PlaceholderText = "Digite o nome do produto";
             txtNomeProduto.SelectedText = "";
             txtNomeProduto.ShadowDecoration.CustomizableEdges = customizableEdges3;
@@ -145,23 +148,23 @@
             // 
             // txtDescricaoProduto
             // 
-            txtDescricaoProduto.BackColor = SystemColors.ButtonShadow;
-            txtDescricaoProduto.BorderColor = Color.FromArgb(224, 224, 224);
-            txtDescricaoProduto.BorderRadius = 5;
+            txtDescricaoProduto.BackColor = Color.FromArgb(24, 24, 24);
+            txtDescricaoProduto.BorderColor = Color.FromArgb(45, 45, 45);
+            txtDescricaoProduto.BorderRadius = 8;
             txtDescricaoProduto.CustomizableEdges = customizableEdges4;
             txtDescricaoProduto.DefaultText = "";
             txtDescricaoProduto.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
             txtDescricaoProduto.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
             txtDescricaoProduto.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
             txtDescricaoProduto.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
-            txtDescricaoProduto.FillColor = Color.DimGray;
-            txtDescricaoProduto.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtDescricaoProduto.FillColor = Color.FromArgb(24, 24, 24);
+            txtDescricaoProduto.FocusedState.BorderColor = Color.FromArgb(198, 255, 40);
             txtDescricaoProduto.Font = new Font("Segoe UI", 9F);
             txtDescricaoProduto.ForeColor = Color.White;
-            txtDescricaoProduto.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtDescricaoProduto.HoverState.BorderColor = Color.FromArgb(198, 255, 40);
             txtDescricaoProduto.Location = new Point(15, 166);
             txtDescricaoProduto.Name = "txtDescricaoProduto";
-            txtDescricaoProduto.PlaceholderForeColor = Color.LightGray;
+            txtDescricaoProduto.PlaceholderForeColor = Color.FromArgb(140, 140, 140);
             txtDescricaoProduto.PlaceholderText = "Descreva o produto, seus beneficios e difetenciais...";
             txtDescricaoProduto.SelectedText = "";
             txtDescricaoProduto.ShadowDecoration.CustomizableEdges = customizableEdges5;
@@ -173,7 +176,7 @@
             // 
             lblDescricaoProduto.BackColor = Color.Transparent;
             lblDescricaoProduto.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblDescricaoProduto.ForeColor = SystemColors.ButtonFace;
+            lblDescricaoProduto.ForeColor = Color.White;
             lblDescricaoProduto.Location = new Point(15, 140);
             lblDescricaoProduto.Name = "lblDescricaoProduto";
             lblDescricaoProduto.Size = new Size(68, 17);
@@ -182,23 +185,23 @@
             // 
             // txtPrecoProduto
             // 
-            txtPrecoProduto.BackColor = SystemColors.ButtonShadow;
-            txtPrecoProduto.BorderColor = Color.FromArgb(224, 224, 224);
-            txtPrecoProduto.BorderRadius = 5;
+            txtPrecoProduto.BackColor = Color.FromArgb(24, 24, 24);
+            txtPrecoProduto.BorderColor = Color.FromArgb(45, 45, 45);
+            txtPrecoProduto.BorderRadius = 8;
             txtPrecoProduto.CustomizableEdges = customizableEdges6;
             txtPrecoProduto.DefaultText = "";
             txtPrecoProduto.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
             txtPrecoProduto.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
             txtPrecoProduto.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
             txtPrecoProduto.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
-            txtPrecoProduto.FillColor = Color.DimGray;
-            txtPrecoProduto.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtPrecoProduto.FillColor = Color.FromArgb(24, 24, 24);
+            txtPrecoProduto.FocusedState.BorderColor = Color.FromArgb(198, 255, 40);
             txtPrecoProduto.Font = new Font("Segoe UI", 9F);
             txtPrecoProduto.ForeColor = Color.White;
-            txtPrecoProduto.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtPrecoProduto.HoverState.BorderColor = Color.FromArgb(198, 255, 40);
             txtPrecoProduto.Location = new Point(15, 323);
             txtPrecoProduto.Name = "txtPrecoProduto";
-            txtPrecoProduto.PlaceholderForeColor = Color.LightGray;
+            txtPrecoProduto.PlaceholderForeColor = Color.FromArgb(140, 140, 140);
             txtPrecoProduto.PlaceholderText = "Ex: 149,90";
             txtPrecoProduto.SelectedText = "";
             txtPrecoProduto.ShadowDecoration.CustomizableEdges = customizableEdges7;
@@ -209,7 +212,7 @@
             // 
             lblPrecoProduto.BackColor = Color.Transparent;
             lblPrecoProduto.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblPrecoProduto.ForeColor = SystemColors.ButtonFace;
+            lblPrecoProduto.ForeColor = Color.White;
             lblPrecoProduto.Location = new Point(15, 300);
             lblPrecoProduto.Name = "lblPrecoProduto";
             lblPrecoProduto.Size = new Size(66, 17);
@@ -218,23 +221,23 @@
             // 
             // txtUrlImagemProduto
             // 
-            txtUrlImagemProduto.BackColor = SystemColors.ButtonShadow;
-            txtUrlImagemProduto.BorderColor = Color.FromArgb(224, 224, 224);
-            txtUrlImagemProduto.BorderRadius = 5;
+            txtUrlImagemProduto.BackColor = Color.FromArgb(24, 24, 24);
+            txtUrlImagemProduto.BorderColor = Color.FromArgb(45, 45, 45);
+            txtUrlImagemProduto.BorderRadius = 8;
             txtUrlImagemProduto.CustomizableEdges = customizableEdges8;
             txtUrlImagemProduto.DefaultText = "";
             txtUrlImagemProduto.DisabledState.BorderColor = Color.FromArgb(208, 208, 208);
             txtUrlImagemProduto.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
             txtUrlImagemProduto.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
             txtUrlImagemProduto.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
-            txtUrlImagemProduto.FillColor = Color.DimGray;
-            txtUrlImagemProduto.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtUrlImagemProduto.FillColor = Color.FromArgb(24, 24, 24);
+            txtUrlImagemProduto.FocusedState.BorderColor = Color.FromArgb(198, 255, 40);
             txtUrlImagemProduto.Font = new Font("Segoe UI", 9F);
             txtUrlImagemProduto.ForeColor = Color.White;
-            txtUrlImagemProduto.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
+            txtUrlImagemProduto.HoverState.BorderColor = Color.FromArgb(198, 255, 40);
             txtUrlImagemProduto.Location = new Point(182, 323);
             txtUrlImagemProduto.Name = "txtUrlImagemProduto";
-            txtUrlImagemProduto.PlaceholderForeColor = Color.LightGray;
+            txtUrlImagemProduto.PlaceholderForeColor = Color.FromArgb(140, 140, 140);
             txtUrlImagemProduto.PlaceholderText = "https://exemplo.com/Imagem.jpg";
             txtUrlImagemProduto.SelectedText = "";
             txtUrlImagemProduto.ShadowDecoration.CustomizableEdges = customizableEdges9;
@@ -245,7 +248,7 @@
             // 
             lblUrlImagemProduto.BackColor = Color.Transparent;
             lblUrlImagemProduto.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblUrlImagemProduto.ForeColor = SystemColors.ButtonFace;
+            lblUrlImagemProduto.ForeColor = Color.White;
             lblUrlImagemProduto.Location = new Point(182, 300);
             lblUrlImagemProduto.Name = "lblUrlImagemProduto";
             lblUrlImagemProduto.Size = new Size(98, 17);
@@ -256,7 +259,7 @@
             // 
             lblCategorianNovoProduto.BackColor = Color.Transparent;
             lblCategorianNovoProduto.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblCategorianNovoProduto.ForeColor = SystemColors.ButtonFace;
+            lblCategorianNovoProduto.ForeColor = Color.White;
             lblCategorianNovoProduto.Location = new Point(15, 371);
             lblCategorianNovoProduto.Name = "lblCategorianNovoProduto";
             lblCategorianNovoProduto.Size = new Size(69, 17);
@@ -265,15 +268,15 @@
             // 
             // cboCategoriaProduto
             // 
-            cboCategoriaProduto.BackColor = SystemColors.ButtonShadow;
+            cboCategoriaProduto.BackColor = Color.FromArgb(24, 24, 24);
             cboCategoriaProduto.CustomizableEdges = customizableEdges10;
             cboCategoriaProduto.DrawMode = DrawMode.OwnerDrawFixed;
             cboCategoriaProduto.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboCategoriaProduto.FillColor = Color.DimGray;
-            cboCategoriaProduto.FocusedColor = Color.FromArgb(94, 148, 255);
-            cboCategoriaProduto.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
+            cboCategoriaProduto.FillColor = Color.FromArgb(24, 24, 24);
+            cboCategoriaProduto.FocusedColor = Color.FromArgb(198, 255, 40);
+            cboCategoriaProduto.FocusedState.BorderColor = Color.FromArgb(198, 255, 40);
             cboCategoriaProduto.Font = new Font("Segoe UI", 10F);
-            cboCategoriaProduto.ForeColor = Color.LightGray;
+            cboCategoriaProduto.ForeColor = Color.FromArgb(140, 140, 140);
             cboCategoriaProduto.ItemHeight = 30;
             cboCategoriaProduto.Location = new Point(15, 394);
             cboCategoriaProduto.Name = "cboCategoriaProduto";
@@ -283,15 +286,15 @@
             // 
             // cboGenero
             // 
-            cboGenero.BackColor = SystemColors.ButtonShadow;
+            cboGenero.BackColor = Color.FromArgb(24, 24, 24);
             cboGenero.CustomizableEdges = customizableEdges12;
             cboGenero.DrawMode = DrawMode.OwnerDrawFixed;
             cboGenero.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboGenero.FillColor = Color.DimGray;
-            cboGenero.FocusedColor = Color.FromArgb(94, 148, 255);
-            cboGenero.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
+            cboGenero.FillColor = Color.FromArgb(24, 24, 24);
+            cboGenero.FocusedColor = Color.FromArgb(198, 255, 40);
+            cboGenero.FocusedState.BorderColor = Color.FromArgb(198, 255, 40);
             cboGenero.Font = new Font("Segoe UI", 10F);
-            cboGenero.ForeColor = Color.LightGray;
+            cboGenero.ForeColor = Color.FromArgb(140, 140, 140);
             cboGenero.ItemHeight = 30;
             cboGenero.Location = new Point(203, 394);
             cboGenero.Name = "cboGenero";
@@ -303,7 +306,7 @@
             // 
             lblGeneroProduto.BackColor = Color.Transparent;
             lblGeneroProduto.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblGeneroProduto.ForeColor = SystemColors.ButtonFace;
+            lblGeneroProduto.ForeColor = Color.White;
             lblGeneroProduto.Location = new Point(203, 371);
             lblGeneroProduto.Name = "lblGeneroProduto";
             lblGeneroProduto.Size = new Size(50, 17);
@@ -314,7 +317,7 @@
             // 
             lblAtivo.BackColor = Color.Transparent;
             lblAtivo.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblAtivo.ForeColor = SystemColors.ButtonFace;
+            lblAtivo.ForeColor = Color.White;
             lblAtivo.Location = new Point(57, 450);
             lblAtivo.Name = "lblAtivo";
             lblAtivo.Size = new Size(39, 17);
@@ -323,8 +326,8 @@
             // 
             // swAtivo
             // 
-            swAtivo.CheckedState.BorderColor = Color.GreenYellow;
-            swAtivo.CheckedState.FillColor = Color.GreenYellow;
+            swAtivo.CheckedState.BorderColor = Color.FromArgb(198, 255, 40);
+            swAtivo.CheckedState.FillColor = Color.FromArgb(198, 255, 40);
             swAtivo.CheckedState.InnerBorderColor = Color.Black;
             swAtivo.CheckedState.InnerColor = Color.White;
             swAtivo.CustomizableEdges = customizableEdges14;
@@ -333,21 +336,21 @@
             swAtivo.ShadowDecoration.CustomizableEdges = customizableEdges15;
             swAtivo.Size = new Size(35, 20);
             swAtivo.TabIndex = 18;
-            swAtivo.UncheckedState.BorderColor = Color.FromArgb(125, 137, 149);
-            swAtivo.UncheckedState.FillColor = Color.FromArgb(125, 137, 149);
+            swAtivo.UncheckedState.BorderColor = Color.FromArgb(70, 70, 70);
+            swAtivo.UncheckedState.FillColor = Color.FromArgb(70, 70, 70);
             swAtivo.UncheckedState.InnerBorderColor = Color.White;
             swAtivo.UncheckedState.InnerColor = Color.White;
             // 
             // btnSalvarProduto
             // 
-            btnSalvarProduto.BorderRadius = 5;
+            btnSalvarProduto.BorderRadius = 8;
             btnSalvarProduto.Cursor = Cursors.Hand;
             btnSalvarProduto.CustomizableEdges = customizableEdges16;
             btnSalvarProduto.DisabledState.BorderColor = Color.DarkGray;
             btnSalvarProduto.DisabledState.CustomBorderColor = Color.DarkGray;
             btnSalvarProduto.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
             btnSalvarProduto.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            btnSalvarProduto.FillColor = Color.GreenYellow;
+            btnSalvarProduto.FillColor = Color.FromArgb(198, 255, 40);
             btnSalvarProduto.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnSalvarProduto.ForeColor = Color.Black;
             btnSalvarProduto.Location = new Point(208, 490);
@@ -360,8 +363,8 @@
             // 
             // btnCancelarProduto
             // 
-            btnCancelarProduto.BorderColor = Color.Silver;
-            btnCancelarProduto.BorderRadius = 5;
+            btnCancelarProduto.BorderColor = Color.FromArgb(60, 60, 60);
+            btnCancelarProduto.BorderRadius = 8;
             btnCancelarProduto.BorderThickness = 1;
             btnCancelarProduto.Cursor = Cursors.Hand;
             btnCancelarProduto.CustomizableEdges = customizableEdges18;
@@ -369,7 +372,7 @@
             btnCancelarProduto.DisabledState.CustomBorderColor = Color.DarkGray;
             btnCancelarProduto.DisabledState.FillColor = Color.FromArgb(169, 169, 169);
             btnCancelarProduto.DisabledState.ForeColor = Color.FromArgb(141, 141, 141);
-            btnCancelarProduto.FillColor = Color.Gray;
+            btnCancelarProduto.FillColor = Color.FromArgb(30, 30, 30);
             btnCancelarProduto.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnCancelarProduto.ForeColor = Color.White;
             btnCancelarProduto.Location = new Point(8, 490);
@@ -384,7 +387,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(64, 64, 64);
+            BackColor = Color.FromArgb(15, 15, 15);
             ClientSize = new Size(412, 547);
             Controls.Add(btnCancelarProduto);
             Controls.Add(btnSalvarProduto);
@@ -407,6 +410,7 @@
             Controls.Add(lblTituloFromProduto);
             FormBorderStyle = FormBorderStyle.None;
             Name = "ProductFormDialog";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "ProductFormDialog";
             Load += ProductFormDialog_Load;
             ResumeLayout(false);

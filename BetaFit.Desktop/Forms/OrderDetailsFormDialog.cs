@@ -61,8 +61,9 @@ namespace BetaFit.Desktop.Forms
             lblCliente.Text = $"Cliente: {_pedido.UserName}";
             lblData.Text = _pedido.CreatedAt.ToString("dd/MM/yyyy 'às' HH:mm");
 
-            // Badge de status reaproveitando as mesmas cores do grid de Pedidos
-            var (fundo, texto) = BetaFitTheme.CorStatusPedido(_pedido.Status);
+            // Badge de status reaproveitando a paleta "admin" (fundo escuro +
+            // texto vivo), a mesma usada no grid escuro de Pedidos.
+            var (fundo, texto) = BetaFitTheme.CorBadgeStatusPedidoAdmin(_pedido.Status);
             lblStatusBadge.Text = FormatarStatus(_pedido.Status);
             lblStatusBadge.ForeColor = texto;
             pnlStatusBadge.BackColor = fundo;
@@ -75,7 +76,7 @@ namespace BetaFit.Desktop.Forms
                 var lblVazio = new Guna2HtmlLabel
                 {
                     Text = "Este pedido não possui itens.",
-                    ForeColor = BetaFitTheme.TextoMuted,
+                    ForeColor = BetaFitTheme.Admin.TextoMuted,
                     Font = BetaFitTheme.FonteNormal,
                     AutoSize = false,
                     Width = pnlItens.Width - 24,
@@ -105,10 +106,10 @@ namespace BetaFit.Desktop.Forms
             {
                 Width = pnlItens.Width - 24,
                 Height = 52,
-                BackColor = BetaFitTheme.Superficie,
-                BorderRadius = 2,
+                BackColor = BetaFitTheme.Admin.FundoLinhaImpar,
+                BorderRadius = BetaFitTheme.Admin.ModalBorderRadius,
                 BorderThickness = 1,
-                BorderColor = BetaFitTheme.Linha,
+                BorderColor = BetaFitTheme.Admin.Borda,
                 Margin = new Padding(0, 0, 0, 8),
             };
 
@@ -126,7 +127,7 @@ namespace BetaFit.Desktop.Forms
             {
                 Text = $"{item.Quantity}x",
                 Font = BetaFitTheme.FonteSubtitulo,
-                ForeColor = BetaFitTheme.LimaEscuro,
+                ForeColor = BetaFitTheme.Admin.Lima,
                 Location = new Point(56, 8),
                 AutoSize = true,
             };
@@ -135,7 +136,7 @@ namespace BetaFit.Desktop.Forms
             {
                 Text = item.ProductName,
                 Font = BetaFitTheme.FonteNormal,
-                ForeColor = BetaFitTheme.Tinta,
+                ForeColor = BetaFitTheme.Admin.TextoPrincipal,
                 Location = new Point(100, 4),
                 AutoSize = false,
                 Size = new Size(linha.Width - 244, 18),
@@ -145,7 +146,7 @@ namespace BetaFit.Desktop.Forms
             {
                 Text = $"{item.UnitPrice:C} / un.",
                 Font = BetaFitTheme.FontePequena,
-                ForeColor = BetaFitTheme.TextoMuted,
+                ForeColor = BetaFitTheme.Admin.TextoMuted,
                 Location = new Point(100, 24),
                 AutoSize = true,
             };
@@ -154,7 +155,7 @@ namespace BetaFit.Desktop.Forms
             {
                 Text = item.Subtotal.ToString("C"),
                 Font = BetaFitTheme.FonteSubtitulo,
-                ForeColor = BetaFitTheme.Tinta,
+                ForeColor = BetaFitTheme.Admin.TextoPrincipal,
                 AutoSize = true,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right,
             };
@@ -221,8 +222,8 @@ namespace BetaFit.Desktop.Forms
             var bmp = new Bitmap(40, 40);
             using var g = Graphics.FromImage(bmp);
             g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.Clear(Color.FromArgb(235, 235, 231));
-            using var caneta = new Pen(Color.FromArgb(190, 190, 186), 1.3f);
+            g.Clear(BetaFitTheme.Admin.FundoLinhaPar);
+            using var caneta = new Pen(BetaFitTheme.Admin.Borda, 1.3f);
             g.DrawRectangle(caneta, 5, 5, 30, 30);
             return bmp;
         }

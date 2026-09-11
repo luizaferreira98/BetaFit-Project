@@ -111,8 +111,6 @@
             colIdUP = new DataGridViewTextBoxColumn();
             colClienteUP = new DataGridViewTextBoxColumn();
             colDataUP = new DataGridViewTextBoxColumn();
-            colStatusUP = new DataGridViewTextBoxColumn();
-            colTotalUP = new DataGridViewTextBoxColumn();
             lblUltimosPedidos = new Guna.UI2.WinForms.Guna2HtmlLabel();
             btnAtualizarPedidos = new Guna.UI2.WinForms.Guna2Button();
             pnlTabela = new Guna.UI2.WinForms.Guna2Panel();
@@ -473,7 +471,7 @@
             gridUltimosPedidos.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             gridUltimosPedidos.ColumnHeadersHeight = 30;
             gridUltimosPedidos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
-            gridUltimosPedidos.Columns.AddRange(new DataGridViewColumn[] { colIdUP, colClienteUP, colDataUP, colStatusUP, colTotalUP });
+            gridUltimosPedidos.Columns.AddRange(new DataGridViewColumn[] { colIdUP, colClienteUP, colDataUP });
             dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = Color.White;
             dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F);
@@ -501,32 +499,26 @@
             // 
             // colIdUP
             // 
-            colIdUP.HeaderText = "ID";
+            colIdUP.HeaderText = "Produto";
             colIdUP.Name = "colIdUP";
             colIdUP.ReadOnly = true;
+            colIdUP.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             // 
             // colClienteUP
             // 
-            colClienteUP.HeaderText = "Cliente";
+            colClienteUP.HeaderText = "Unidades pedidas";
             colClienteUP.Name = "colClienteUP";
             colClienteUP.ReadOnly = true;
+            colClienteUP.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colClienteUP.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             // 
             // colDataUP
             // 
-            colDataUP.HeaderText = "Data";
+            colDataUP.HeaderText = "Nº de pedidos";
             colDataUP.Name = "colDataUP";
             colDataUP.ReadOnly = true;
-            // 
-            // colStatusUP
-            // 
-            colStatusUP.HeaderText = "Status";
-            colStatusUP.Name = "colStatusUP";
-            // 
-            // colTotalUP
-            // 
-            colTotalUP.HeaderText = "Total";
-            colTotalUP.Name = "colTotalUP";
-            colTotalUP.ReadOnly = true;
+            colDataUP.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colDataUP.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             // 
             // lblUltimosPedidos
             // 
@@ -537,7 +529,7 @@
             lblUltimosPedidos.Name = "lblUltimosPedidos";
             lblUltimosPedidos.Size = new Size(146, 23);
             lblUltimosPedidos.TabIndex = 9;
-            lblUltimosPedidos.Text = "ÚLTIMOS PEDIDOS";
+            lblUltimosPedidos.Text = "ITENS MAIS PEDIDOS";
             // 
             // btnAtualizarPedidos
             // 
@@ -654,7 +646,7 @@
             lblResumoPag.Name = "lblResumoPag";
             lblResumoPag.Size = new Size(151, 17);
             lblResumoPag.TabIndex = 13;
-            lblResumoPag.Text = "Exibindo 0 a 0 de 0 produtos";
+            lblResumoPag.Text = "Exibindo 0 de 0 itens";
             // 
             // PnlPedidosVazios
             // 
@@ -690,7 +682,7 @@
             lblTituloVazio.Name = "lblTituloVazio";
             lblTituloVazio.Size = new Size(257, 27);
             lblTituloVazio.TabIndex = 24;
-            lblTituloVazio.Text = "Nenhum pedido encontrado";
+            lblTituloVazio.Text = "Nenhum item encontrado";
             // 
             // lblSubtituloVazio
             // 
@@ -700,7 +692,7 @@
             lblSubtituloVazio.Name = "lblSubtituloVazio";
             lblSubtituloVazio.Size = new Size(285, 17);
             lblSubtituloVazio.TabIndex = 25;
-            lblSubtituloVazio.Text = "Ainda não há pedidos registrados.";
+            lblSubtituloVazio.Text = "Ainda não há itens vendidos registrados.";
             // 
             // btnIrParaProdutos
             // 
@@ -791,8 +783,6 @@
         private DataGridViewTextBoxColumn colIdUP;
         private DataGridViewTextBoxColumn colClienteUP;
         private DataGridViewTextBoxColumn colDataUP;
-        private DataGridViewTextBoxColumn colStatusUP;
-        private DataGridViewTextBoxColumn colTotalUP;
         private Guna.UI2.WinForms.Guna2Button btnAtualizarPedidos;
         private Guna.UI2.WinForms.Guna2Panel pnlIconeFaturamento;
         private Guna.UI2.WinForms.Guna2Panel pnlIconeCategorias;
