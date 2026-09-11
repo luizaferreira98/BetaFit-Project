@@ -1,0 +1,5 @@
+@model BetaFit.Application.ViewModels.ProductFormViewModel
+@using System.Text.Json
+@using BetaFit.UI.Helpers
+@{var measures=Model.SizeMeasurements.Count>0?Model.SizeMeasurements:ProductMeasurements.For(new ProductDto{AvailableSizes=Model.AvailableSizes,CategoryName=Model.Categories.FirstOrDefault(x=>x.Id==Model.CategoryId)?.Name??""});}
+<section class="bf-form-section"><h3>Tabela de medidas por tamanho</h3><p>Preencha as medidas em centímetros para cada tamanho selecionado. Clique no valor para editar.</p><input type="hidden" name="measurementsJson" data-measure-editor-value value="@(Context.Request.HasFormContentType?Context.Request.Form["measurementsJson"].ToString():JsonSerializer.Serialize(measures))" /><div class="bf-table-scroll" data-measure-editor></div><label class="bf-check"><input asp-for="MeasurementsAreDemo" /><span>Medidas de demonstração (desmarque somente após conferir as peças)</span></label></section>

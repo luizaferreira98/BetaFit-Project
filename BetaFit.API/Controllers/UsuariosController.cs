@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BetaFit.API - UsuariosController
 // =============================================================================
 // Controller REST para gestão de usuários (Identity), usado pelas telas
@@ -20,7 +20,7 @@ namespace BetaFit.API.Controllers
 {
     [ApiController]            // Define que esta classe responde a requisições HTTP (JSON)
     [Route("api/[controller]")] // A rota será: localhost:porta/api/usuarios
-    [Authorize(Roles = "Admin")] // Somente Admin gerencia outros usuários/funcionários
+    [Authorize(Roles = "Admin")]    // Gestão de usuários é exclusiva do administrador
     public class UsuariosController : ControllerBase
     {
         private readonly IUsuariosService _usuariosService;

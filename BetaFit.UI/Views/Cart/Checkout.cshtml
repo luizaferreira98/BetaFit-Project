@@ -1,0 +1,58 @@
+@model BetaFit.UI.Models.CheckoutViewModel
+@{ ViewData["Title"] = "Checkout demonstrativo"; var paymentStep = Model.HasSavedAddress ? "02" : "03"; }
+
+<section class="bf-page-hero bf-page-hero--compact"><div class="bf-container bf-page-hero__inner"><div><span class="bf-eyebrow bf-eyebrow--dark">Compra demonstrativa</span><h1>Finalizar compra</h1><p>Escolha como deseja pagar. Nenhuma cobrança real será processada.</p></div></div></section>
+
+<section class="bf-section"><div class="bf-container"><div class="bf-checkout-layout"><form asp-action="Checkout" method="post" class="bf-form bf-form--admin bf-checkout-form">@Html.AntiForgeryToken()
+@if(!ViewData.ModelState.IsValid){<div class="bf-alert bf-alert--error" role="alert">@Html.ValidationSummary(false)</div>}
+
+@if (Model.HasSavedAddress)
+{
+    <div class="bf-form-section bf-checkout-confirmation"><div class="bf-form-section__head"><span>01</span><div><strong>Confirme seu CPF</strong><small>Seu endereço está salvo. Para sua segurança, informe somente o CPF antes de escolher o pagamento.</small></div></div>
+        <div class="bf-order-address"><p><strong>@Model.Street, @Model.Number</strong>@if(!string.IsNullOrWhiteSpace(Model.Complement)){<text> · @Model.Complement</text>}</p><p>@Model.Neighborhood · @Model.City/@Model.State · CEP @Model.Cep</p><a class="bf-text-link" asp-controller="Account" asp-action="Profile">Alterar endereço no perfil</a></div>
+        <label class="bf-checkout-cpf">CPF de confirmação<input asp-for="Cpf" maxlength="14" data-cpf-mask inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" data-checkout-group="profile"/><span asp-validation-for="Cpf" class="text-danger"></span></label>
+    </div>
+}
+else
+{
+    <div class="bf-checkout-journey" data-checkout-journey aria-label="Progresso do preenchimento">
+        <div class="bf-checkout-journey__step" data-checkout-step="profile"><span>01</span><div><strong>Identificação</strong><small>Informe seu CPF</small></div><b>✓</b></div>
+        <div class="bf-checkout-journey__line"></div>
+        <div class="bf-checkout-journey__step" data-checkout-step="address"><span>02</span><div><strong>Entrega</strong><small>Complete o endereço</small></div><b>✓</b></div>
+        <div class="bf-checkout-journey__line"></div>
+        <div class="bf-checkout-journey__step" data-checkout-step="payment"><span>03</span><div><strong>Pagamento</strong><small>Escolha a opção</small></div><b>✓</b></div>
+    </div>
+    <div class="bf-form-section"><div class="bf-form-section__head"><span>01</span><div><strong>Dados para a compra</strong><small>Vamos salvar este endereço no seu perfil para os próximos pedidos.</small></div></div><div class="bf-form-grid">
+        <label>CPF<input asp-for="Cpf" maxlength="14" data-cpf-mask inputmode="numeric" autocomplete="off" data-checkout-group="profile"/><span asp-validation-for="Cpf" class="text-danger"></span></label>
+        <label>CEP<input asp-for="Cep" maxlength="9" data-cep-mask data-viacep inputmode="numeric" data-checkout-group="address"/><small class="bf-field-status" data-viacep-status></small><span asp-validation-for="Cep" class="text-danger"></span></label>
+        <label class="bf-form-grid__full">Rua<input asp-for="Street" maxlength="180" data-address-street data-checkout-group="address"/><span asp-validation-for="Street" class="text-danger"></span></label>
+        <label>Número<input asp-for="Number" maxlength="20" data-address-number data-checkout-group="address"/></label><label>Complemento<input asp-for="Complement" maxlength="120" data-address-complement data-checkout-optional="true"/></label>
+        <label>Bairro<input asp-for="Neighborhood" maxlength="120" data-address-neighborhood data-checkout-group="address"/></label><label>Cidade<input asp-for="City" maxlength="120" data-address-city data-checkout-group="address"/></label><label>Estado<input asp-for="State" maxlength="2" data-address-state style="text-transform:uppercase" data-checkout-group="address"/></label>
+    </div></div>
+}
+
+<div class="bf-form-section"><div class="bf-form-section__head"><span>@paymentStep</span><div><strong>Forma de pagamento</strong><small>Escolha a opção que será exibida no seu pedido.</small></div></div>
+    <div class="bf-payment-options" data-checkout-group="payment">
+        <label class="bf-payment-option"><input asp-for="PaymentMethod" type="radio" value="Pix" /><span><strong>Pix</strong><small>Pagamento demonstrativo por Pix</small></span></label>
+        <label class="bf-payment-option"><input asp-for="PaymentMethod" type="radio" value="Credito" data-card-payment /><span><strong>Crédito</strong><small>Cartão demonstrativo com validação</small></span></label>
+        <label class="bf-payment-option"><input asp-for="PaymentMethod" type="radio" value="Debito" data-card-payment /><span><strong>Débito</strong><small>Cartão demonstrativo com validação</small></span></label>
+        <label class="bf-payment-option"><input asp-for="PaymentMethod" type="radio" value="Boleto" /><span><strong>Boleto</strong><small>Boleto demonstrativo</small></span></label>
+    </div><span asp-validation-for="PaymentMethod" class="text-danger"></span>
+    <div class="bf-card-checkout" data-card-checkout hidden>
+        <div class="bf-card-preview"><span>BETAFIT · PAGAMENTO DEMONSTRATIVO</span><strong data-card-preview-number>•••• •••• •••• ••••</strong><small><b data-card-preview-name>NOME NO CARTÃO</b><b data-card-preview-expiry>MM/AA</b></small></div>
+        @if(Model.HasSavedCard){<label class="bf-check"><input asp-for="UseSavedCard" type="checkbox" data-use-saved-card /><span>Escolher um cartão cadastrado</span></label><label data-saved-card-picker>Cartão<select asp-for="SelectedCardId" data-saved-card-select><option value="">Selecione</option>@foreach(var card in Model.SavedCards){<option value="@card.Id" data-card-type="@card.Type" data-card-last="@card.Last4" data-saved-holder="@card.Holder" data-card-exp="@card.Expiry">@(card.Type=="Credito"?"Crédito":"Débito") · @card.Brand •••• @card.Last4 · @card.Expiry · @card.Holder</option>}</select></label>}
+        <label data-installments>Parcelamento<select asp-for="Installments">@for(var i=1;i<=12;i++){<option value="@i">@i x de @((Model.Total/i).ToString("C")) sem juros</option>}</select></label>
+        <div class="bf-form-grid" data-new-card-fields>
+            <label class="bf-form-grid__full">Nome impresso<input asp-for="CardHolderName" maxlength="120" autocomplete="cc-name" data-card-holder /></label>
+            <label>Número do cartão<input asp-for="CardNumber" inputmode="numeric" minlength="13" maxlength="19" autocomplete="cc-number" data-card-number placeholder="4111111111111111" /></label>
+            <label>Validade<input asp-for="CardExpiry" inputmode="numeric" maxlength="5" autocomplete="cc-exp" data-card-expiry placeholder="MM/AA" /></label>
+            <label>CVV<input asp-for="CardSecurityCode" type="password" inputmode="numeric" minlength="3" maxlength="4" autocomplete="cc-csc" data-card-cvv /></label>
+        </div>
+        <p class="bf-form-hint">Para testar, use 4111111111111111, uma validade futura e qualquer CVV de 3 dígitos. O sistema guarda somente bandeira, final e validade.</p>
+    </div>
+</div>
+<label>Cupom de avaliação (opcional)<input asp-for="CouponCode" maxlength="60" placeholder="BF5-..."/><small>5% aplicado ao confirmar o pedido, se o cupom pertencer à sua conta e ainda não tiver sido usado.</small></label><div class="bf-form-actions"><a class="bf-btn bf-btn--ghost" asp-action="Index">Voltar ao carrinho</a><button class="bf-btn bf-btn--dark" type="submit">Confirmar pedido <span>→</span></button></div></form>
+<aside class="bf-cart-summary"><span>Resumo da compra</span>@foreach(var item in Model.Items){<div class="bf-cart-summary__items"><span>@item.Name × @item.Quantity</span><strong>@((item.Price*item.Quantity).ToString("C"))</strong></div>}<div class="bf-cart-summary__total"><strong>Total</strong><strong>@Model.Total.ToString("C")</strong></div><small>Pedido criado apenas para demonstração, sem pagamento real.</small></aside>
+</div></div></section>
+
+@section Scripts { @await Html.PartialAsync("_ValidationScriptsPartial") }

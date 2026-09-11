@@ -16,7 +16,7 @@ namespace BetaFit.Domain.Entities
 {
     /// <summary>
     /// Representa um produto do catálogo institucional da Beta Fit.
-    /// O preço é demonstrativo: não existe carrinho, checkout ou pagamento real.
+    /// O preço pertence ao catálogo e o checkout usa o gateway configurado no ambiente.
     /// </summary>
     public class Product
     {
@@ -37,9 +37,15 @@ namespace BetaFit.Domain.Entities
         public string Description { get; set; } = string.Empty;
 
         /// <summary>
-        /// Preço demonstrativo do produto.
+        /// Preço do produto.
         /// </summary>
         public decimal Price { get; set; }
+        [System.ComponentModel.DataAnnotations.StringLength(80)] public string Sku { get; set; } = "";
+        [System.ComponentModel.DataAnnotations.Range(0.01,999999.99)] public decimal? SalePrice { get; set; }
+        [System.ComponentModel.DataAnnotations.Range(0,100000)] public int LowStockThreshold { get; set; } = 5;
+public string VariantsJson {get;set;}="[]";
+
+        public int Stock { get; set; } = 999;
 
         /// <summary>
         /// URL da imagem do produto.
@@ -50,7 +56,16 @@ namespace BetaFit.Domain.Entities
         public string ImageUrlsJson { get; set; } = "[]";
 
         /// <summary>Tamanhos disponíveis armazenados como JSON.</summary>
-        public string AvailableSizesJson { get; set; } = "[\"P\",\"M\",\"G\",\"GG\"]";
+        public string AvailableSizesJson { get; set; } = "[]";
+
+        /// <summary>Cores disponíveis armazenadas como JSON.</summary>
+        public string AvailableColorsJson { get; set; } = "[]";
+
+        /// <summary>Mapa JSON no formato { "Preto": "/images/..." } para a foto principal de cada cor.</summary>
+        public string ColorGalleriesJson { get; set; } = "{}";
+        public string SizeMeasurementsJson { get; set; } = "{}";
+        public bool MeasurementsAreDemo { get; set; } = true;
+        public string ColorImageUrlsJson { get; set; } = "{}";
 
         /// <summary>
         /// Público-alvo do produto.
@@ -91,5 +106,7 @@ namespace BetaFit.Domain.Entities
         /// Categoria à qual este produto pertence (propriedade de navegação).
         /// </summary>
         public virtual Category? Category { get; set; }
+
+        public virtual ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();
     }
 }

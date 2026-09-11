@@ -143,11 +143,18 @@ namespace BetaFit.Application.Services
 
         {
 
+            ValidateExtras(dto.ColorGalleries,dto.SizeMeasurements);
+            ValidateInventory(dto.Price,dto.SalePrice,dto.Sku,dto.Variants,dto.AvailableSizes,dto.AvailableColors);
             // Garante que o produto está sendo vinculado a uma categoria existente.
 
             var category = await _categoryRepository.GetByIdAsync(dto.CategoryId)
 
                 ?? throw new InvalidOperationException("Categoria informada não foi encontrada.");
+
+            if (string.IsNullOrWhiteSpace(dto.Name)) throw new InvalidOperationException("Informe o nome do produto.");
+            if (string.IsNullOrWhiteSpace(dto.Description)) throw new InvalidOperationException("Informe a descrição do produto.");
+            if (dto.Price < 0) throw new InvalidOperationException("O preço não pode ser negativo.");
+            if (dto.Stock < 0) throw new InvalidOperationException("O estoque não pode ser negativo.");
 
             // Mapeia o DTO de criação para a entidade Product
 
@@ -159,13 +166,20 @@ namespace BetaFit.Application.Services
 
                 Description = dto.Description,
 
-                Price = dto.Price,
+                Price = dto.Price, SalePrice=dto.SalePrice,Sku=dto.Sku.Trim(),LowStockThreshold=dto.LowStockThreshold,VariantsJson=JsonSerializer.Serialize(dto.Variants),
+
+                Stock = dto.Variants.Count>0?dto.Variants.Sum(v=>v.Stock):Math.Max(0, dto.Stock),
 
                 ImageUrl = dto.ImageUrl ?? dto.ImageUrls.FirstOrDefault(),
 
                 ImageUrlsJson = JsonSerializer.Serialize((dto.ImageUrls.Any() ? dto.ImageUrls : (dto.ImageUrl is null ? new List<string>() : new List<string> { dto.ImageUrl })).Distinct()),
 
                 AvailableSizesJson = JsonSerializer.Serialize(dto.AvailableSizes.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()),
+                AvailableColorsJson = JsonSerializer.Serialize(dto.AvailableColors.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(20).ToList()),
+                ColorGalleriesJson = JsonSerializer.Serialize(dto.ColorGalleries),
+                SizeMeasurementsJson = JsonSerializer.Serialize(dto.SizeMeasurements),
+                MeasurementsAreDemo = dto.MeasurementsAreDemo,
+                ColorImageUrlsJson = JsonSerializer.Serialize(NormalizeColorImages(dto.AvailableColors, dto.ColorImageUrls)),
 
                 Gender = dto.Gender,
 
@@ -173,12 +187,15 @@ namespace BetaFit.Application.Services
 
                 IsFeatured = dto.IsFeatured,
 
-                IsActive = true,
+                IsActive = dto.IsActive,
 
                 CreatedAt = DateTime.Now
 
             };
 
+            var createImages = (dto.ImageUrls.Any() ? dto.ImageUrls : (dto.ImageUrl is null ? new List<string>() : new List<string> { dto.ImageUrl }))
+                .Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            product.Images = createImages.Select((url, index) => new ProductImage { Url = url, SortOrder = index, IsPrimary = index == 0 }).ToList();
             await _productRepository.AddAsync(product);
 
             product.Category = category;
@@ -199,6 +216,8 @@ namespace BetaFit.Application.Services
 
         {
 
+            ValidateExtras(dto.ColorGalleries,dto.SizeMeasurements);
+            ValidateInventory(dto.Price,dto.SalePrice,dto.Sku,dto.Variants,dto.AvailableSizes,dto.AvailableColors);
             var product = await _productRepository.GetByIdAsync(id);
 
             if (product == null) return null;
@@ -207,18 +226,31 @@ namespace BetaFit.Application.Services
 
                 ?? throw new InvalidOperationException("Categoria informada não foi encontrada.");
 
+            if (string.IsNullOrWhiteSpace(dto.Name)) throw new InvalidOperationException("Informe o nome do produto.");
+            if (string.IsNullOrWhiteSpace(dto.Description)) throw new InvalidOperationException("Informe a descrição do produto.");
+            if (dto.Price < 0) throw new InvalidOperationException("O preço não pode ser negativo.");
+            if (dto.Stock < 0) throw new InvalidOperationException("O estoque não pode ser negativo.");
+
             // Atualiza os campos do produto com os dados do DTO
 
             product.Name = dto.Name;
 
             product.Description = dto.Description;
 
-            product.Price = dto.Price;
+            product.Price = dto.Price;product.SalePrice=dto.SalePrice;product.Sku=dto.Sku.Trim();product.LowStockThreshold=dto.LowStockThreshold;product.VariantsJson=JsonSerializer.Serialize(dto.Variants);
+            product.Stock = dto.Variants.Count>0?dto.Variants.Sum(v=>v.Stock):Math.Max(0, dto.Stock);
 
-            product.ImageUrl = dto.ImageUrl ?? dto.ImageUrls.FirstOrDefault();
-            var updateImages = dto.ImageUrls.Any() ? dto.ImageUrls : (dto.ImageUrl is null ? new List<string>() : new List<string> { dto.ImageUrl });
-            product.ImageUrlsJson = JsonSerializer.Serialize(updateImages.Distinct().ToList());
+            var updateImages = (dto.ImageUrls.Any() ? dto.ImageUrls : (dto.ImageUrl is null ? new List<string>() : new List<string> { dto.ImageUrl }))
+                .Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            product.Images = updateImages.Select((url, index) => new ProductImage { Url = url, SortOrder = index, IsPrimary = index == 0 }).ToList();
+            product.ImageUrl = updateImages.FirstOrDefault();
+            product.ImageUrlsJson = JsonSerializer.Serialize(updateImages);
             product.AvailableSizesJson = JsonSerializer.Serialize(dto.AvailableSizes.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList());
+            product.AvailableColorsJson = JsonSerializer.Serialize(dto.AvailableColors.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(20).ToList());
+            product.ColorGalleriesJson = JsonSerializer.Serialize(dto.ColorGalleries);
+            product.SizeMeasurementsJson = JsonSerializer.Serialize(dto.SizeMeasurements);
+            product.MeasurementsAreDemo = dto.MeasurementsAreDemo;
+            product.ColorImageUrlsJson = JsonSerializer.Serialize(NormalizeColorImages(dto.AvailableColors, dto.ColorImageUrls));
 
             product.Gender = dto.Gender;
 
@@ -284,6 +316,18 @@ namespace BetaFit.Application.Services
 
         // =====================================================================
 
+        private static void ValidateInventory(decimal price,decimal? sale,string sku,List<ProductVariant> variants,List<string> sizes,List<string> colors){
+ if(sale.HasValue&&(sale<=0||sale>=price))throw new InvalidOperationException("O preço de oferta deve ser positivo e menor que o preço original.");
+ if(variants.Count>600||variants.Any(v=>v.Stock<0||v.Stock>100000||v.Sku.Length>80)||variants.Sum(v=>(long)v.Stock)>100000)throw new InvalidOperationException("Estoque das variações inválido.");
+ if(variants.Select(v=>(v.Size+"|"+v.Color).ToLowerInvariant()).Distinct().Count()!=variants.Count)throw new InvalidOperationException("Há variações repetidas.");
+ if(variants.Any(v=>sizes.Count>0?!sizes.Contains(v.Size):v.Size!="")||variants.Any(v=>colors.Count>0?!colors.Contains(v.Color):v.Color!=""))throw new InvalidOperationException("A variação deve usar os tamanhos e cores cadastrados.");
+ if(variants.Count>0&&variants.Count!=Math.Max(1,sizes.Count)*Math.Max(1,colors.Count))throw new InvalidOperationException("Preencha o estoque de todas as combinações de tamanho e cor.");
+ }
+ private static void ValidateExtras(Dictionary<string,List<string>> galleries,Dictionary<string,Dictionary<string,decimal>> measurements)
+        {
+            if(galleries is null||galleries.Count>20||galleries.Any(g=>g.Value is null||g.Value.Count>20||g.Value.Any(url=>url.Length>500||!(url.StartsWith("/")&&!url.StartsWith("//")||Uri.TryCreate(url,UriKind.Absolute,out var u)&&u.Scheme=="https"))))throw new InvalidOperationException("Galeria por cor inválida.");
+            if(measurements is null||measurements.Count>30||measurements.Any(s=>s.Value is null||s.Value.Count>12||s.Value.Any(m=>m.Key.Length>80||m.Value<=0||m.Value>500)))throw new InvalidOperationException("Tabela de medidas inválida.");
+        }
         private static List<string> DeserializeList(string? json, params string[] fallback)
         {
             try
@@ -309,11 +353,20 @@ namespace BetaFit.Application.Services
 
                 Description = product.Description,
 
-                Price = product.Price,
+                Price = product.Price, SalePrice=product.SalePrice,Sku=product.Sku,LowStockThreshold=product.LowStockThreshold,Variants=VariantInventory.Read(product),
+
+                Stock = product.Stock,
 
                 ImageUrl = product.ImageUrl,
-                ImageUrls = DeserializeList(product.ImageUrlsJson, product.ImageUrl),
-                AvailableSizes = DeserializeList(product.AvailableSizesJson, "P", "M", "G", "GG"),
+                ImageUrls = (product.Images?.OrderBy(x => x.SortOrder).Select(x => x.Url).Where(x => !string.IsNullOrWhiteSpace(x)).ToList())?.Count > 0
+                    ? product.Images.OrderBy(x => x.SortOrder).Select(x => x.Url).ToList()
+                    : DeserializeList(product.ImageUrlsJson, product.ImageUrl ?? string.Empty),
+                AvailableSizes = DeserializeList(product.AvailableSizesJson),
+                AvailableColors = DeserializeList(product.AvailableColorsJson),
+                ColorGalleries = JsonSerializer.Deserialize<Dictionary<string,List<string>>>(product.ColorGalleriesJson)??new(),
+                SizeMeasurements = JsonSerializer.Deserialize<Dictionary<string,Dictionary<string,decimal>>>(product.SizeMeasurementsJson)??new(),
+                MeasurementsAreDemo = product.MeasurementsAreDemo,
+                ColorImageUrls = DeserializeDictionary(product.ColorImageUrlsJson),
 
                 Gender = product.Gender,
 
@@ -329,6 +382,21 @@ namespace BetaFit.Application.Services
 
             };
 
+        }
+
+        private static Dictionary<string, string> NormalizeColorImages(IEnumerable<string>? colors, IDictionary<string, string>? images)
+        {
+            var allowed = new HashSet<string>((colors ?? Array.Empty<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()), StringComparer.OrdinalIgnoreCase);
+            return (images ?? new Dictionary<string, string>())
+                .Where(x => allowed.Contains(x.Key) && !string.IsNullOrWhiteSpace(x.Value))
+                .GroupBy(x => x.Key.Trim(), StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(x => x.Key, x => x.Last().Value.Trim(), StringComparer.OrdinalIgnoreCase);
+        }
+
+        private static Dictionary<string, string> DeserializeDictionary(string? json)
+        {
+            try { return JsonSerializer.Deserialize<Dictionary<string, string>>(json ?? "{}") ?? new(StringComparer.OrdinalIgnoreCase); }
+            catch (JsonException) { return new(StringComparer.OrdinalIgnoreCase); }
         }
 
     }

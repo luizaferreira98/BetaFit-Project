@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BetaFit.Infraestructure - ProductRepository
 // =============================================================================
 //  CONCEITO: Repositório (Repository Pattern)
@@ -37,7 +37,8 @@ namespace BetaFit.Infraestructure.Repositories
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
             return await _context.Products
-                .Include(p => p.Category)  // Faz JOIN com a tabela Categories
+                .Include(p => p.Category)
+                .Include(p => p.Images.OrderBy(i => i.SortOrder))
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
         }
@@ -49,6 +50,7 @@ namespace BetaFit.Infraestructure.Repositories
         {
             return await _context.Products
                 .Include(p => p.Category)
+                .Include(p => p.Images.OrderBy(i => i.SortOrder))
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
@@ -60,6 +62,7 @@ namespace BetaFit.Infraestructure.Repositories
         {
             return await _context.Products
                 .Include(p => p.Category)
+                .Include(p => p.Images.OrderBy(i => i.SortOrder))
                 .Where(p => p.IsFeatured)  // WHERE IsFeatured = true
                 .ToListAsync();
         }
@@ -71,6 +74,7 @@ namespace BetaFit.Infraestructure.Repositories
         {
             return await _context.Products
                 .Include(p => p.Category)
+                .Include(p => p.Images.OrderBy(i => i.SortOrder))
                 .Where(p => p.CategoryId == categoryId)
                 .ToListAsync();
         }
@@ -94,7 +98,18 @@ namespace BetaFit.Infraestructure.Repositories
         /// </summary>
         public async Task UpdateAsync(Product product)
         {
-            _context.Products.Update(product);
+            var existingImages = await _context.ProductImages.Where(x => x.ProductId == product.Id).ToListAsync();
+            _context.ProductImages.RemoveRange(existingImages);
+            var newImages = product.Images ?? new List<ProductImage>();
+            foreach (var image in newImages)
+            {
+                image.Id = 0;
+                image.ProductId = product.Id;
+            }
+            // O produto já está sendo rastreado após GetByIdAsync. Adicionar as
+            // imagens explicitamente evita que o EF tente atualizar registros que
+            // acabaram de ser removidos da galeria anterior.
+            await _context.ProductImages.AddRangeAsync(newImages);
             await _context.SaveChangesAsync();
         }
 

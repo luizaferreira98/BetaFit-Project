@@ -15,10 +15,6 @@ namespace BetaFit.API.Controllers
         public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         { _userManager = userManager; _signInManager = signInManager; }
 
-        // Domínio reservado exclusivamente para contas de funcionário
-        // (criadas pelo Admin via Desktop, não pelo cadastro público do site).
-        private const string DominioInterno = "@betafit.com";
-
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterDto dto)
         {
@@ -28,12 +24,11 @@ namespace BetaFit.API.Controllers
                 return BadRequest(new { message = "É necessário ter 18 anos ou mais para criar uma conta." });
             if (dto.BirthDate.Date < DateTime.Today.AddYears(-120))
                 return BadRequest(new { message = "Informe uma data de nascimento válida." });
-
-            // Impede que um cliente comum se cadastre usando o domínio interno
-            // da equipe — contas @betafit.com só podem ser criadas pelo Admin,
-            // pela tela de Usuários do Desktop (POST /api/usuarios).
-            if (dto.Email.Trim().EndsWith(DominioInterno, StringComparison.OrdinalIgnoreCase))
-                return BadRequest(new { message = $"O domínio {DominioInterno} é reservado para contas internas da equipe. Utilize outro e-mail para se cadastrar." });
+            if (IsInternalEmail(dto.Email))
+                return BadRequest(new { message = "O domínio @betafit é reservado para contas internas criadas pela administração." });
+            var allowedGenders = new[] { "Feminino", "Masculino", "Não binário", "Outro", "Prefiro não informar" };
+            if (!allowedGenders.Contains(dto.Gender, StringComparer.OrdinalIgnoreCase))
+                return BadRequest(new { message = "Selecione uma opção de gênero válida." });
 
             var user = new IdentityUser { UserName = dto.Email.Trim(), Email = dto.Email.Trim(), PhoneNumber = dto.PhoneNumber.Trim() };
             var result = await _userManager.CreateAsync(user, dto.Password);
@@ -42,7 +37,8 @@ namespace BetaFit.API.Controllers
             await _userManager.AddClaimsAsync(user, new[]
             {
                 new Claim("FullName", dto.FullName.Trim()),
-                new Claim("BirthDate", dto.BirthDate.ToString("yyyy-MM-dd"))
+                new Claim("BirthDate", dto.BirthDate.ToString("yyyy-MM-dd")),
+                new Claim("Gender", dto.Gender.Trim())
             });
             await _userManager.AddToRoleAsync(user, "Usuario");
             return Ok(new { message = "Usuário registrado com sucesso!" });
@@ -80,13 +76,15 @@ namespace BetaFit.API.Controllers
             DateTime? birthDate = DateTime.TryParse(birth, out var parsed) ? parsed : null;
             return new UserDto
             {
-                Id = user.Id,
-                Email = user.Email ?? string.Empty,
-                FullName = claims.FirstOrDefault(c => c.Type == "FullName")?.Value ?? user.UserName ?? string.Empty,
-                PhoneNumber = user.PhoneNumber ?? string.Empty,
-                BirthDate = birthDate,
-                Roles = await _userManager.GetRolesAsync(user)
+                Id = user.Id, Email = user.Email ?? string.Empty, FullName = claims.FirstOrDefault(c => c.Type == "FullName")?.Value ?? user.UserName ?? string.Empty,
+                PhoneNumber = user.PhoneNumber ?? string.Empty, BirthDate = birthDate, Gender = claims.FirstOrDefault(c => c.Type == "Gender")?.Value, Cpf = claims.FirstOrDefault(c => c.Type == "Cpf")?.Value, Cep = claims.FirstOrDefault(c => c.Type == "Address.Cep")?.Value, Street = claims.FirstOrDefault(c => c.Type == "Address.Street")?.Value, Number = claims.FirstOrDefault(c => c.Type == "Address.Number")?.Value, Complement = claims.FirstOrDefault(c => c.Type == "Address.Complement")?.Value, Neighborhood = claims.FirstOrDefault(c => c.Type == "Address.Neighborhood")?.Value, City = claims.FirstOrDefault(c => c.Type == "Address.City")?.Value, State = claims.FirstOrDefault(c => c.Type == "Address.State")?.Value, CardHolderName = claims.FirstOrDefault(c => c.Type == "Card.Holder")?.Value, CardBrand = claims.FirstOrDefault(c => c.Type == "Card.Brand")?.Value, CardLast4 = claims.FirstOrDefault(c => c.Type == "Card.Last4")?.Value, CardExpiry = claims.FirstOrDefault(c => c.Type == "Card.Expiry")?.Value, Roles = await _userManager.GetRolesAsync(user)
             };
+        }
+
+        private static bool IsInternalEmail(string? email)
+        {
+            var domain = email?.Trim().Split('@').LastOrDefault();
+            return !string.IsNullOrWhiteSpace(domain) && (domain.Equals("betafit", StringComparison.OrdinalIgnoreCase) || domain.EndsWith(".betafit", StringComparison.OrdinalIgnoreCase) || domain.Equals("betafit.com", StringComparison.OrdinalIgnoreCase));
         }
     }
 }

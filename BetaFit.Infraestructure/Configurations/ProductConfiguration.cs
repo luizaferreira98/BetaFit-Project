@@ -40,8 +40,16 @@ namespace BetaFit.Infraestructure.Configurations
             builder.Property(p => p.ImageUrlsJson)
                 .HasMaxLength(8000);
 
+
+            builder.Property(p => p.Stock)
+                .HasDefaultValue(999)
+                .IsRequired();
             builder.Property(p => p.AvailableSizesJson)
                 .HasMaxLength(1000);
+            builder.Property(p => p.AvailableColorsJson)
+                .HasMaxLength(1000);
+            builder.Property(p => p.ColorImageUrlsJson)
+                .HasMaxLength(12000);
 
             // Preço com precisão decimal explícita (evita warning do EF Core)
             builder.Property(p => p.Price)

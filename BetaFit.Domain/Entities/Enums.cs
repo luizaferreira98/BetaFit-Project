@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BetaFit.Domain - Enum Gender
 // =============================================================================
 // Público-alvo do produto no catálogo Beta Fit.
@@ -23,7 +23,10 @@ namespace BetaFit.Domain.Enums
         EmPreparacao = 1,
         Pronto = 2,
         Entregue = 3,
-        Cancelado = 4
+        Cancelado = 4,
+        Confirmado = 5,
+        Enviado = 6,
+        Reembolso = 7
     }
 
 }

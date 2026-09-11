@@ -94,30 +94,6 @@ namespace BetaFit.Desktop.Forms
 
                 if (success && user != null)
                 {
-                    // ── Trava de acesso: só FUNCIONÁRIOS entram no Desktop ──────
-                    // "Funcionário" = qualquer um dos 3 papéis internos (Admin,
-                    // Gerente, Estoquista). O papel "Usuario" é reservado a
-                    // clientes cadastrados pelo site (BetaFit.UI) e nunca deve
-                    // conseguir abrir o painel administrativo — mesmo logando
-                    // com sucesso na API, essa checagem barra o acesso aqui.
-                    bool isFuncionario = user.IsFuncionario;
-
-                    if (!isFuncionario)
-                    {
-                        // O login já foi validado e a API já emitiu o cookie de
-                        // sessão — precisamos desfazer isso explicitamente, senão
-                        // a sessão desse cliente fica ativa mesmo com o acesso
-                        // negado na tela.
-                        await _authService.LogoutAsync();
-
-                        ExibirErro("⛔ Acesso restrito à equipe BetaFit.");
-                        MessageBox.Show(
-                            "⛔ Este aplicativo é de uso exclusivo da equipe BetaFit.\n" +
-                            "Sua conta não tem permissão de funcionário (Admin, Gerente ou Estoquista).",
-                            "Acesso negado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-
                     // Armazena os dados do usuário na sessão (Singleton)
                     SessionManager.Instance.SetUser(user);
 

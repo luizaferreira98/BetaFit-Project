@@ -1,7 +1,19 @@
+@inject BetaFit.UI.Services.HttpCartService HeaderCart
+@inject BetaFit.UI.Services.HttpSiteSettingsService SiteSettingsService
+@inject BetaFit.UI.Services.HttpNotificationService NotificationService
 @{
     var isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
     var userName = User?.Identity?.Name;
     var isAdmin = User?.IsInRole("Admin") ?? false;
+    var isStaff = (User?.IsInRole("Funcionario") ?? false)||(User?.IsInRole("Estoquista") ?? false);
+    var displayName = User?.FindFirst("FullName")?.Value ?? userName ?? "U";
+    var userInitial = displayName.Length > 0 ? displayName[..1].ToUpperInvariant() : "U";
+    SiteSettingsDto siteSettings;
+    try { siteSettings = await SiteSettingsService.GetAsync(); } catch { siteSettings = new SiteSettingsDto(); }
+    var notifications = isAuthenticated ? await NotificationService.GetAsync() : new List<NotificationDto>();
+    var adminArea=(isAdmin||isStaff) && (ViewContext.RouteData.Values["controller"]?.ToString()?.StartsWith("Admin")==true || ViewContext.RouteData.Values["controller"]?.ToString()=="Orders" && (ViewContext.RouteData.Values["action"]?.ToString()=="Staff" || Context.Request.Query["admin"]=="true"));
+    var cartCount=0;try{cartCount=(await HeaderCart.GetAsync()).Sum(i=>i.Quantity);}catch{}
+    var unreadNotifications = notifications.Count(x => !x.IsRead);
 }
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -15,14 +27,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/BetaFit.UI.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/storefront.css" asp-append-version="true" /><link rel="stylesheet" href="~/css/management.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/account-theme.css" asp-append-version="true" />
+    <script>try{document.documentElement.dataset.theme=localStorage.getItem("betafit-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch{}</script>
 </head>
 <body>
     <a class="bf-skip-link" href="#main-content">Pular para o conteúdo</a>
 
     <div class="bf-announcement">
         <div class="bf-container bf-announcement__inner">
-            <span>Beta Fit · Performance para quem leva o treino a sério.</span>
+            <span>@siteSettings.Announcement</span>
             <span class="bf-announcement__right">Projeto demonstrativo · Preços sem venda real</span>
         </div>
     </div>
@@ -33,27 +47,28 @@
                 BETA<span>FIT</span>
             </a>
 
-            <nav class="bf-nav" aria-label="Navegação principal">
+            <button type="button" class="bf-menu-toggle bf-icon-link" data-menu-toggle aria-controls="header-navigation header-actions" aria-expanded="false" aria-label="Abrir menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+            <nav id="header-navigation" class="bf-nav" aria-label="Navegação principal">
                 <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "is-active" : "")" asp-controller="Home" asp-action="Index">Início</a>
                 <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Catalog" ? "is-active" : "")" asp-controller="Catalog" asp-action="Index">Catálogo</a>
-                @if (isAdmin)
+                @if (isAuthenticated) { <a asp-controller="Orders" asp-action="MyOrders">Minhas compras</a> }
+                @foreach(var link in siteSettings.HeaderLinks.Where(x=>!string.IsNullOrWhiteSpace(x.Label)&&!string.IsNullOrWhiteSpace(x.Url))){<a href="@link.Url">@link.Label</a>}
+                @if (isAdmin || isStaff)
                 {
-                    <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" ? "is-active" : "")" asp-controller="Admin" asp-action="Index">Administração</a>
+                    <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" ? "is-active" : "")" asp-controller="Admin" asp-action="Index" title="Administração"><span class="bf-nav-icon" aria-hidden="true">⚙</span> Administração</a>
                 }
-                @if (isAuthenticated)
-                {
-                    <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Orders" ? "is-active" : "")" asp-controller="Orders" asp-action="MyOrders">Meus Pedidos</a>
-                    <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Favorites" ? "is-active" : "")" asp-controller="Favorites" asp-action="Index">Favoritos</a>
-                }
-                <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Cart" ? "is-active" : "")" asp-controller="Cart" asp-action="Index">Carrinho</a>
             </nav>
 
-            <div class="bf-header__actions">
+            <div id="header-actions" class="bf-header__actions">
+                <button type="button" class="bf-icon-link bf-icon-button" data-theme-toggle aria-label="Ativar modo escuro" title="Alternar tema"><svg class="bf-theme-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14A8 8 0 0 1 10 4a8 8 0 1 0 10 10Z"/></svg><svg class="bf-theme-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button>
+                <a class="bf-icon-link" asp-controller="Favorites" asp-action="Index" aria-label="Favoritos" title="Favoritos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 5c-3-3-6-1-8 1-2-2-5-4-8-1-4 4 2 9 8 14 6-5 12-10 8-14Z"/></svg></a>
+                <a class="bf-icon-link" asp-controller="Cart" asp-action="Index" aria-label="Carrinho" title="Carrinho"><b class="bf-cart-count">@cartCount</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l1 14H4L5 7ZM8 7V5a4 4 0 0 1 8 0v2"/></svg></a>
                 @if (isAuthenticated)
                 {
+                    <div class="bf-notifications" data-notifications><button class="bf-notifications__trigger" type="button" data-notifications-toggle aria-label="Notificações">♢@if(unreadNotifications>0){<b>@unreadNotifications</b>}</button><div class="bf-notifications__panel"><div class="bf-notifications__head"><strong>Notificações</strong>@if(unreadNotifications>0){<form asp-controller="Notifications" asp-action="ReadAll" method="post">@Html.AntiForgeryToken()<input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" /><button>Marcar como lidas</button></form>}</div>@foreach(var n in notifications.Take(8)){<a class="@(!n.IsRead?"is-unread":"")" href="@(n.LinkUrl??"#")"><strong>@n.Title</strong><span>@n.Message</span><small>@n.CreatedAt.ToLocalTime().ToString("dd/MM HH:mm")</small></a>}@if(!notifications.Any()){<p>Nenhuma notificação.</p>}</div></div>
                     <a class="bf-user-chip" title="Meu perfil" asp-controller="Account" asp-action="Profile">
-                        <span class="bf-user-chip__icon" aria-hidden="true">@((User.FindFirst("FullName")?.Value ?? userName ?? "U").Substring(0, 1).ToUpper())</span>
-                        <span class="bf-user-chip__name">@(User.FindFirst("FullName")?.Value ?? userName)</span>
+                        <span class="bf-user-chip__icon" aria-hidden="true">@userInitial</span>
+                        <span class="bf-user-chip__name">Minha conta</span>
                     </a>
                     <form class="bf-logout-form" asp-controller="Account" asp-action="Logout" method="post" onsubmit="return confirm('Tem certeza que deseja sair da sua conta?');">
                         @Html.AntiForgeryToken()
@@ -74,7 +89,7 @@
     </header>
 
     <main id="main-content">
-        @RenderBody()
+        @if(adminArea){<div class="bf-admin-shell">@await Html.PartialAsync("_AdminSidebar")<div class="bf-admin-main">@RenderBody()</div></div>}else{@RenderBody()}
     </main>
 
     <footer class="bf-footer">
@@ -89,7 +104,6 @@
                     <ul>
                         <li><a asp-controller="Home" asp-action="Index">Início</a></li>
                         <li><a asp-controller="Catalog" asp-action="Index">Catálogo</a></li>
-                        <li><a asp-controller="Cart" asp-action="Index">Carrinho</a></li>
                     </ul>
                 </div>
                 <div>
@@ -115,30 +129,9 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @if (isAuthenticated)
-    {
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js" integrity="" crossorigin="anonymous"></script>
-        <script>
-            (function() {
-                try {
-                    const connection = new signalR.HubConnectionBuilder()
-                        .withUrl('/hubs/orders')
-                        .withAutomaticReconnect()
-                        .build();
-
-                    connection.on('OrderFinalized', function(payload) {
-                        // payload contém { orderId }
-                        alert('✅ Seu pedido foi finalizado. Você será redirecionado para Meus Pedidos.');
-                        window.location.href = '/Orders/MyOrders';
-                    });
-
-                    connection.start().catch(err => console.error('SignalR:', err.toString()));
-                } catch (ex) {
-                    console.error(ex);
-                }
-            })();
-        </script>
-    }
+    <script src="~/js/storefront.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+<script src="~/js/management.js" asp-append-version="true"></script>
 </body>
 </html>
+

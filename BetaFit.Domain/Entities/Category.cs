@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BetaFit.Domain - Entidade Category
 // =============================================================================
 // Esta classe representa uma categoria de produtos no sistema.
@@ -21,6 +21,10 @@ namespace BetaFit.Domain.Entities
         /// Identificador único da categoria (chave primária).
         /// </summary>
         public int Id { get; set; }
+        public string Slug { get; set; } = string.Empty;
+        public int? ParentId { get; set; }
+        public int SortOrder { get; set; }
+        public bool HideWhenOutOfStock { get; set; } = true;
 
         /// <summary>
         /// Nome da categoria. Exemplo: "Camisetas", "Leggings".

@@ -1,4 +1,4 @@
-﻿@model LoginDto
+@model LoginDto
 @{
     ViewData["Title"] = "Entrar";
 }
@@ -10,17 +10,23 @@
             <span class="bf-eyebrow bf-eyebrow--dark">Área do cliente</span>
             <h1>Bem-vindo<br />de volta.</h1>
             <p class="bf-auth-intro">Entre na sua conta para continuar sua experiência Beta Fit.</p>
+            @if (TempData["Sucesso"] is string success)
+            {
+                <div class="bf-alert" role="status">@success</div>
+            }
             @if (!ViewData.ModelState.IsValid)
             {
                 <div class="bf-alert bf-alert--error" role="alert">@Html.ValidationSummary(true, "", new { @class = "bf-validation" })</div>
             }
-            <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" class="bf-form">
+            @if ((ViewData["ReturnUrl"]?.ToString() ?? "").Contains("Checkout")){<p class="bf-alert">Entre ou crie uma conta para continuar a compra. Seu carrinho será preservado.</p>}
+<form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" class="bf-form">
                 @Html.AntiForgeryToken()
-                <label>E-mail<input asp-for="Email" type="email" autocomplete="email" placeholder="voce@email.com" required /></label>
-                <label>Senha<input asp-for="Password" type="password" autocomplete="current-password" placeholder="Sua senha" required /></label>
+                <label>E-mail<input asp-for="Email" type="email" autocomplete="email" maxlength="256" placeholder="voce@email.com" required /></label>
+                <div class="bf-password-field"><label for="Password">Senha</label><div class="bf-password-input-wrap"><input asp-for="Password" type="password" autocomplete="current-password" maxlength="100" placeholder="Sua senha" required /><button type="button" class="bf-password-toggle" data-password-toggle="#Password">Mostrar</button></div></div>
                 <button class="bf-btn bf-btn--dark bf-btn--wide" type="submit">Entrar <span>→</span></button>
             </form>
-            <p class="bf-auth-switch">Ainda não possui conta? <a asp-controller="Account" asp-action="Register">Criar conta</a></p>
+            <p class="bf-auth-switch"><a asp-controller="Account" asp-action="ForgotPassword">Esqueci minha senha</a></p>
+            <p class="bf-auth-switch">Ainda não possui conta? <a asp-controller="Account" asp-action="Register" asp-route-returnUrl="@ViewData["ReturnUrl"]">Criar conta</a></p>
         </div>
     </div>
 </section>

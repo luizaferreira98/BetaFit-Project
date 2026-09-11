@@ -10,6 +10,7 @@
 using BetaFit.Application.Interfaces;
 using BetaFit.Application.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using BetaFit.UI.Services;
 
 namespace BetaFit.UI.Controllers
 {
@@ -20,11 +21,13 @@ namespace BetaFit.UI.Controllers
     {
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
+        private readonly HttpSiteSettingsService _siteSettings;
 
-        public HomeController(IProductService productService, ICategoryService categoryService)
+        public HomeController(IProductService productService, ICategoryService categoryService, HttpSiteSettingsService siteSettings)
         {
             _productService = productService;
             _categoryService = categoryService;
+            _siteSettings = siteSettings;
         }
 
         /// <summary>
@@ -44,7 +47,14 @@ namespace BetaFit.UI.Controllers
                 viewModel.FeaturedProducts = featured.Where(p => p.IsActive).Take(8).ToList();
 
                 var categories = await _categoryService.GetAllAsync();
-                viewModel.Categories = categories.Where(c => c.IsActive).ToList();
+                viewModel.Categories = categories.Where(c => c.IsVisible).OrderBy(c=>c.SortOrder).ToList();
+                var visibleCategories=viewModel.Categories.Select(c=>c.Id).ToHashSet();var products = (await _productService.GetAllAsync()).Where(p => p.IsActive&&visibleCategories.Contains(p.CategoryId)).ToList();viewModel.FeaturedProducts=viewModel.FeaturedProducts.Where(p=>visibleCategories.Contains(p.CategoryId)).ToList();
+                viewModel.RecentProducts = products.OrderByDescending(p => p.CreatedAt).Take(12).ToList();
+                viewModel.ProductsByCategory = viewModel.Categories
+                    .Where(c => products.Any(p => p.CategoryId == c.Id))
+                    .GroupBy(c => c.Name)
+                    .ToDictionary(g => g.Key, g => (IReadOnlyList<BetaFit.Application.DTOs.ProductDto>)products.Where(p => g.Any(c => c.Id == p.CategoryId)).Take(12).ToList());
+                viewModel.SiteSettings = await _siteSettings.GetAsync();
             }
             catch (HttpRequestException)
             {

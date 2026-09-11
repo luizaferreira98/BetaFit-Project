@@ -1,0 +1,101 @@
+(() => {
+  'use strict';
+  const themeButton = document.querySelector('[data-theme-toggle]');
+  function updateThemeLabel() { const dark=document.documentElement.dataset.theme==='dark';themeButton?.setAttribute('aria-label',dark?'Ativar modo claro':'Ativar modo escuro');themeButton?.setAttribute('aria-pressed',String(dark));themeButton?.setAttribute('title',dark?'Ativar modo claro':'Ativar modo escuro'); }
+  themeButton?.addEventListener('click',()=>{const theme=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=theme;try{localStorage.setItem('betafit-theme',theme)}catch{}updateThemeLabel();});updateThemeLabel();
+  document.querySelectorAll('dialog').forEach(dialog=>{
+    dialog.querySelectorAll('[data-dialog-close]').forEach(b=>b.addEventListener('click',()=>dialog.close()));
+    dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
+  });
+  const gallery=document.querySelector('[data-product-gallery]'), lightbox=document.querySelector('[data-product-lightbox]');
+  if(gallery&&lightbox){
+    const main=gallery.querySelector('[data-gallery-main]'), large=lightbox.querySelector('[data-lightbox-image]'), area=lightbox.querySelector('[data-lightbox-zoom-area]');
+    const all=[...gallery.querySelectorAll('[data-gallery-select] img')].map(i=>i.getAttribute('src'));
+    const colorData=JSON.parse(document.querySelector('#bf-color-galleries')?.textContent||'{}')||{};
+    let images=all, index=0, zoom=1, panX=0,panY=0,drag=null,moved=false,lastFocus=null;
+    const pointers=new Map();let pinchDistance=0,pinchZoom=1;
+    const renderZoom=()=>{large.style.transform=`translate(${panX}px,${panY}px) scale(${zoom})`;large.style.cursor=zoom>1?'grab':'zoom-in';};
+    const resetZoom=()=>{zoom=1;panX=panY=0;renderZoom();};
+    const show=n=>{if(!images.length||!main)return;index=(n+images.length)%images.length;main.src=images[index];large.src=images[index];resetZoom();const label=`${index+1} / ${images.length}`;gallery.querySelector('[data-gallery-count]').textContent=label;lightbox.querySelector('[data-lightbox-count]').textContent=label;document.querySelectorAll('[data-gallery-select],[data-lightbox-select]').forEach(b=>{const active=Number(b.dataset.gallerySelect??b.dataset.lightboxSelect)===index;b.classList.toggle('is-active',active);b.setAttribute('aria-current',String(active));});};
+    const rebuild=()=>{
+      [gallery.querySelector('.bf-product-gallery__thumbs'),lightbox.querySelector('.bf-product-lightbox__thumbs')].forEach((container,k)=>{
+        if(!container)return;container.replaceChildren();images.forEach((src,i)=>{const b=document.createElement('button');b.type='button';b.className=k===0?'bf-product-gallery__thumb':'';b.setAttribute(k===0?'data-gallery-select':'data-lightbox-select',i);b.setAttribute('aria-label',`Ver foto ${i+1} de ${images.length}`);const img=document.createElement('img');img.src=src;img.alt=`Foto ${i+1} do produto`;b.append(img);b.addEventListener('click',()=>show(i));container.append(b);});
+      });show(0);
+    };
+    const open=()=>{if(!images.length)return;lastFocus=document.activeElement;lightbox.setAttribute('aria-hidden','false');document.body.classList.add('bf-modal-open');document.querySelector('header.bf-header').inert=true;document.querySelector('main').inert=false;lightbox.querySelector('button[data-lightbox-close]').focus();};
+    const close=()=>{lightbox.setAttribute('aria-hidden','true');document.body.classList.remove('bf-modal-open');document.querySelector('header.bf-header').inert=false;resetZoom();lastFocus?.focus();};
+    main?.addEventListener('click',open);main?.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
+    gallery.querySelector('[data-gallery-previous]')?.addEventListener('click',()=>show(index-1));gallery.querySelector('[data-gallery-next]')?.addEventListener('click',()=>show(index+1));
+    lightbox.querySelectorAll('[data-lightbox-close]').forEach(b=>b.addEventListener('click',close));lightbox.querySelector('[data-lightbox-previous]')?.addEventListener('click',()=>show(index-1));lightbox.querySelector('[data-lightbox-next]')?.addEventListener('click',()=>show(index+1));
+    document.addEventListener('keydown',e=>{if(lightbox.getAttribute('aria-hidden')!=='false')return;if(e.key==='Escape')close();if(e.key==='ArrowLeft')show(index-1);if(e.key==='ArrowRight')show(index+1);if(e.key==='Tab'){const focusable=[...lightbox.querySelectorAll('button')].filter(b=>b.offsetParent!==null);const first=focusable[0],last=focusable.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
+    area?.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.min(5,Math.max(1,zoom*Math.exp(-e.deltaY*.002)));if(zoom===1)panX=panY=0;renderZoom();},{passive:false});
+    area?.addEventListener('click',()=>{if(moved){moved=false;return;}zoom=zoom>1?1:2.2;panX=panY=0;renderZoom();});
+    area?.addEventListener('pointerdown',e=>{pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});area.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,px:panX,py:panY};moved=false;if(pointers.size===2){const [a,b]=[...pointers.values()];pinchDistance=Math.hypot(a.x-b.x,a.y-b.y);pinchZoom=zoom;}});
+    area?.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===2){const[a,b]=[...pointers.values()];zoom=Math.min(5,Math.max(1,pinchZoom*Math.hypot(a.x-b.x,a.y-b.y)/pinchDistance));moved=true;renderZoom();}else if(drag&&zoom>1){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>4)moved=true;panX=Math.max(-area.clientWidth*(zoom-1)/2,Math.min(area.clientWidth*(zoom-1)/2,drag.px+dx));panY=Math.max(-area.clientHeight*(zoom-1)/2,Math.min(area.clientHeight*(zoom-1)/2,drag.py+dy));renderZoom();}});
+    ['pointerup','pointercancel'].forEach(name=>area?.addEventListener(name,e=>{pointers.delete(e.pointerId);drag=null;}));large?.addEventListener('dragstart',e=>e.preventDefault());
+    document.querySelectorAll('[data-color-choice]').forEach(input=>input.addEventListener('change',()=>{document.querySelector('[data-selected-color]').textContent=input.value;const key=Object.keys(colorData).find(x=>x.toLowerCase()===input.value.toLowerCase());const matched=colorData[key];images=matched?.length?matched:input.dataset.colorImage?[input.dataset.colorImage]:all;const notice=gallery.querySelector('[data-gallery-notice]');if(notice)notice.hidden=!!matched?.length||!!input.dataset.colorImage;rebuild();const measureImage=document.querySelector('.bf-measure-visual img');if(measureImage&&images[0])measureImage.src=images[0];}));rebuild();
+  }
+  const measure=document.querySelector('[data-measure-dialog]');
+  if(measure){
+    const data=JSON.parse(document.querySelector('#bf-measurements').textContent), sizes=[...measure.querySelectorAll('[data-measure-size]')];let current=0;
+    const help=name=> /manga/i.test(name)?'Meça da costura do ombro até a borda da manga.': /tórax|quadril|cintura/i.test(name)?'Meça a largura da peça estendida e multiplique por dois para obter a circunferência.':/pé/i.test(name)?'Meça do calcanhar até a ponta do dedo mais longo.':'Meça em linha reta do ponto mais alto até a barra da peça.';
+    const select=index=>{current=(index+sizes.length)%sizes.length;sizes.forEach((b,i)=>{b.classList.toggle('is-active',i===current);b.setAttribute('aria-pressed',String(i===current));});const rows=measure.querySelector('[data-measure-rows]');rows.replaceChildren();Object.entries(data[sizes[current].dataset.measureSize]||{}).forEach(([label,value])=>{const tr=document.createElement('tr'),th=document.createElement('th'),td=document.createElement('td');const button=document.createElement('button');button.type='button';button.textContent=label;button.addEventListener('click',()=>{measure.querySelector('[data-measure-help]').textContent=help(label);});th.append(button);td.textContent=`${Number(value).toLocaleString('pt-BR',{maximumFractionDigits:1})} cm`;tr.append(th,td);rows.append(tr);});};
+    sizes.forEach((b,i)=>b.addEventListener('click',()=>select(i)));measure.querySelector('[data-measure-prev]').addEventListener('click',()=>select(current-1));measure.querySelector('[data-measure-next]').addEventListener('click',()=>select(current+1));
+    document.querySelector('[data-size-guide-open]')?.addEventListener('click',()=>{const selected=document.querySelector('input[name="size"]:checked')?.value;select(Math.max(0,sizes.findIndex(b=>b.dataset.measureSize===selected)));measure.showModal();});if(sizes.length)select(0);
+  }
+  const info=document.querySelector('[data-info-dialog]');
+  const information={payment:['Seu ritmo. Seu pagamento.','No crédito, escolha de 1 a 12 parcelas sem juros. No débito, o pagamento é à vista. Também há Pix e boleto demonstrativos.','Escolha um cartão cadastrado ou adicione outro durante o checkout. Os pagamentos deste projeto são simulados.'],quality:['Feita para acompanhar você.','A Beta Fit reúne roupas, calçados e acessórios para sua rotina. Consulte a descrição de cada produto para conhecer material, caimento e características.','As fotos e a tabela de medidas ajudam a escolher a variação e o tamanho.'],care:['Cuide hoje. Use por mais tempo.','Confira sempre a etiqueta: ela indica o cuidado correto para o tecido da sua peça.','Separe por cores. Prefira sabão suave, evite alvejante e excesso de calor. Seque conforme a etiqueta e guarde a peça limpa e seca.'],exchange:['Sua experiência importa.','Confira tamanho, cor e medidas antes de concluir a compra. Em Meus pedidos, acompanhe a entrega e consulte os detalhes da compra.','Este projeto é demonstrativo. Para uma loja em operação, as condições de troca e os canais de atendimento devem ser definidos pela Beta Fit.']};
+  document.querySelectorAll('[data-info-open]').forEach(b=>b.addEventListener('click',()=>{const [title,...paragraphs]=information[b.dataset.infoOpen];info.querySelector('[data-info-title]').textContent=title;const content=info.querySelector('[data-info-content]');content.replaceChildren(...paragraphs.map(text=>{const p=document.createElement('p');p.textContent=text;return p;}));info.showModal();}));
+  document.querySelector('[data-product-notifications]')?.addEventListener('click',event=>{event.stopPropagation();const n=document.querySelector('[data-notifications]');n?.classList.add('is-open');n?.querySelector('button')?.focus();window.scrollTo({top:0,behavior:'smooth'});});
+  // Sync card type, selected card preview and installments on every method switch.
+  const cardPanel=document.querySelector('[data-card-checkout]');
+  if(cardPanel){const select=cardPanel.querySelector('[data-saved-card-select]'),saved=cardPanel.querySelector('[data-use-saved-card]');const update=()=>{
+    const method=document.querySelector('[name="PaymentMethod"]:checked')?.value;const card=method==='Credito'||method==='Debito';
+    if(select){[...select.options].forEach(o=>{if(o.value){o.disabled=o.dataset.cardType!==method;o.hidden=o.disabled;}});if(select.selectedOptions[0]?.disabled)select.value='';if(!select.value){const first=[...select.options].find(o=>o.value&&!o.disabled);if(first)select.value=first.value;}select.required=card&&!!saved?.checked;select.disabled=!card||!saved?.checked;select.closest('[data-saved-card-picker]').hidden=!card||!saved?.checked;}
+    cardPanel.querySelector('[data-installments]').hidden=method!=='Credito';const installments=cardPanel.querySelector('[name="Installments"]');installments.disabled=method!=='Credito';
+    cardPanel.querySelectorAll('[data-new-card-fields] input').forEach(i=>i.disabled=!card||!!saved?.checked);
+    const selected=select?.selectedOptions[0];if(saved?.checked&&selected?.value){cardPanel.querySelector('[data-card-preview-number]').textContent=`•••• •••• •••• ${selected.dataset.cardLast}`;cardPanel.querySelector('[data-card-preview-name]').textContent=selected.dataset.savedHolder;cardPanel.querySelector('[data-card-preview-expiry]').textContent=selected.dataset.cardExp;}
+  };document.querySelectorAll('[name="PaymentMethod"]').forEach(r=>r.addEventListener('change',update));saved?.addEventListener('change',update);select?.addEventListener('change',update);update();}
+  const editor=document.querySelector('[data-measure-editor]'),storage=document.querySelector('[data-measure-editor-value]');
+  if(editor&&storage){let values={};try{values=JSON.parse(storage.value||'{}')}catch{}
+    const render=()=>{const selected=[...document.querySelectorAll('[name="AvailableSizes"]:checked:not(:disabled)')].map(x=>x.value);const category=document.querySelector('#product-category')?.selectedOptions[0]?.textContent||'';
+      const lower=/legging|calça|short/i.test(category),shoe=/tênis|tenis/i.test(category);
+      const defaults=shoe?['Comprimento do pé']:lower?['Cintura (circunferência)','Quadril (circunferência)','Comprimento']:['Comprimento frente','Comprimento da manga','Comprimento costas','Tórax (circunferência)'];
+      selected.forEach(size=>{if(!values[size]||!Object.keys(values[size]).length){const i=Math.max(0,['PP','P','M','G','GG','XG','Único'].indexOf(size));const nums=shoe?[20+(Number(size)-30)*.67]:lower?[64+4*i,88+4*i,/short/i.test(category)?34+2*i:92+2*i]:[67+2*i,20+i,70+2*i,103+4*i];values[size]=Object.fromEntries(defaults.map((label,j)=>[label,Number(nums[j].toFixed(1))]));}});
+      const names=[...new Set(selected.flatMap(size=>Object.keys(values[size])))];editor.replaceChildren();const table=document.createElement('table');table.className='bf-admin-table';const head=document.createElement('thead'),heading=document.createElement('tr');['Tamanho',...names].forEach(t=>{const th=document.createElement('th');th.textContent=t;heading.append(th);});head.append(heading);table.append(head);const body=document.createElement('tbody');
+      const sync=()=>storage.value=JSON.stringify(Object.fromEntries(selected.map(size=>[size,values[size]])));selected.forEach(size=>{const tr=document.createElement('tr'),th=document.createElement('th');th.textContent=size;tr.append(th);names.forEach(name=>{const td=document.createElement('td'),input=document.createElement('input');input.type='number';input.name=`measurementEditor[${selected.indexOf(size)}][${names.indexOf(name)}]`;input.min='0.1';input.max='500';input.step='0.1';input.value=values[size][name]??'';input.setAttribute('aria-label',size+' · '+name);input.style.width='90px';input.addEventListener('input',()=>{if(input.value==='')delete values[size][name];else values[size][name]=Number(input.value);sync();});td.append(input);tr.append(td);});body.append(tr);});table.append(body);editor.append(table);if(!selected.length){const p=document.createElement('p');p.textContent='Selecione os tamanhos disponíveis acima para preencher as medidas.';editor.append(p);}sync();
+    };document.querySelectorAll('[name="AvailableSizes"]').forEach(c=>c.addEventListener('change',render));document.querySelector('#product-category')?.addEventListener('change',()=>{values={};render();});render();
+  }
+})();
+
+// The same navigation and account actions are available in the mobile menu.
+(() => {
+  const header = document.querySelector('.bf-header');
+  const button = document.querySelector('[data-menu-toggle]');
+  if (!header || !button) return;
+  const setOpen = open => {
+    header.classList.toggle('is-menu-open', open);
+    button.setAttribute('aria-expanded', String(open));
+    button.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+  };
+  button.addEventListener('click', () => setOpen(button.getAttribute('aria-expanded') !== 'true'));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') { setOpen(false); button.focus(); } });
+  document.addEventListener('click', e => { if (!header.contains(e.target)) setOpen(false); });
+  header.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
+  matchMedia('(max-width: 1100px)').addEventListener('change', () => setOpen(false));
+})();
+
+// Demo data is filled only on an explicit click; never substitute submitted data.
+document.querySelectorAll('[data-card-form]').forEach(form => {
+  form.querySelector('[data-fill-demo-card]')?.addEventListener('click', () => {
+    const values = {
+      CardHolderName: 'CLIENTE TESTE', CardNumber: '4111111111111111',
+      Expiry: `12/${String(new Date().getFullYear() + 3).slice(-2)}`, SecurityCode: '123'
+    };
+    Object.entries(values).forEach(([name, value]) => {
+      const input = form.elements.namedItem(name);
+      if (input) { input.value = value; input.dispatchEvent(new Event('input', { bubbles: true })); }
+    });
+    form.querySelector('[data-card-number]')?.focus();
+  });
+});

@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BetaFit.Infraestructure - DbContext
 // =============================================================================
 //  CONCEITO IMPORTANTE: DbContext (Entity Framework Core)
@@ -62,11 +62,19 @@ namespace BetaFit.Infraestructure.Context
         /// Tabela de Pedidos no banco de dados.
         /// </summary>
         public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderMessage> OrderMessages {get;set;}
 
         /// <summary>
         /// Tabela de Itens de Pedido no banco de dados.
         /// </summary>
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Favorite> Favorites { get; set; }
+        public DbSet<PendingProfileChange> PendingProfileChanges { get; set; }
+        public DbSet<ProductReview> ProductReviews { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<UserNotification> UserNotifications { get; set; }
+        public DbSet<SiteSettings> SiteSettings { get; set; }
 
 
         // =====================================================================
@@ -80,6 +88,15 @@ namespace BetaFit.Infraestructure.Context
             // IMPORTANTE: Sempre chamar base.OnModelCreating() quando herdar
             // de IdentityDbContext, para que as tabelas do Identity sejam criadas.
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Category>().Property(c=>c.Slug).HasMaxLength(100);
+            modelBuilder.Entity<Category>().HasIndex(c=>c.Slug).IsUnique().HasFilter("[Slug] <> ''");
+            modelBuilder.Entity<Category>().HasOne<Category>().WithMany().HasForeignKey(c=>c.ParentId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Product>().Property(p=>p.SalePrice).HasPrecision(18,2);
+            modelBuilder.Entity<Order>().Property(p=>p.Discount).HasPrecision(18,2);
+            modelBuilder.Entity<OrderItem>().Property(p=>p.OriginalPrice).HasPrecision(18,2);
+            modelBuilder.Entity<OrderMessage>().HasOne<Order>().WithMany().HasForeignKey(m=>m.OrderId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<OrderMessage>().Property(m=>m.Text).HasMaxLength(500);
+
 
             // Aplica as configurações de cada entidade (definidas em classes separadas)
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
@@ -87,6 +104,13 @@ namespace BetaFit.Infraestructure.Context
 
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new OrderItemConfiguration());
+            modelBuilder.ApplyConfiguration(new PendingProfileChangeConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductReviewConfiguration());
+            modelBuilder.ApplyConfiguration(new CartItemConfiguration());
+            modelBuilder.ApplyConfiguration(new FavoriteConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductImageConfiguration());
+            modelBuilder.ApplyConfiguration(new UserNotificationConfiguration());
+            modelBuilder.ApplyConfiguration(new SiteSettingsConfiguration());
 
         }
     }

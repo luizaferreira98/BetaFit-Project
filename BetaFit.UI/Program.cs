@@ -42,7 +42,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
 
 // =====================================================================
-// CARRINHO (Session) — demonstrativo, sem checkout real
+// Infraestrutura de sessão MVC (não utilizada para persistência de carrinho/favoritos)
 // =====================================================================
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -63,19 +63,20 @@ builder.Services.AddSession(options =>
 builder.Services.AddTransient<ApiCookieHandler>();
 
 // Resolve a URL da BetaFit.API dinamicamente (launchSettings ou appsettings)
-var apiBaseUrl = AppConfig.ApiBaseUrl;
+var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? AppConfig.ApiBaseUrl;
 
 // Cliente usado apenas para Login/Register (ainda não existe cookie a repassar)
 builder.Services.AddHttpClient("ApiClientAuth", client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
-});
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false });
 
 // Cliente padrão para os demais serviços (repassa o cookie de autenticação)
 builder.Services.AddHttpClient("ApiClient", client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
 })
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false })
 .AddHttpMessageHandler<ApiCookieHandler>();
 
 // A UI implementa os MESMOS contratos (interfaces) definidos na Application,
@@ -91,6 +92,20 @@ builder.Services.AddScoped<IDashboardService>(sp =>
 
 builder.Services.AddScoped<IOrderService>(sp =>
     new HttpOrderService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+builder.Services.AddScoped<HttpReviewService>(sp =>
+    new HttpReviewService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+builder.Services.AddScoped<HttpCartService>(sp =>
+    new HttpCartService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient"), sp.GetRequiredService<IHttpContextAccessor>(), sp.GetRequiredService<IProductService>()));
+builder.Services.AddScoped<HttpFavoriteService>(sp =>
+    new HttpFavoriteService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+builder.Services.AddScoped<HttpPaymentService>(sp =>
+    new HttpPaymentService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+builder.Services.AddScoped<HttpProfileService>(sp =>
+    new HttpProfileService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+builder.Services.AddScoped<HttpSiteSettingsService>(sp =>
+    new HttpSiteSettingsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+builder.Services.AddScoped<HttpNotificationService>(sp =>
+    new HttpNotificationService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
 
 // =====================================================================
 // MVC
@@ -108,6 +123,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.UseRequestLocalization(new RequestLocalizationOptions().SetDefaultCulture("pt-BR").AddSupportedCultures("pt-BR").AddSupportedUICultures("pt-BR"));
 app.UseRouting();
 
 app.UseSession();

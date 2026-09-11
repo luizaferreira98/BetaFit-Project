@@ -1,13 +1,35 @@
 @model UserDto
 @using BetaFit.Application.DTOs
-@{ ViewData["Title"]="Meu perfil"; var birth=Model?.BirthDate?.ToString("yyyy-MM-dd"); }
-<section class="bf-page-hero bf-page-hero--compact"><div class="bf-container bf-page-hero__inner"><div><span class="bf-eyebrow bf-eyebrow--dark">Área do cliente</span><h1>Meu perfil</h1><p>Consulte e atualize seus dados pessoais e de acesso.</p></div></div></section>
+@{ ViewData["Title"]="Meu perfil"; }
+<section class="bf-page-hero bf-page-hero--compact"><div class="bf-container bf-page-hero__inner"><div><span class="bf-eyebrow bf-eyebrow--dark">Área do cliente</span><h1>Meu perfil</h1><p>Veja seus dados e escolha abaixo exatamente o que deseja alterar.</p></div></div></section>
 <section class="bf-section bf-section--catalog"><div class="bf-container bf-profile-page">
 @if(TempData["Sucesso"] is string ok){<div class="bf-alert" role="status">@ok</div>}
-@if(!ViewData.ModelState.IsValid){<div class="bf-alert bf-alert--error" role="alert">@Html.ValidationSummary(true,"",new{@class="bf-validation"})</div>}
-<form asp-controller="Account" asp-action="Profile" method="post" class="bf-form bf-form--admin">@Html.AntiForgeryToken()
-<div class="bf-profile-heading"><div class="bf-user-avatar">@((Model?.FullName??Model?.Email??"U").Substring(0,1).ToUpper())</div><div><span class="bf-eyebrow bf-eyebrow--dark">Dados pessoais</span><h2>@(Model?.FullName ?? "Seu perfil")</h2></div></div>
-<div class="bf-form-grid"><label>Nome completo<input name="FullName" value="@Model?.FullName" maxlength="120" required /></label><label>E-mail<input name="Email" type="email" value="@Model?.Email" maxlength="256" required /></label><label>Telefone<input name="PhoneNumber" type="tel" value="@Model?.PhoneNumber" maxlength="15" inputmode="tel" data-phone-mask required /></label><label>Data de nascimento<input name="BirthDate" type="date" value="@birth" required /></label></div>
-<div class="bf-profile-divider"><span>Alterar senha</span><small>Deixe os campos vazios se não quiser trocar.</small></div>
-<div class="bf-form-grid"><label>Senha atual<input name="CurrentPassword" type="password" autocomplete="current-password" /></label><label>Nova senha<input name="NewPassword" type="password" minlength="6" autocomplete="new-password" /></label><label>Confirmar nova senha<input name="ConfirmNewPassword" type="password" minlength="6" autocomplete="new-password" /></label></div>
-<div class="bf-form-actions"><a class="bf-btn bf-btn--ghost" asp-controller="Home" asp-action="Index">Cancelar</a><button class="bf-btn bf-btn--dark" type="submit">Salvar alterações <span>→</span></button></div></form></div></section>
+@if(TempData["Erro"] is string error){<div class="bf-alert bf-alert--error" role="alert">@error</div>}
+@if(!ViewData.ModelState.IsValid){<div class="bf-alert bf-alert--error" role="alert">@Html.ValidationSummary(false,"",new{@class="bf-validation"})</div>}
+<div class="bf-account-shortcuts"><a class="bf-account-tile" asp-controller="Orders" asp-action="MyOrders"><strong>Minhas compras →</strong><span>Histórico, acompanhamento e detalhes dos pedidos.</span></a><a class="bf-account-tile" asp-action="Cards"><strong>Meus cartões →</strong><span>@Model.Cards.Count cadastrado(s). Adicione ou exclua cartões.</span></a></div><div class="bf-profile-summary">
+    <div class="bf-profile-heading"><div class="bf-user-avatar">@((Model?.FullName??Model?.Email??"U").Substring(0,1).ToUpper())</div><div><span class="bf-eyebrow bf-eyebrow--dark">Dados da conta</span><h2>@(Model?.FullName ?? "Seu perfil")</h2></div></div>
+    <dl class="bf-profile-data">
+        <div><dt>E-mail</dt><dd>@Model.Email</dd></div><div><dt>Telefone</dt><dd>@Model.PhoneNumber</dd></div>
+        <div><dt>Nascimento</dt><dd>@(Model.BirthDate?.ToString("dd/MM/yyyy") ?? "Não informado")</dd></div><div><dt>Gênero</dt><dd>@(Model.Gender ?? "Não informado")</dd></div>
+        <div>
+            <dt>CPF</dt>
+
+             <dd data-cpf-display>
+                @(string.IsNullOrWhiteSpace(Model.Cpf)
+                ? "Não informado"
+                : Model.Cpf)
+            </dd>
+        </div>
+        <div><dt>Endereço</dt><dd>@(string.IsNullOrWhiteSpace(Model.Street) ? "Não cadastrado" : $"{Model.Street}, {Model.Number} · {Model.City}/{Model.State}")</dd></div>
+        <div><dt>Cartões</dt><dd>@Model.Cards.Count cadastrado(s)</dd></div>
+    </dl>
+</div>
+<div class="bf-profile-edit-list">
+
+
+<a class="bf-account-tile" asp-action="ChangeEmail"><strong>Editar e-mail →</strong><span>Abra a página de troca de e-mail para confirmar seus dados.</span></a>
+    <details class="bf-profile-editor"><summary><span><strong>Editar senha</strong><small>Crie uma senha forte com no máximo 100 caracteres.</small></span><b>+</b></summary><form asp-action="UpdatePassword" method="post" class="bf-form bf-form--admin">@Html.AntiForgeryToken()<div class="bf-form-grid"><label>Senha atual<input name="currentPassword" type="password" maxlength="100" autocomplete="current-password" required /></label><label>Nova senha<input name="newPassword" type="password" minlength="6" maxlength="100" autocomplete="new-password" required /></label><label>Confirmar nova senha<input name="confirmNewPassword" type="password" minlength="6" maxlength="100" autocomplete="new-password" required /></label></div><button class="bf-btn bf-btn--dark" type="submit">Alterar senha</button></form></details>
+    <details class="bf-profile-editor"><summary><span><strong>Editar endereço</strong><small>O CEP pode preencher automaticamente os dados disponíveis.</small></span><b>+</b></summary><form asp-action="UpdateAddress" method="post" class="bf-form bf-form--admin" data-address-form>@Html.AntiForgeryToken()<div class="bf-form-grid"><label>CPF<input name="Cpf" value="@Model.Cpf" maxlength="14" inputmode="numeric" data-cpf-mask required /></label><label>CEP<input name="Cep" value="@Model.Cep" maxlength="9" inputmode="numeric" data-cep-mask data-viacep required /><small class="bf-field-status" data-viacep-status></small></label><label class="bf-form-grid__full">Rua<input name="Street" value="@Model.Street" maxlength="180" data-address-street required /></label><label>Número<input name="Number" value="@Model.Number" maxlength="20" data-address-number required /></label><label>Complemento<input name="Complement" value="@Model.Complement" maxlength="120" data-address-complement /></label><label>Bairro<input name="Neighborhood" value="@Model.Neighborhood" maxlength="120" data-address-neighborhood required /></label><label>Cidade<input name="City" value="@Model.City" maxlength="120" data-address-city required /></label><label>Estado<input name="State" value="@Model.State" maxlength="2" data-address-state required /></label></div><button class="bf-btn bf-btn--dark" type="submit">Salvar endereço</button></form></details>
+
+</div>
+</div></section>

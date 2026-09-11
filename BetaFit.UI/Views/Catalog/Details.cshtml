@@ -1,6 +1,108 @@
 @model ProductDto
-@using BetaFit.UI.Helpers
-@{ var apiUnavailable=(bool)(ViewData["ApiUnavailable"]??false); var relatedProducts=(IReadOnlyList<ProductDto>)(ViewData["RelatedProducts"]??Array.Empty<ProductDto>()); ViewData["Title"]=Model?.Name??"Produto"; var images=Model?.ImageUrls?.Any()==true?Model.ImageUrls:(string.IsNullOrWhiteSpace(Model?.ImageUrl)?new List<string>():new List<string>{Model!.ImageUrl!}); var sizes=Model?.AvailableSizes??new List<string>(); var requiresSize=ProductCatalogRules.RequiresSize(Model?.CategoryName); }
-@if(apiUnavailable){<div class="bf-container bf-alert-wrap"><div class="bf-alert">O serviço de catálogo está temporariamente indisponível.</div></div>}
-@if(Model is not null){<section class="bf-product-page"><div class="bf-container"><a class="bf-back-link" asp-controller="Catalog" asp-action="Index">← Voltar ao catálogo</a><div class="bf-product-detail"><div class="bf-product-detail__media bf-gallery">@if(Model.IsFeatured){<span class="bf-product-card__badge">Destaque</span>}<div class="bf-gallery__main">@if(images.Any()){<img id="bf-main-product-image" src="@images.First()" alt="@Model.Name" />}else{<div class="bf-product-detail__placeholder">BF</div>}</div>@if(images.Count>1){<div class="bf-gallery__thumbs">@foreach(var img in images){<button type="button" class="bf-gallery__thumb" data-gallery-image="@img"><img src="@img" alt="@Model.Name" loading="lazy" /></button>}</div>}</div><div class="bf-product-detail__content"><span class="bf-eyebrow bf-eyebrow--dark">@Model.CategoryName</span><h1>@Model.Name</h1><div class="bf-product-detail__price">@Model.Price.ToString("C")</div><div class="bf-product-detail__rule"></div>@if(TempData["Error"] is string e){<div class="bf-alert bf-alert--error">@e</div>}<p class="bf-product-detail__desc">@Model.Description</p><div class="bf-product-specs"><div><span>Categoria</span><strong>@Model.CategoryName</strong></div><div><span>Gênero</span><strong>@Model.Gender</strong></div></div>@if(User?.Identity?.IsAuthenticated==true){<div class="bf-product-actions-row"><form asp-controller="Favorites" asp-action="Toggle" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" /><input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" /><button class="bf-btn bf-btn--outline" type="submit">♡ Adicionar aos favoritos</button></form></div><form asp-controller="Catalog" asp-action="AddToCart" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" /><div class="bf-product-choice-grid">@if(requiresSize && sizes.Any()){<label>Tamanho<select name="size" required><option value="">Escolha o tamanho</option>@foreach(var size in sizes){<option value="@size">@size</option>}</select></label>}<label>Quantidade<div class="bf-quantity-control" data-quantity-control><button type="button" class="bf-quantity-btn" data-quantity-minus>−</button><input id="product-quantity" class="bf-quantity-input" type="number" name="quantity" value="1" min="1" max="99" /><button type="button" class="bf-quantity-btn" data-quantity-plus>+</button></div></label></div><button class="bf-btn bf-btn--dark bf-btn--wide" type="submit">Adicionar ao carrinho <span>→</span></button></form>}else{<div class="bf-login-required"><strong>Entre na sua conta para adicionar produtos e favoritos.</strong><a class="bf-btn bf-btn--dark bf-btn--wide" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString">Entrar para continuar <span>→</span></a></div>}<p class="bf-demo-note">Preço demonstrativo. Este é um projeto institucional de portfólio, sem venda real.</p></div></div></div></section>
-@if(relatedProducts.Any()){<section class="bf-section bf-section--soft"><div class="bf-container"><div class="bf-section__head"><div><span class="bf-eyebrow bf-eyebrow--dark">Você também pode gostar</span><h2>Produtos relacionados</h2></div></div><div class="bf-product-grid">@foreach(var related in relatedProducts){<a class="bf-product-card" asp-controller="Catalog" asp-action="Details" asp-route-id="@related.Id"><div class="bf-product-card__media bf-product-card__media--carousel" data-product-carousel><div class="bf-product-card__slides">@{var relatedImages=related.ImageUrls?.Any()==true?related.ImageUrls:(string.IsNullOrWhiteSpace(related.ImageUrl)?new List<string>():new List<string>{related.ImageUrl!});}@foreach(var img in relatedImages){<img src="@img" alt="@related.Name" loading="lazy" decoding="async" />}</div>@if(relatedImages.Count>1){<span class="bf-product-card__carousel-hint" aria-hidden="true">@relatedImages.Count fotos</span>}</div><div class="bf-product-card__body"><span class="bf-product-card__cat">@related.CategoryName</span><strong>@related.Name</strong><span class="bf-product-card__price">@related.Price.ToString("C")</span></div></a>}</div></div></section>}}
+@{
+    var apiUnavailable = (bool)(ViewData["ApiUnavailable"] ?? false);
+    var relatedProducts = (IReadOnlyList<ProductDto>)(ViewData["RelatedProducts"] ?? Array.Empty<ProductDto>());
+    var productReviews = ViewData["Reviews"] as IEnumerable<ReviewDto> ?? Array.Empty<ReviewDto>();
+    ViewData["Title"] = Model?.Name ?? "Produto";
+    var images = Model?.ImageUrls?.Where(x => !string.IsNullOrWhiteSpace(x)).ToList() ?? new List<string>();
+    if (images.Count == 0 && !string.IsNullOrWhiteSpace(Model?.ImageUrl)) images.Add(Model.ImageUrl!);
+    var sizes = Model?.AvailableSizes?.Where(x => !string.IsNullOrWhiteSpace(x)).ToList() ?? new List<string>();
+    var requiresSize = sizes.Count > 0;
+    var colors = Model?.AvailableColors?.Where(x => !string.IsNullOrWhiteSpace(x)).ToList() ?? new List<string>();
+    var measurements = BetaFit.UI.Helpers.ProductMeasurements.For(Model ?? new ProductDto());
+    var reviewCount = productReviews.Count();
+    var reviewAverage = reviewCount == 0 ? 0 : productReviews.Average(x => x.Rating);
+}
+
+@if (apiUnavailable) { <div class="bf-container bf-alert-wrap"><div class="bf-alert">O serviço de catálogo está temporariamente indisponível.</div></div> }
+
+@if (Model is not null)
+{
+    <section class="bf-product-page"><div class="bf-container">
+        <a class="bf-back-link" asp-controller="Catalog" asp-action="Index">← Voltar ao catálogo</a>
+        <div class="bf-product-detail bf-product-detail--store">
+            <div class="bf-product-gallery" data-product-gallery>
+                @if (Model.IsFeatured) { <span class="bf-product-card__badge">Destaque</span> }
+                @if (images.Any())
+                {
+                    <div class="bf-product-gallery__thumbs" aria-label="Fotos do produto">
+                        @for (var index = 0; index < images.Count; index++)
+                        {
+                            <button type="button" class="bf-product-gallery__thumb @(index == 0 ? "is-active" : "")" data-gallery-select="@index" aria-label="Ver foto @(index + 1) de @images.Count">
+                                <img src="@images[index]" alt="Miniatura de @Model.Name" loading="lazy" />
+                            </button>
+                        }
+                    </div>
+                    <div class="bf-product-gallery__stage">
+                        <img src="@images[0]" alt="@Model.Name" data-gallery-main tabindex="0" role="button" aria-label="Ampliar foto de @Model.Name" />
+                        @if (images.Count > 1)
+                        {
+                            <button type="button" class="bf-product-gallery__arrow bf-product-gallery__arrow--prev" data-gallery-previous aria-label="Foto anterior">‹</button>
+                            <button type="button" class="bf-product-gallery__arrow bf-product-gallery__arrow--next" data-gallery-next aria-label="Próxima foto">›</button>
+                        }
+                        
+                        <span class="bf-gallery-notice" data-gallery-notice hidden>Fotos desta cor ainda não cadastradas</span><span class="bf-product-gallery__count" data-gallery-count>1 / @images.Count</span>
+                    </div>
+                }
+                else { <div class="bf-product-detail__placeholder">BF</div> }
+            </div>
+
+            <div class="bf-product-detail__content">
+                
+                <h1>@Model.Name</h1>
+                <a class="bf-product-rating" href="#avaliacoes" aria-label="@reviewCount avaliações, média @reviewAverage.ToString("0.0") de 5">
+                    <span>★★★★★</span><strong>@(reviewCount == 0 ? "Sem avaliações" : reviewAverage.ToString("0.0"))</strong><small>(@reviewCount @(reviewCount == 1 ? "avaliação" : "avaliações"))</small>
+                </a>
+                @if(Model.SalePrice.HasValue){<del>@Model.Price.ToString("C")</del><span class="bf-badge bf-badge--offer">Oferta</span>}<div class="bf-product-detail__price">@Model.EffectivePrice.ToString("C")</div><p class="bf-product-installments"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3zM3 10h18"/></svg> Em até <strong>12x de @((Model.EffectivePrice/12).ToString("C"))</strong> sem juros no crédito</p>
+                @if (Model.Stock <= 0) { <div class="bf-alert bf-alert--error">Produto esgotado no momento.</div> }
+                @if (TempData["Error"] is string errorMessage) { <div class="bf-alert bf-alert--error">@errorMessage</div> }
+
+                    <form asp-controller="Catalog" asp-action="AddToCart" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" />
+                        <div class="bf-product-choice-grid">
+                            @if (requiresSize) { <fieldset class="bf-detail-options"><legend>Tamanho: <strong data-selected-size>selecione</strong></legend><div class="bf-size-buttons">@foreach (var size in sizes) { <label><input type="radio" name="size" value="@size" required /><span>@size</span></label> }</div><button class="bf-size-guide-trigger" type="button" data-size-guide-open>⌁ Tabela de medidas</button></fieldset> }
+                            @if (colors.Any()) { <fieldset class="bf-detail-options bf-detail-colors"><legend>Cor: <strong data-selected-color>selecione</strong></legend><div class="bf-color-variant-list">@foreach(var color in colors){Model.ColorImageUrls.TryGetValue(color,out var colorImage);<label title="@color"><input type="radio" name="color" value="@color" required data-color-choice data-color-image="@colorImage" /><span>@if(!string.IsNullOrWhiteSpace(colorImage)){<img src="@colorImage" alt="@color" />}else{<i class="bf-color-dot" data-color="@color"></i>}<small>@color</small></span></label>}</div></fieldset> }
+                            <div class="bf-buy-row"><div class="bf-quantity-control" data-quantity-control><button type="button" class="bf-quantity-btn" data-quantity-minus>−</button><input id="product-quantity" class="bf-quantity-input" type="number" name="quantity" value="1" min="1" max="@Math.Min(99,Math.Max(1,Model.Stock))" aria-label="Quantidade" /><button type="button" class="bf-quantity-btn" data-quantity-plus>+</button></div>
+                        @if (Model.Stock <= 0) { <button class="bf-btn bf-btn--dark bf-btn--wide" type="button" disabled>Produto esgotado</button> } else { <button class="bf-btn bf-btn--dark bf-btn--wide" type="submit">Adicionar ao carrinho</button> }
+                        @if(User.Identity?.IsAuthenticated==true){<button type="submit" class="bf-favorite-round" form="product-favorite-form" aria-label="Adicionar ou remover dos favoritos">@((ViewData["IsFavorite"] as bool?)==true?"♥":"♡")</button>}else{<a class="bf-favorite-round" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path" aria-label="Entrar para favoritar">♡</a>}</div></div>
+                    </form>
+<form id="product-favorite-form" asp-controller="Favorites" asp-action="Toggle" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" /><input type="hidden" name="returnUrl" value="@Context.Request.Path" /></form>
+                <p class="bf-shipping-note">Frete grátis em compras acima de R$ 299,90</p>
+                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <details class="bf-product-description"><summary><span>Descrição</span><b>+</b></summary><p>@Model.Description</p></details>
+                }
+                <div class="bf-product-information"><h2>Informações Beta Fit</h2>
+<button type="button" data-info-open="payment"><span>▤</span><span>Até 12x sem juros<small>Veja as opções de pagamento</small></span></button>
+<button type="button" data-info-open="quality"><span>✦</span><span>Performance e conforto<small>Conheça a proposta Beta Fit</small></span></button>
+<button type="button" data-info-open="care"><span>♧</span><span>Mais cuidado, mais durabilidade<small>Como conservar sua peça</small></span></button>
+<button type="button" data-info-open="exchange"><span>⇄</span><span>Trocas e atendimento<small>Confira as orientações da loja</small></span></button></div>
+<div class="bf-product-updates"><span>♧</span><div><strong>Acompanhe suas novidades</strong>@if(User.Identity?.IsAuthenticated==true){<p>Atualizações de pedidos e novidades chegam nas notificações da sua conta.</p><button class="bf-text-link" type="button" data-product-notifications>Ver minhas notificações</button>}else{<p>Entre para receber atualizações de pedidos e novidades da Beta Fit.</p><a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path">Entrar ou criar conta</a>}</div></div>
+            </div>
+        </div>
+    </div></section>
+}
+
+<section class="bf-section bf-reviews" id="avaliacoes"><div class="bf-container"><div class="bf-section__head"><div><span class="bf-eyebrow bf-eyebrow--dark">Experiências reais</span><h2>Avaliações</h2></div></div>
+@if (!productReviews.Any()) { <div class="bf-empty"><strong>Ainda não há avaliações.</strong><span>As primeiras avaliações aparecerão aqui após pedidos entregues.</span></div> }
+else { <div class="bf-reviews-grid">@foreach (var review in productReviews) { var stars = new string('★', Math.Clamp(review.Rating, 0, 5)); var emptyStars = new string('☆', 5 - Math.Clamp(review.Rating, 0, 5)); <article class="bf-review-card"><div class="bf-review-card__stars" aria-label="@review.Rating de 5">@stars@emptyStars</div><strong>@review.UserName</strong><small>@review.CreatedAt.ToString("dd/MM/yyyy")</small>@if (!string.IsNullOrWhiteSpace(review.Comment)) { <p>@review.Comment</p> }@if (review.PhotoUrls.Any()) { <div class="bf-review-card__photos">@foreach (var photo in review.PhotoUrls) { <a href="@photo" target="_blank" rel="noopener"><img src="@photo" alt="Foto enviada na avaliação" loading="lazy" /></a> }</div> }</article> }</div> }
+</div></section>
+
+@if (relatedProducts.Any()) { <section class="bf-section bf-section--soft"><div class="bf-container"><div class="bf-section__head"><div><span class="bf-eyebrow bf-eyebrow--dark">Você também pode gostar</span><h2>Produtos relacionados</h2></div></div><div class="bf-product-grid">@foreach (var related in relatedProducts) { var relatedImages = related.ImageUrls?.Where(x => !string.IsNullOrWhiteSpace(x)).ToList() ?? new List<string>(); if (relatedImages.Count == 0 && !string.IsNullOrWhiteSpace(related.ImageUrl)) relatedImages.Add(related.ImageUrl!); <a class="bf-product-card" asp-controller="Catalog" asp-action="Details" asp-route-id="@related.Id"><div class="bf-product-card__media bf-product-card__media--carousel" data-product-carousel><div class="bf-product-card__slides">@foreach (var img in relatedImages) { <img src="@img" alt="@related.Name" loading="lazy" decoding="async" /> }</div></div><div class="bf-product-card__body"><span class="bf-product-card__cat">@related.CategoryName</span><strong>@related.Name</strong><span class="bf-product-card__price">@related.EffectivePrice.ToString("C")</span></div></a> }</div></div></section> }
+
+<div class="bf-product-lightbox" data-product-lightbox aria-hidden="true">
+    <div class="bf-product-lightbox__backdrop" data-lightbox-close></div>
+    <div class="bf-product-lightbox__panel" role="dialog" aria-modal="true" aria-label="Fotos de @Model?.Name">
+        <button type="button" class="bf-product-lightbox__close" data-lightbox-close aria-label="Fechar">×</button>
+        <div class="bf-product-lightbox__image-wrap" data-lightbox-zoom-area>
+            <img src="@images.FirstOrDefault()" alt="@Model?.Name" data-lightbox-image />
+
+        </div>
+        <div class="bf-product-lightbox__controls"><button type="button" data-lightbox-previous aria-label="Foto anterior">‹</button><span data-lightbox-count>1 / @images.Count</span><button type="button" data-lightbox-next aria-label="Próxima foto">›</button></div>
+        <div class="bf-product-lightbox__thumbs">@for (var index = 0; index < images.Count; index++) { <button type="button" data-lightbox-select="@index" aria-label="Ver foto @(index + 1)"><img src="@images[index]" alt="Miniatura de @Model?.Name" /></button> }</div>
+    </div>
+</div>
+
+@if(requiresSize){<dialog class="bf-measure-dialog" data-measure-dialog aria-labelledby="measure-title"><button class="bf-dialog-close" type="button" data-dialog-close aria-label="Fechar tabela">×</button><div class="bf-measure-layout"><div class="bf-measure-visual"><h2 id="measure-title">Tabela de tamanhos</h2><img src="@images.FirstOrDefault()" alt="@Model?.Name" /><p data-measure-help>Compare com uma peça sua estendida sobre uma superfície plana.</p><a href="~/downloads/measurement_tape_cm_ptbr.pdf" target="_blank" rel="noopener">Fita métrica · baixar PDF</a></div><div class="bf-measure-content"><p>Selecione um tamanho e verifique as medidas</p><div class="bf-measure-sizes"><button type="button" data-measure-prev aria-label="Tamanho anterior">‹</button><div>@foreach(var size in sizes){<button type="button" data-measure-size="@size">@size</button>}</div><button type="button" data-measure-next aria-label="Próximo tamanho">›</button></div><table><tbody data-measure-rows></tbody></table><small>@(Model?.MeasurementsAreDemo==true || sizes.Any(x=>!Model!.SizeMeasurements.ContainsKey(x))?"Medidas de referência para demonstração; confira a peça antes de comprar.":"Medidas da peça em centímetros. Pode haver variação de fabricação.")</small></div></div></dialog>}
+<script type="application/json" id="bf-measurements">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(measurements))</script>
+<script type="application/json" id="bf-color-galleries">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model?.ColorGalleries))</script>
+<dialog class="bf-info-dialog" data-info-dialog><button class="bf-dialog-close" type="button" data-dialog-close aria-label="Fechar informações">×</button><span class="bf-eyebrow">BETA FIT · MOVE FORWARD</span><h2 data-info-title></h2><div data-info-content></div></dialog>

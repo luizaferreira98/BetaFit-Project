@@ -1,4 +1,4 @@
-﻿using BetaFit.Domain.Entities;
+using BetaFit.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -16,6 +16,8 @@ namespace BetaFit.Infraestructure.Configurations
             builder.ToTable("OrderItems");
             builder.HasKey(i => i.Id);
             builder.Property(i => i.UnitPrice).HasColumnType("decimal(18,2)");
+            builder.Property(i => i.Size).HasMaxLength(30);
+            builder.Property(i => i.Color).HasMaxLength(40);
 
             builder.HasOne(i => i.Product)
                    .WithMany()

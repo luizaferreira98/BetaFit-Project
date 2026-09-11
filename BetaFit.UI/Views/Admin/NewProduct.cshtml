@@ -1,88 +1,32 @@
 @model ProductFormViewModel
 @using System.Text.Json
-@{
-    ViewData["Title"] = "Novo produto";
-    var sizeCategories = Model.Categories
-        .Where(c => BetaFit.UI.Helpers.ProductCatalogRules.RequiresSize(c.Name))
-        .Select(c => c.Id)
-        .ToArray();
-}
-<section class="bf-page-hero bf-page-hero--compact">
-    <div class="bf-container bf-page-hero__inner">
-        <div>
-            <span class="bf-eyebrow bf-eyebrow--dark">Administração</span>
-            <h1>Novo produto</h1>
-            <p>Cadastre o produto com uma galeria organizada e atributos que façam sentido para a categoria.</p>
-        </div>
-    </div>
-</section>
-
-<section class="bf-section bf-section--catalog">
-<div class="bf-container bf-form-page">
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="bf-alert bf-alert--error" role="alert">@Html.ValidationSummary(true, "", new { @class = "bf-validation" })</div>
-}
-<form asp-controller="Admin" asp-action="NewProduct" method="post" enctype="multipart/form-data" class="bf-form bf-form--admin" id="product-form">
-    @Html.AntiForgeryToken()
-
-    <div class="bf-form-section">
-        <div class="bf-form-section__head"><span>01</span><div><strong>Informações do produto</strong><small>Defina os dados principais da peça.</small></div></div>
-        <div class="bf-form-grid">
-            <label>Nome<input asp-for="Name" required placeholder="Ex.: Camiseta Beta Performance" /></label>
-            <label>Preço<input asp-for="Price" type="number" step="0.01" min="0" required placeholder="0,00" /></label>
-            <label>
-                Categoria
-                <select asp-for="CategoryId" required id="product-category">
-                    <option value="">Selecione uma categoria...</option>
-                    @foreach (var c in Model.Categories)
-                    {
-                        <option value="@c.Id" data-requires-size="@BetaFit.UI.Helpers.ProductCatalogRules.RequiresSize(c.Name).ToString().ToLowerInvariant()">@c.Name</option>
-                    }
-                </select>
-            </label>
-            <label>Gênero<select name="gender" asp-items="Html.GetEnumSelectList<Gender>()"></select></label>
-            <label class="bf-form-grid__full">Descrição<textarea asp-for="Description" rows="5" placeholder="Descreva tecido, caimento, uso e diferenciais."></textarea></label>
-        </div>
-    </div>
-
+@{var editing=Model.Id>0;ViewData["Title"]=editing?"Editar produto":"Novo produto";var media=Model.ImageUrls.Concat(Model.ColorGalleries.Values.SelectMany(x=>x)).Concat(Model.ColorImageUrls.Values).Distinct().Select(url=>new{url,color=Model.ColorGalleries.FirstOrDefault(g=>g.Value.Contains(url)).Key??Model.ColorImageUrls.FirstOrDefault(g=>g.Value==url).Key??"",fileKey=""}).ToList();}
+<section class="bf-section"><div class="bf-container"><div class="bf-toolbar"><h1>@ViewData["Title"]</h1>@if(editing){<a class="bf-btn bf-btn--ghost" href="/Product/@Model.Id" target="_blank" rel="noopener">Visualizar na loja ↗</a>}</div><p>A prévia abre a versão salva. Salve as alterações para publicá-las.</p>
+@if(!ViewData.ModelState.IsValid){<div class="bf-alert bf-alert--error">@Html.ValidationSummary(false)</div>}
+<form action="@(editing?$"/Admin/EditProduct/{Model.Id}":"/Admin/NewProduct")" method="post" enctype="multipart/form-data" class="bf-form bf-form--admin" id="product-form">
+@Html.AntiForgeryToken()<div class="bf-form-grid"><label>Nome<input asp-for="Name" required maxlength="200"/></label><label>SKU / Código do produto<input asp-for="Sku" maxlength="80"/></label><label>Preço original<div class="bf-money-input"><span>R$</span><input asp-for="Price" type="number" step="0.01" min="0" required/></div></label><label>Preço de oferta (opcional)<div class="bf-money-input"><span>R$</span><input asp-for="SalePrice" type="number" step="0.01" min="0.01"/></div></label><label>Estoque total<div class="bf-stock-input"><button type="button" data-stock-step="-1" aria-label="Diminuir estoque">−</button><input asp-for="Stock" type="number" min="0" max="100000" required/><button type="button" data-stock-step="1" aria-label="Aumentar estoque">+</button></div><small data-stock-warning></small></label><label>Alerta de estoque baixo<input asp-for="LowStockThreshold" type="number" min="0" max="100000"/></label><label>Categoria<select asp-for="CategoryId" required id="product-category"><option value="">Selecione</option>@foreach(var c in Model.Categories){<option value="@c.Id" data-requires-size="@BetaFit.UI.Helpers.ProductCatalogRules.RequiresSize(c.Name).ToString().ToLowerInvariant()">@c.Name</option>}</select></label><label>Gênero<select asp-for="Gender" asp-items="Html.GetEnumSelectList<Gender>()"></select></label><label class="bf-form-grid__full">Descrição<textarea asp-for="Description" rows="4" maxlength="2000" required></textarea></label></div>
     <div class="bf-size-picker" id="size-picker" data-size-picker>
         <div class="bf-size-picker__head">
             <div><span class="bf-form-kicker">Variação</span><strong>Tamanhos disponíveis</strong><small id="size-helper">Selecione os tamanhos que o cliente poderá escolher.</small></div>
             <span class="bf-size-status" id="size-status">Obrigatório para roupas</span>
         </div>
-        <div class="bf-size-options">
-            @foreach (var size in new[]{"PP","P","M","G","GG","XG","36","38","40","42","44","Único"})
+        <div class="bf-size-options" data-size-options>
+            @foreach (var size in new[]{"PP","P","M","G","GG","XG","Único","35","36","37","38","39","40","41","42","43","44","45"})
             {
-                <label class="bf-size-option"><input type="checkbox" name="AvailableSizes" value="@size" checked="@(Model.AvailableSizes.Contains(size))" /><span>@size</span></label>
+                <label class="bf-size-option" data-size-value="@size"><input type="checkbox" name="AvailableSizes" value="@size" checked="@(Model.AvailableSizes.Contains(size))" /><span>@size</span></label>
             }
         </div>
         <div class="bf-size-picker__hidden" id="size-not-required"><span>✓</span> Esta categoria não usa tamanho. O campo será ocultado para o cliente.</div>
     </div>
 
-    <div class="bf-upload-field bf-form-grid__full bf-upload-card" data-upload-zone>
-        <div class="bf-upload-card__head">
-            <div><span class="bf-form-kicker">03 · Galeria</span><strong>Fotos do produto</strong><small>Arraste para ordenar. A primeira foto será a principal.</small></div>
-            <span class="bf-upload-count" data-upload-count>0 fotos</span>
-        </div>
-        <label class="bf-file-drop" for="product-images-input">
-            <input id="product-images-input" name="images" type="file" accept="image/jpeg,image/png,image/webp" multiple data-image-preview-input="product-images-preview" />
-            <span class="bf-file-drop__icon">＋</span>
-            <strong>Escolher imagens</strong>
-            <span>ou arraste os arquivos para esta área</span>
-            <small>JPG, PNG ou WEBP · até 5 MB por arquivo</small>
-        </label>
-        <div id="product-images-preview" class="bf-image-upload-preview" data-empty="true">
-            <div class="bf-image-upload-preview__placeholder"><span>+</span><strong>Sua galeria aparecerá aqui</strong><small>A primeira imagem será usada como capa.</small></div>
-            <div class="bf-image-upload-preview__grid"></div>
-        </div>
+    <div class="bf-size-picker bf-color-picker">
+        <div class="bf-size-picker__head"><div><span class="bf-form-kicker">02 · Variação</span><strong>Cores disponíveis</strong><small>Selecione as cores que poderão ser escolhidas pelo cliente.</small></div></div>
+        <div class="bf-size-options">@foreach(var color in new[]{"Preto","Branco","Cinza","Azul","Verde neon","Rosa","Vermelho","Bege"}){<label class="bf-size-option"><input type="checkbox" name="AvailableColors" value="@color" checked="@(Model.AvailableColors.Contains(color))" /><span><i class="bf-color-dot" data-color="@color"></i>@color</span></label>}</div>
     </div>
 
-    <label class="bf-check"><input asp-for="IsFeatured" type="checkbox" /><span>Produto em destaque na loja</span></label>
-    <div class="bf-form-actions">
-        <a class="bf-btn bf-btn--ghost" asp-controller="Admin" asp-action="Index">Cancelar</a>
-        <button class="bf-btn bf-btn--dark" type="submit">Salvar produto <span>→</span></button>
-    </div>
-</form>
-</div>
-</section>
+
+<section class="bf-form-section" data-media-manager><h3>Galeria de fotos</h3><p>Adicione, remova e ordene as fotos aqui. Marque a cor de cada foto; a primeira será a capa. “Todas” aparece na galeria geral.</p><input type="hidden" name="mediaJson" value="@JsonSerializer.Serialize(media)" data-media-manifest/><label class="bf-drop-zone" data-media-drop><span>＋ Escolher imagens ou arrastar aqui</span><small>JPG, PNG ou WEBP · até 5 MB por foto</small><input type="file" accept="image/jpeg,image/png,image/webp" multiple data-media-picker/></label><div class="bf-media-grid" data-media-grid></div></section>
+<section class="bf-form-section"><h3>SKU e estoque por variação</h3><label class="bf-check"><input type="checkbox" data-variants-enable checked="@(Model.Variants.Count>0)"/> Controlar estoque por tamanho e cor</label><p>Quando ativado, o estoque total é a soma das variações. Uma variação zerada não pode ser comprada.</p><input type="hidden" name="variantsJson" data-variants-json value="@JsonSerializer.Serialize(Model.Variants)"/><div class="bf-table-scroll" data-variants-editor></div></section>
+@await Html.PartialAsync("_ProductExtras",Model)
+<div class="bf-checks"><label class="bf-check"><input asp-for="IsFeatured"/> Em destaque</label><label class="bf-check"><input asp-for="IsActive"/> Ativo</label></div><div class="bf-form-actions bf-sticky-actions"><a class="bf-btn bf-btn--ghost" href="/Admin">Cancelar</a><button class="bf-btn bf-btn--dark">Salvar alterações</button></div></form></div></section>
+@section Scripts { @await Html.PartialAsync("_ValidationScriptsPartial") }

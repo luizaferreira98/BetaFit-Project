@@ -1,4 +1,4 @@
-﻿// =============================================================================
+// =============================================================================
 // BetaFit.Infraestructure - Seed Data (Dados Iniciais)
 // =============================================================================
 //  CONCEITO IMPORTANTE: Seed Data
@@ -15,6 +15,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json;
+using System.Security.Claims;
 using BetaFit.Domain.Entities;
 using BetaFit.Domain.Enums;
 using BetaFit.Infraestructure.Context;
@@ -329,24 +331,72 @@ namespace BetaFit.Infraestructure.Identity
                 await context.SaveChangesAsync();
             }
 
+
+            // Corrige dados de demonstração antigos: acessórios não ganham tamanho inventado e tênis usam numeração.
+            var shoeCategory = await context.Categories.FirstOrDefaultAsync(c => c.Name == "Tênis");
+            if (shoeCategory is not null)
+            {
+                var shoeProducts = await context.Products.Where(p => p.CategoryId == shoeCategory.Id).ToListAsync();
+                foreach (var shoe in shoeProducts) shoe.AvailableSizesJson = JsonSerializer.Serialize(Enumerable.Range(35, 8).Select(x => x.ToString()).ToList());
+            }
+            var noSizeCategories = await context.Categories.Where(c => c.Name == "Acessórios").Select(c => c.Id).ToListAsync();
+            var accessories = await context.Products.Where(p => noSizeCategories.Contains(p.CategoryId)).ToListAsync();
+            foreach (var item in accessories) item.AvailableSizesJson = "[]";
+            await context.SaveChangesAsync();
+
+            var clothingIds=await context.Categories.Where(c=>c.Name=="Camisetas"||c.Name=="Leggings"||c.Name=="Moletons"||c.Name=="Shorts").Select(c=>c.Id).ToListAsync();
+            foreach(var p in await context.Products.Where(p=>clothingIds.Contains(p.CategoryId)).ToListAsync())
+                if(string.IsNullOrWhiteSpace(p.AvailableSizesJson)||p.AvailableSizesJson=="[]")p.AvailableSizesJson="[\"P\",\"M\",\"G\",\"GG\",\"XG\"]";
+            await context.SaveChangesAsync();
+            // Garante que os produtos antigos também tenham linhas na galeria persistente.
+            foreach (var product in await context.Products.Include(p => p.Images).ToListAsync())
+            {
+                if (!product.Images.Any())
+                {
+                    List<string> urls = new();
+                    try { urls = JsonSerializer.Deserialize<List<string>>(product.ImageUrlsJson ?? "[]") ?? new(); } catch { }
+                    if (!urls.Any() && !string.IsNullOrWhiteSpace(product.ImageUrl)) urls.Add(product.ImageUrl);
+                    product.Images = urls.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Select((url, i) => new ProductImage { Url=url, SortOrder=i, IsPrimary=i==0 }).ToList();
+                }
+                List<string> currentColors = new();
+                try { currentColors = JsonSerializer.Deserialize<List<string>>(product.AvailableColorsJson ?? "[]") ?? new(); } catch { }
+                if (!currentColors.Any())
+                {
+                    var name = product.Name.ToLowerInvariant();
+                    currentColors = name.Contains("branco") ? new() { "Branco" }
+                        : name.Contains("preto") || name.Contains("all black") ? new() { "Preto" }
+                        : name.Contains("cinza") || name.Contains("grafite") ? new() { "Cinza" }
+                        : name.Contains("verde") || name.Contains("neon") ? new() { "Verde neon" }
+                        : new() { "Preto", "Branco" };
+                    product.AvailableColorsJson = JsonSerializer.Serialize(currentColors);
+                    if(product.Name.StartsWith("Boné Beta Fit",StringComparison.Ordinal)){
+                        var gallery=new Dictionary<string,List<string>>{{"Preto",new(){"/images/products/betafit_bone_preto.jpg"}},{"Branco",new(){"/images/products/betafit_bone_branco.jpg"}},{"Cinza",new(){"/images/products/betafit_bone_grafite.jpg"}},{"Verde neon",new(){"/images/products/betafit_bone_verde_neon.jpg"}}};
+                        product.ColorGalleriesJson=JsonSerializer.Serialize(gallery);product.ColorImageUrlsJson=JsonSerializer.Serialize(gallery.ToDictionary(x=>x.Key,x=>x.Value[0]));product.AvailableColorsJson=JsonSerializer.Serialize(gallery.Keys);
+                    }
+                }
+            }
+            await context.SaveChangesAsync();
+
             // =====================================================================
             // 3. SEED DE ROLES (Papéis de Usuário)
             // =====================================================================
             //  CONCEITO: Roles no Identity
             // Roles são papéis que definem o nível de acesso do usuário.
-            //
-            //   Admin      - acesso total; único que gerencia outros funcionários
-            //   Gerente    - CRUD de produtos/categorias/pedidos + dashboard
-            //   Estoquista - CRUD de produtos/categorias (catálogo/estoque)
-            //   Usuario    - cliente da loja (site/UI); NUNCA acessa o Desktop
+            // Exemplo: "Admin" pode gerenciar produtos, "Usuario" só pode visualizar.
             // =====================================================================
-            var roles = new[] { "Admin", "Gerente", "Estoquista", "Usuario" };
-            foreach (var role in roles)
+            if (!await roleManager.RoleExistsAsync("Admin"))
             {
-                if (!await roleManager.RoleExistsAsync(role))
-                {
-                    await roleManager.CreateAsync(new IdentityRole(role));
-                }
+                await roleManager.CreateAsync(new IdentityRole("Admin"));
+            }
+
+            if (!await roleManager.RoleExistsAsync("Usuario"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Usuario"));
+            }
+
+            if (!await roleManager.RoleExistsAsync("Funcionario"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Funcionario"));
             }
 
             // =====================================================================
@@ -375,46 +425,15 @@ namespace BetaFit.Infraestructure.Identity
                 {
                     // Atribui a role "Admin" ao usuário
                     await userManager.AddToRoleAsync(adminUser, "Admin");
+                    await userManager.AddClaimsAsync(adminUser, new[] { new Claim("FullName", "Administrador BetaFit"), new Claim("BirthDate", "1990-01-01") });
                 }
             }
 
-            // =====================================================================
-            // 5. SEED DE CONTAS DE TESTE (Gerente e Estoquista)
-            // =====================================================================
-            //  Enquanto o Desktop não tem uma tela própria de "Usuários/
-            //  Funcionários" pra o Admin criar essas contas pela interface,
-            //  criamos aqui 2 contas de teste — uma pra cada papel novo —
-            //  só pra dar pra logar e validar o comportamento de cada um.
-            //
-            //  ⚠️ São credenciais de DESENVOLVIMENTO. Antes de ir pra produção,
-            //  troque as senhas (ou remova este bloco e crie as contas de
-            //  verdade manualmente).
-            // =====================================================================
-            await SeedFuncionarioDeTesteAsync(userManager, "gerente@betafit.com", "Gerente@123", "Gerente");
-            await SeedFuncionarioDeTesteAsync(userManager, "estoquista@betafit.com", "Estoquista@123", "Estoquista");
-        }
-
-        /// <summary>
-        /// Cria uma conta de funcionário de teste (idempotente — não duplica
-        /// se o e-mail já existir) e atribui o papel informado.
-        /// </summary>
-        private static async Task SeedFuncionarioDeTesteAsync(
-            UserManager<IdentityUser> userManager, string email, string senha, string role)
-        {
-            var user = await userManager.FindByEmailAsync(email);
-            if (user != null) return; // já existe, não recria
-
-            user = new IdentityUser
+            if (adminUser is not null)
             {
-                UserName = email,
-                Email = email,
-                EmailConfirmed = true
-            };
-
-            var result = await userManager.CreateAsync(user, senha);
-            if (result.Succeeded)
-            {
-                await userManager.AddToRoleAsync(user, role);
+                var adminClaims = await userManager.GetClaimsAsync(adminUser);
+                if (!adminClaims.Any(c => c.Type == "FullName")) await userManager.AddClaimAsync(adminUser, new Claim("FullName", "Administrador BetaFit"));
+                if (!adminClaims.Any(c => c.Type == "BirthDate")) await userManager.AddClaimAsync(adminUser, new Claim("BirthDate", "1990-01-01"));
             }
         }
     }

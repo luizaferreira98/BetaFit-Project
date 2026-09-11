@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using BetaFit.Domain.Entities;
 using BetaFit.Domain.Enums;
 using BetaFit.Domain.Interfaces;

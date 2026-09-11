@@ -1,4 +1,4 @@
-﻿namespace BetaFit.Domain.Entities
+namespace BetaFit.Domain.Entities
 {
     public class OrderItem
     {
@@ -11,8 +11,14 @@
         public string ProductName { get; set; } = string.Empty;
 
         public decimal UnitPrice { get; set; }
+        public decimal? OriginalPrice {get;set;}
+        public string? ImageUrl {get;set;}
 
         public int Quantity { get; set; }
+
+        public string? Size { get; set; }
+
+        public string? Color { get; set; }
 
         public decimal Subtotal => UnitPrice * Quantity;
 
