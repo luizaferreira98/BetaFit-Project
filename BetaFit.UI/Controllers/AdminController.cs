@@ -23,6 +23,15 @@ public class AdminController : Controller
     public AdminController(IProductService products, ICategoryService categories, IDashboardService dashboard, HttpSiteSettingsService site, IWebHostEnvironment env, HttpReviewService reviews,IHttpClientFactory factory)
     { _api=factory.CreateClient("ApiClient"); _reviews=reviews; _products=products; _categories=categories; _dashboard=dashboard; _site=site; _env=env; }
 
+    [Authorize(Roles="Admin"),HttpGet("Coupons")]
+    public async Task<IActionResult> Coupons(){try{return View(await _api.GetFromJsonAsync<List<CouponDto>>("api/coupons")??new());}catch(Exception ex) when(ex is HttpRequestException or System.Text.Json.JsonException or TaskCanceledException){HttpContext.RequestServices.GetRequiredService<ILogger<AdminController>>().LogError(ex,"Falha ao carregar cupons da API");ViewData["CouponsUnavailable"]=true;TempData["Error"]=ApiFailure.Message(ex,"os cupons");return View(new List<CouponDto>());}}
+    [Authorize(Roles="Admin"),HttpPost("Coupons"),ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateCoupon(CouponDto dto){
+    foreach(var field in new[]{"Percent","Minimum"}){ModelState.Remove(field);if(decimal.TryParse(Request.Form[field],System.Globalization.NumberStyles.AllowDecimalPoint,System.Globalization.CultureInfo.InvariantCulture,out var value)){if(field=="Percent")dto.Percent=value;else dto.Minimum=value;}else ModelState.AddModelError(field,"Valor inválido.");}
+    TryValidateModel(dto);
+    if(!ModelState.IsValid){TempData["Error"]="Confira código, percentual, validade e limites.";return RedirectToAction(nameof(Coupons));}try{dto.ExpiresAt=dto.ExpiresAt.ToUniversalTime();var response=await _api.PostAsJsonAsync("api/coupons",dto);TempData[response.IsSuccessStatusCode?"Success":"Error"]=response.IsSuccessStatusCode?"Cupom criado.":"Não foi possível criar: confira se o código já existe e se a validade é futura.";}catch(HttpRequestException){TempData["Error"]="API indisponível.";}return RedirectToAction(nameof(Coupons));}
+    [Authorize(Roles="Admin"),HttpPost("Coupons/{id:int}/Toggle"),ValidateAntiForgeryToken]
+    public async Task<IActionResult> ToggleCoupon(int id){try{var response=await _api.PostAsync($"api/coupons/{id}/toggle",null);TempData[response.IsSuccessStatusCode?"Success":"Error"]=response.IsSuccessStatusCode?"Status atualizado.":"Não foi possível atualizar.";}catch(HttpRequestException){TempData["Error"]="API indisponível.";}return RedirectToAction(nameof(Coupons));}
     [HttpGet("")]
     public async Task<IActionResult> Index(string? search, int? categoryId, string? status,int page=1,int pageSize=20)
     {
@@ -117,7 +126,15 @@ public class AdminController : Controller
     }
 
     [Authorize(Roles="Admin"),HttpGet("Reviews")]
-    public async Task<IActionResult> Reviews() => View(await _reviews.ModerationAsync());
+    public async Task<IActionResult> Reviews() { var rows=await _reviews.ModerationAsync(); ViewData["ReviewsError"]=_reviews.LoadError; return View(rows); }
+    [Authorize(Roles="Admin"),HttpPost("Reviews/Bulk"),ValidateAntiForgeryToken]
+    public async Task<IActionResult> ModerateReviews(int[] selectedIds,string status)
+    {
+        if(selectedIds.Length == 0 || selectedIds.Length > 100 || status is not ("Aprovado" or "Rejeitado" or "Pendente")) { TempData["Error"]="Selecione de 1 a 100 avaliações e uma ação válida."; return RedirectToAction(nameof(Reviews)); }
+        var count=0; foreach(var id in selectedIds.Distinct()) if(await _reviews.ModerateAsync(id,status)) count++;
+        TempData[count==selectedIds.Distinct().Count()?"Success":"Error"]=$"{count} avaliações e suas fotos atualizadas de {selectedIds.Distinct().Count()} selecionadas.";
+        return RedirectToAction(nameof(Reviews));
+    }
     [Authorize(Roles="Admin"),HttpPost("Reviews/{id:int}"),ValidateAntiForgeryToken]
     public async Task<IActionResult> ModerateReview(int id,string status)
     {var ok=await _reviews.ModerateAsync(id,status);TempData[ok?"Success":"Error"]=ok?"Visibilidade da avaliação atualizada.":"Não foi possível moderar a avaliação.";return RedirectToAction(nameof(Reviews));}

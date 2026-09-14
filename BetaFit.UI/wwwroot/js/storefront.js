@@ -82,7 +82,7 @@
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') { setOpen(false); button.focus(); } });
   document.addEventListener('click', e => { if (!header.contains(e.target)) setOpen(false); });
   header.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
-  matchMedia('(max-width: 1100px)').addEventListener('change', () => setOpen(false));
+  matchMedia('(max-width: 1350px)').addEventListener('change', () => setOpen(false));
 })();
 
 // Demo data is filled only on an explicit click; never substitute submitted data.

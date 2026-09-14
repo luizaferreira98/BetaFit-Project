@@ -86,6 +86,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<ICouponRepository, CouponRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddHttpClient<IEmailSender, ResendEmailSender>(client => client.BaseAddress = new Uri("https://api.resend.com/"));
 builder.Services.AddScoped<INotificationService, NotificationService>();
@@ -148,6 +149,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler(handler=>handler.Run(async context=>{
+    var error=context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()?.Error;
+    app.Logger.LogError(error,"Falha na API {Path}. Referência: {TraceId}",context.Request.Path,context.TraceIdentifier);
+    context.Response.StatusCode=500;
+    await context.Response.WriteAsJsonAsync(new {message="Não foi possível concluir a operação. Consulte o log da API.",traceId=context.TraceIdentifier});
+}));
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors("UiCors");

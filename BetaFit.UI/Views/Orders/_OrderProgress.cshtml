@@ -1,0 +1,18 @@
+@model BetaFit.Application.DTOs.OrderDto
+@{
+    var paid = Model.PaymentStatus.Contains("Pago", StringComparison.OrdinalIgnoreCase);
+    var sent = Model.Status is "Enviado" or "Entregue";
+    var received = Model.Status == "Entregue";
+    var reviewRows = ViewData["Reviews"] as IEnumerable<BetaFit.Application.DTOs.ReviewDto> ?? Array.Empty<BetaFit.Application.DTOs.ReviewDto>();
+    var finished = received && Model.Items.Any() && Model.Items.All(i=>reviewRows.Any(r=>r.ProductId==i.ProductId));
+    var stopped = Model.Status.Contains("Cancel",StringComparison.OrdinalIgnoreCase) || Model.Status.Contains("Reembolso",StringComparison.OrdinalIgnoreCase);
+    var labels = new[]{"Pedido realizado","Pagamento confirmado","Pedido enviado","Pedido recebido","Pedido avaliado"};
+    var done = new[]{true,paid,sent,received,finished};
+    var icons = new[]{"▤","$","↗","✓","★"};
+}
+<section class="bf-order-progress" aria-label="Acompanhamento do pedido">
+ <div class="bf-order-progress__head"><span>ID DO PEDIDO: #@Model.Id</span><strong>@Model.Status</strong></div>
+ @if(stopped){@if(Model.Status=="Reembolso"){<div class="bf-refund-state"><ol class="bf-refund-steps"><li class="is-complete"><strong>Solicitação recebida</strong></li><li><strong>Em análise</strong></li><li><strong>Conclusão</strong></li></ol><h2>Reembolso em análise</h2><p>Sua solicitação foi registrada. Acompanhe a resposta da loja pelo atendimento deste pedido.</p><small>Valor solicitado: @Model.Total.ToString("C"). Nenhum estorno real foi realizado.</small></div>}else{<p class="bf-alert">Pedido cancelado. Consulte os itens e o atendimento abaixo.</p>}}
+ else {<ol>@for(int i=0;i<labels.Length;i++){<li class="@(done[i]?"is-complete":"")"><span class="bf-progress-icon" aria-hidden="true">@icons[i]</span><strong>@labels[i]</strong>@if(i==0){<small>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>}else if(i==3 && Model.DeliveredAt.HasValue){<small>@Model.DeliveredAt.Value.ToString("dd/MM/yyyy HH:mm")</small>}else{<small>@(done[i]?"Concluído":"Aguardando")</small>}</li>}</ol>}
+ <div class="bf-order-progress__actions"><p>@(received?"Seu pedido foi entregue. Obrigado por comprar na Beta Fit!":"Acompanhe as atualizações do seu pedido nesta página.")</p>@if(received && Model.UserId==User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value){<form asp-controller="Orders" asp-action="BuyAgain" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id"/><button class="bf-btn bf-btn--dark">Comprar novamente</button></form>}</div><div class="bf-order-contact"><a class="bf-btn bf-btn--outline" href="#chat">Falar com a loja</a></div>
+</section>

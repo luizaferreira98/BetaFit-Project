@@ -151,6 +151,7 @@ namespace BetaFit.Application.Services
 
                 ?? throw new InvalidOperationException("Categoria informada não foi encontrada.");
 
+            if (category.Name.Contains("acess", StringComparison.OrdinalIgnoreCase)) { dto.AvailableSizes.Clear(); dto.SizeMeasurements.Clear(); if(dto.Variants.Any(v=>!string.IsNullOrWhiteSpace(v.Size))) throw new InvalidOperationException("Acessórios devem ter estoque por cor, sem tamanho."); }
             if (string.IsNullOrWhiteSpace(dto.Name)) throw new InvalidOperationException("Informe o nome do produto.");
             if (string.IsNullOrWhiteSpace(dto.Description)) throw new InvalidOperationException("Informe a descrição do produto.");
             if (dto.Price < 0) throw new InvalidOperationException("O preço não pode ser negativo.");
@@ -226,6 +227,7 @@ namespace BetaFit.Application.Services
 
                 ?? throw new InvalidOperationException("Categoria informada não foi encontrada.");
 
+            if (category.Name.Contains("acess", StringComparison.OrdinalIgnoreCase)) { dto.AvailableSizes.Clear(); dto.SizeMeasurements.Clear(); if(dto.Variants.Any(v=>!string.IsNullOrWhiteSpace(v.Size))) throw new InvalidOperationException("Acessórios devem ter estoque por cor, sem tamanho."); }
             if (string.IsNullOrWhiteSpace(dto.Name)) throw new InvalidOperationException("Informe o nome do produto.");
             if (string.IsNullOrWhiteSpace(dto.Description)) throw new InvalidOperationException("Informe a descrição do produto.");
             if (dto.Price < 0) throw new InvalidOperationException("O preço não pode ser negativo.");

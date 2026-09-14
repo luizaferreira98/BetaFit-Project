@@ -80,19 +80,20 @@ namespace BetaFit.UI.Controllers
                 return Forbid();
 
             ViewData["AdminContext"]=admin&&(User.IsInRole("Admin")||User.IsInRole("Estoquista")||User.IsInRole("Funcionario"));
-            ViewData["Messages"]=await _api.GetFromJsonAsync<List<OrderMessageDto>>($"api/orders/{id}/messages")??new();
+            try{ViewData["Messages"]=await _api.GetFromJsonAsync<List<OrderMessageDto>>($"api/orders/{id}/messages")??new();}catch(HttpRequestException){ViewData["Messages"]=new List<OrderMessageDto>();ViewData["MessagesError"]="Não foi possível carregar a conversa. Recarregue a página para tentar novamente.";}
             ViewData["Reviews"] = await _reviewService.GetByOrderAsync(id);
+            ViewData["ReviewsError"] = _reviewService.LoadError;
             return View(order);
         }
 
         [HttpPost("Review"), ValidateAntiForgeryToken]
-        public async Task<IActionResult> Review(int orderId, int productId, int rating, string? comment, List<IFormFile>? photos)
+        public async Task<IActionResult> Review(int orderId, int productId, decimal rating, string? comment, List<IFormFile>? photos)
         {
             var order=await _orderService.GetByIdAsync(orderId); if(order is null)return NotFound();
             var userId=User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value??string.Empty;
             if(order.UserId!=userId)return Forbid();
             if(!order.Items.Any(x=>x.ProductId==productId))return BadRequest("Produto não pertence ao pedido.");
-            if(rating is <1 or >5||BetaFit.Application.Services.ReviewPolicy.Validate(comment) is string){TempData["Error"]=BetaFit.Application.Services.ReviewPolicy.Validate(comment)??"Selecione de 1 a 5 estrelas.";return RedirectToAction(nameof(Details),new{id=orderId});}
+            if(!new HalfStarAttribute().IsValid(rating)||BetaFit.Application.Services.ReviewPolicy.Validate(comment) is string){TempData["Error"]=BetaFit.Application.Services.ReviewPolicy.Validate(comment)??"Selecione de 0,5 a 5 estrelas em intervalos de meia estrela.";return RedirectToAction(nameof(Details),new{id=orderId});}
             if((photos?.Count??0)>5){TempData["Error"]="Envie até 5 fotos.";return RedirectToAction(nameof(Details),new{id=orderId});}
             var urls=new List<string>(); var folder=Path.Combine(_env.WebRootPath,"images","reviews"); Directory.CreateDirectory(folder);
             foreach(var photo in photos??new())
@@ -110,9 +111,9 @@ namespace BetaFit.UI.Controllers
         }
 
     [HttpPost,ValidateAntiForgeryToken]
-    public async Task<IActionResult> BuyAgain(int id){var o=await _orderService.GetByIdAsync(id);if(o==null)return NotFound();if(o.UserId!=User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)return Forbid();var added=0;var errors=new List<string>();foreach(var item in o.Items){var r=await _cart.AddAsync(item.ProductId,item.Quantity,item.Size,item.Color);if(r.Ok)added++;else errors.Add(item.ProductName+": "+r.Message);}TempData["Success"]=$"{added} item(ns) adicionado(s) ao carrinho com preços atuais.";if(errors.Count>0)TempData["Error"]=string.Join(" ",errors);return RedirectToAction("Index","Cart");}
+    public async Task<IActionResult> BuyAgain(int id){var o=await _orderService.GetByIdAsync(id);if(o==null)return NotFound();if(o.UserId!=User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)return Forbid();if(o.Status!="Entregue"){TempData["Error"]="Comprar novamente fica disponível após a entrega.";return RedirectToAction(nameof(Details),new{id});}var added=0;var errors=new List<string>();foreach(var item in o.Items){var r=await _cart.AddAsync(item.ProductId,item.Quantity,item.Size,item.Color);if(r.Ok)added++;else errors.Add(item.ProductName+": "+r.Message);}TempData["Success"]=$"{added} item(ns) adicionado(s) ao carrinho com preços atuais.";if(errors.Count>0)TempData["Error"]=string.Join(" ",errors);return RedirectToAction("Index","Cart");}
     [HttpPost,ValidateAntiForgeryToken]
-    public async Task<IActionResult> Journey(int id,string action,string? comment,int rating=5,string? code=null,bool admin=false){HttpResponseMessage response;switch(action){case "received":case "refund":response=await _api.PostAsJsonAsync($"api/orders/{id}/{action}",new{});break;case "experience":case "messages":response=await _api.PostAsJsonAsync($"api/orders/{id}/{action}",new OrderExperienceDto{Rating=rating,Comment=comment??""});break;case "tracking":response=await _api.PostAsJsonAsync($"api/orders/{id}/tracking",new TrackingDto{Code=code??"",Description=comment??""});break;default:return BadRequest();}TempData[response.IsSuccessStatusCode?"Success":"Error"]=response.IsSuccessStatusCode?"Informação registrada com sucesso.":"Não foi possível concluir. Confira o status do pedido e os campos informados.";return RedirectToAction(nameof(Details),new{id,admin});}
+    public async Task<IActionResult> Journey(int id,string action,string? comment,decimal rating=5,string? code=null,bool admin=false){HttpResponseMessage response;switch(action){case "received":case "refund":response=await _api.PostAsJsonAsync($"api/orders/{id}/{action}",new{});break;case "experience":case "messages":response=await _api.PostAsJsonAsync($"api/orders/{id}/{action}",new OrderExperienceDto{Rating=rating,Comment=comment??""});break;case "tracking":response=await _api.PostAsJsonAsync($"api/orders/{id}/tracking",new TrackingDto{Code=code??"",Description=comment??""});break;default:return BadRequest();}TempData[response.IsSuccessStatusCode?"Success":"Error"]=response.IsSuccessStatusCode?"Informação registrada com sucesso.":"Não foi possível concluir. Confira o status do pedido e os campos informados.";return RedirectToAction(nameof(Details),new{id,admin});}
 
     private static async Task<bool> IsKnownImageAsync(IFormFile file, string ext)
     {

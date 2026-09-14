@@ -63,6 +63,7 @@ public class ProfileController : ControllerBase
         if ((emailChanged || passwordChanged) && string.IsNullOrWhiteSpace(dto.CurrentPassword)) return BadRequest(new { message="Informe a senha atual para confirmar a alteração." });
         if (emailChanged || passwordChanged)
         {
+            if(passwordChanged){foreach(var validator in _users.PasswordValidators){var validation=await validator.ValidateAsync(_users,user,dto.NewPassword!);if(!validation.Succeeded)return BadRequest(new{message=string.Join(" ",validation.Errors.Select(e=>e.Description))});}}
             var check=await _users.CheckPasswordAsync(user,dto.CurrentPassword!);
             if(!check) return BadRequest(new { message="A senha atual está incorreta." });
             var existing=await _db.PendingProfileChanges.Where(x=>x.UserId==user.Id).ToListAsync();
@@ -77,10 +78,10 @@ public class ProfileController : ControllerBase
             var html=$"<h2>Beta Fit</h2><p>Seu código de confirmação é:</p><p style='font-size:32px;font-weight:bold'>{raw}</p><p>Válido por 10 minutos. Se não solicitou, ignore esta mensagem.</p>";
             var baseUrl = _config["App:PublicBaseUrl"]?.TrimEnd('/');
             if (Uri.TryCreate(baseUrl, UriKind.Absolute, out var publicUri) && (publicUri.Scheme == "https" || publicUri.Scheme == "http"))
-                html += $"<p><a href='{System.Net.WebUtility.HtmlEncode(baseUrl + "/Account/ChangeEmail")}'>Voltar à página de confirmação</a></p>";
+                html += $"<p><a href='{System.Net.WebUtility.HtmlEncode(baseUrl + (passwordChanged&&!emailChanged?"/Account/ChangePassword":"/Account/ChangeEmail"))}'>Voltar à página de confirmação</a></p>";
             try { await _email.SendAsync(target,"Confirme uma alteração de segurança — Beta Fit",html); }
             catch(InvalidOperationException ex){_db.PendingProfileChanges.Remove(pending);await _db.SaveChangesAsync();return StatusCode(503,new{message=ex.Message});}
-            return Ok(new ProfileChangeResponseDto{RequiresVerification=true,Message=_config["Email:Mode"]=="Outbox"?"Modo de teste: nenhuma mensagem foi enviada. Consulte o código no terminal da API. Seu e-mail ainda não foi alterado.":"Código enviado ao novo e-mail. Confira a caixa de entrada e o spam. Seu e-mail atual permanece até a confirmação."});
+            return Ok(new ProfileChangeResponseDto{RequiresVerification=true,Message=passwordChanged&&!emailChanged?(_config["Email:Mode"]=="Outbox"?"Modo de teste: consulte o código no terminal da API. A senha só será alterada após confirmar.":"Código enviado ao seu e-mail. A senha só será alterada após confirmar."):_config["Email:Mode"]=="Outbox"?"Modo de teste: nenhuma mensagem foi enviada. Consulte o código no terminal da API. Seu e-mail ainda não foi alterado.":"Código enviado ao novo e-mail. Confira a caixa de entrada e o spam. Seu e-mail atual permanece até a confirmação."});
         }
         await ApplyAsync(user,dto,null); return Ok(new ProfileChangeResponseDto{User=await Map(user),Message="Perfil atualizado com sucesso."});
     }

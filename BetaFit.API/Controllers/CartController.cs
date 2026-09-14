@@ -47,7 +47,7 @@ public class CartController : ControllerBase
         else item.Quantity = Math.Clamp(item.Quantity + quantity, 1, 99);
         if (item.Quantity > Available(product,size,color)) return BadRequest(new { message = $"Estoque insuficiente. Disponível: {product.Stock}." });
         await _db.SaveChangesAsync();
-        return Ok(new CartItemDto { ProductId=product.Id, Name=product.Name, Price=product.SalePrice??product.Price, ImageUrl=GetImage(product), Size=item.Size, Color=item.Color, Quantity=item.Quantity });
+        return Ok(new CartItemDto { ProductId=product.Id, Name=product.Name, Price=product.SalePrice??product.Price, ImageUrl=Domain.Entities.ProductPhoto.ForColor(product,item.Color), Size=item.Size, Color=item.Color, Quantity=item.Quantity });
     }
 
     [HttpPut("{productId:int}")]
@@ -103,5 +103,5 @@ public class CartController : ControllerBase
         return colors.FirstOrDefault(x => string.Equals(x.Trim(), requested.Trim(), StringComparison.OrdinalIgnoreCase)) ?? InvalidSize;
     }
     private static string? GetImage(Domain.Entities.Product p) => p.Images.OrderBy(x => x.SortOrder).Select(x => x.Url).FirstOrDefault() ?? p.ImageUrl;
-    private static CartItemDto Map(Domain.Entities.CartItem x) => new() { ProductId=x.ProductId, Name=x.Product!.Name, Price=x.Product.SalePrice??x.Product.Price, ImageUrl=GetImage(x.Product), Size=x.Size, Color=x.Color, Quantity=x.Quantity };
+    private static CartItemDto Map(Domain.Entities.CartItem x) => new() { ProductId=x.ProductId, Name=x.Product!.Name, Price=x.Product.SalePrice??x.Product.Price, ImageUrl=Domain.Entities.ProductPhoto.ForColor(x.Product,x.Color), Size=x.Size, Color=x.Color, Quantity=x.Quantity };
 }

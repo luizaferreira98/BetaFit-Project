@@ -10,6 +10,7 @@ namespace BetaFit.Application.Services
 {
     public class OrderService : IOrderService
     {
+        private readonly ICouponRepository _coupons;
         private readonly IOrderRepository _orderRepository;
         private readonly IProductRepository _productRepository;
         private readonly UserManager<IdentityUser> _userManager;    
@@ -17,11 +18,11 @@ namespace BetaFit.Application.Services
         public OrderService(
             IOrderRepository orderRepository,
             IProductRepository productRepository,
-            UserManager<IdentityUser> userManager)
+            UserManager<IdentityUser> userManager, ICouponRepository coupons)
         {
             _orderRepository = orderRepository;
             _productRepository = productRepository;
-            _userManager = userManager;
+            _userManager = userManager; _coupons=coupons;
         }
 
         public async Task<List<OrderDto>> GetAllAsync()
@@ -206,7 +207,7 @@ namespace BetaFit.Application.Services
                 {
                     ProductId = product.Id,
                     ProductName = product.Name,
-                    UnitPrice = product.SalePrice??product.Price,OriginalPrice=product.Price,ImageUrl=product.ImageUrl,
+                    UnitPrice = product.SalePrice??product.Price,OriginalPrice=product.Price,ImageUrl=ProductPhoto.ForColor(product,itemDto.Color),
                     Quantity = Math.Clamp(itemDto.Quantity, 1, 99),
                     Size = string.IsNullOrWhiteSpace(itemDto.Size) ? null : itemDto.Size.Trim()
                     ,Color = string.IsNullOrWhiteSpace(itemDto.Color) ? null : itemDto.Color.Trim()
@@ -230,10 +231,7 @@ namespace BetaFit.Application.Services
                 total += orderItem.UnitPrice * orderItem.Quantity;
             }
 
-            if(!string.IsNullOrWhiteSpace(dto.CouponCode)){
-                var owner=await _userManager.FindByIdAsync(userId)??throw new InvalidOperationException("Usuário inválido.");var coupon=(await _userManager.GetClaimsAsync(owner)).FirstOrDefault(c=>c.Type=="ReviewCoupon"&&c.Value==dto.CouponCode.Trim());
-                if(coupon==null)throw new InvalidOperationException("Cupom inválido ou já utilizado.");order.CouponCode=coupon.Value;order.Discount=Math.Round(total*.05m,2);total-=order.Discount;await _userManager.RemoveClaimAsync(owner,coupon);
-            }
+            if(!string.IsNullOrWhiteSpace(dto.CouponCode)){var coupon=await _coupons.RedeemAsync(dto.CouponCode,userId,total);order.CouponCode=coupon.Code;order.Discount=coupon.Discount;total-=coupon.Discount;}
             foreach(var item in order.Items){var p=await _productRepository.GetByIdAsync(item.ProductId);VariantInventory.Change(p!,item.Size,item.Color,-item.Quantity);}
             order.Total = total;
             if(dto.PaymentMethod=="Boleto") {order.BoletoDigits=DemoBoleto.Create(total);order.BoletoDueAt=DateTime.Today.AddDays(3); }

@@ -1,2 +1,15 @@
+using System;
+
 namespace BetaFit.Domain.Entities;
-public class OrderMessage {public int Id{get;set;}public int OrderId{get;set;}public string UserId{get;set;}="";public bool IsStaff{get;set;}public string Text{get;set;}="";public DateTime CreatedAt{get;set;}=DateTime.UtcNow;}
+
+public class OrderMessage
+{
+    public int Id { get; set; }
+    public int OrderId { get; set; }
+    public string UserId { get; set; } = "";
+
+    // Indica se a mensagem foi enviada por um membro da equipe (staff) ou pelo cliente.
+    public bool IsStaff { get; set; }
+    public string Text { get; set; } = "";
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}

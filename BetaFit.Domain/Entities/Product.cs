@@ -40,8 +40,17 @@ namespace BetaFit.Domain.Entities
         /// Preço do produto.
         /// </summary>
         public decimal Price { get; set; }
+
+        
+        //Armazena o SKU (Stock Keeping Unit) do produto, que é um identificador único usado para controle de estoque.
         [System.ComponentModel.DataAnnotations.StringLength(80)] public string Sku { get; set; } = "";
+
+        
+        // Preço promocional do produto, caso esteja em promoção. Pode ser nulo se não houver promoção.
         [System.ComponentModel.DataAnnotations.Range(0.01,999999.99)] public decimal? SalePrice { get; set; }
+
+        
+        // Quantidade mínima em estoque antes de considerar o produto como "em falta". Exemplo: 5.
         [System.ComponentModel.DataAnnotations.Range(0,100000)] public int LowStockThreshold { get; set; } = 5;
 public string VariantsJson {get;set;}="[]";
 

@@ -78,6 +78,25 @@ namespace BetaFit.Infraestructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DiscountCoupons",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Code = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    Percent = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: false),
+                    Minimum = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Active = table.Column<bool>(type: "bit", nullable: false),
+                    MaxUses = table.Column<int>(type: "int", nullable: false),
+                    Used = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DiscountCoupons", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
@@ -89,7 +108,7 @@ namespace BetaFit.Infraestructure.Migrations
                     TrackingCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TrackingDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DeliveredAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ExperienceRating = table.Column<int>(type: "int", nullable: true),
+                    ExperienceRating = table.Column<decimal>(type: "decimal(2,1)", precision: 2, scale: 1, nullable: true),
                     ExperienceComment = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ReviewCoupon = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CouponCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -155,7 +174,7 @@ namespace BetaFit.Infraestructure.Migrations
                     OrderId = table.Column<int>(type: "int", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
-                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Rating = table.Column<decimal>(type: "decimal(2,1)", precision: 2, scale: 1, nullable: false),
                     Comment = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     PhotoUrlsJson = table.Column<string>(type: "nvarchar(max)", maxLength: 12000, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -530,6 +549,12 @@ namespace BetaFit.Infraestructure.Migrations
                 filter: "[Slug] <> ''");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DiscountCoupons_Code",
+                table: "DiscountCoupons",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Favorites_ProductId",
                 table: "Favorites",
                 column: "ProductId");
@@ -608,6 +633,9 @@ namespace BetaFit.Infraestructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "CartItems");
+
+            migrationBuilder.DropTable(
+                name: "DiscountCoupons");
 
             migrationBuilder.DropTable(
                 name: "Favorites");

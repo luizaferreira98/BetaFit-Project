@@ -61,6 +61,7 @@ namespace BetaFit.Infraestructure.Context
         /// <summary>
         /// Tabela de Pedidos no banco de dados.
         /// </summary>
+        public DbSet<DiscountCoupon> DiscountCoupons {get;set;}
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderMessage> OrderMessages {get;set;}
 
@@ -88,9 +89,16 @@ namespace BetaFit.Infraestructure.Context
             // IMPORTANTE: Sempre chamar base.OnModelCreating() quando herdar
             // de IdentityDbContext, para que as tabelas do Identity sejam criadas.
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<DiscountCoupon>().ToTable("DiscountCoupons");
+            modelBuilder.Entity<DiscountCoupon>().Property(x=>x.Code).HasMaxLength(40).IsRequired();
+            modelBuilder.Entity<DiscountCoupon>().HasIndex(x=>x.Code).IsUnique();
+            modelBuilder.Entity<DiscountCoupon>().Property(x=>x.Percent).HasPrecision(5,2);
+            modelBuilder.Entity<DiscountCoupon>().Property(x=>x.Minimum).HasPrecision(18,2);
             modelBuilder.Entity<Category>().Property(c=>c.Slug).HasMaxLength(100);
             modelBuilder.Entity<Category>().HasIndex(c=>c.Slug).IsUnique().HasFilter("[Slug] <> ''");
             modelBuilder.Entity<Category>().HasOne<Category>().WithMany().HasForeignKey(c=>c.ParentId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ProductReview>().Property(p=>p.Rating).HasPrecision(2,1);
+            modelBuilder.Entity<Order>().Property(p=>p.ExperienceRating).HasPrecision(2,1);
             modelBuilder.Entity<Product>().Property(p=>p.SalePrice).HasPrecision(18,2);
             modelBuilder.Entity<Order>().Property(p=>p.Discount).HasPrecision(18,2);
             modelBuilder.Entity<OrderItem>().Property(p=>p.OriginalPrice).HasPrecision(18,2);

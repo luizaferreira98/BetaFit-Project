@@ -18,17 +18,18 @@
             <div class="bf-alert bf-alert--error" role="alert">@error</div>
         }
 
-        <div class="bf-order-detail">
+        <div class="bf-order-detail bf-order-detail--journey">
+            @await Html.PartialAsync("_OrderProgress", Model)
             <header class="bf-order-meta">
-                <h1>Pedido #@Model.Id</h1>
-                <p>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm") · Total <strong>@Model.Total.ToString("C")</strong></p>
-                <p>Status: <strong>@Model.Status</strong> · Pagamento: <strong>@Model.PaymentMethod</strong> (@Model.PaymentStatus)</p>
+                
+                
+                
                 @if(Model.UserId==User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value && Model.PaymentMethod.Contains("Boleto")){<a class="bf-btn bf-btn--outline" asp-controller="Cart" asp-action="Boleto" asp-route-id="@Model.Id">Ver boleto demonstrativo</a>}
                 @if(Model.PaymentMethod.Contains("crédito",StringComparison.OrdinalIgnoreCase)){<p>@Model.PaymentId · @Model.Installments x de @((Model.Total/Model.Installments).ToString("C")) sem juros</p>}
                 @if(Model.UserId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value && Model.PaymentMethod.Contains("Pix",StringComparison.OrdinalIgnoreCase) && !Model.PaymentStatus.Contains("Pago",StringComparison.OrdinalIgnoreCase) && Model.Status!="Cancelado") { <a class="bf-btn bf-btn--outline" asp-controller="Cart" asp-action="Pix" asp-route-id="@Model.Id">Abrir pagamento Pix</a> }
                 @if (Model.UserId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value && (Model.Status == "Pendente" || Model.Status == "Confirmado"))
                 {
-                    <form asp-action="Cancel" method="post" onsubmit="return confirm('Cancelar este pedido? Os itens voltarão ao estoque.');">
+                    <form asp-action="Cancel" method="post" data-confirm="Cancelar este pedido? Os itens voltarão ao estoque.">
                         @Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" />
                         <button class="bf-btn bf-btn--danger" type="submit">Cancelar pedido</button>
                     </form>
@@ -38,15 +39,10 @@
             @if (!string.IsNullOrWhiteSpace(Model.ShippingStreet))
             {
                 <div class="bf-order-address">
-                    <h3>Endereço da compra</h3>
+                    <h3>Endereço de entrega</h3>
                     <p>@Model.ShippingStreet, @Model.ShippingNumber@if (!string.IsNullOrWhiteSpace(Model.ShippingComplement)) { <text> · @Model.ShippingComplement</text> }</p>
                     <p>@Model.ShippingNeighborhood · @Model.ShippingCity/@Model.ShippingState · CEP @Model.ShippingCep</p>
                 </div>
-            }
-
-            @if (Model.UserId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value && (Model.Status == "Pendente" || Model.Status == "Confirmado"))
-            {
-                <details class="bf-order-editor"><summary><span><strong>Editar endereço deste pedido</strong><small>Disponível até o início da preparação.</small></span><b>+</b></summary><form asp-action="UpdateDelivery" method="post" class="bf-form bf-form--admin" data-address-form>@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" /><div class="bf-form-grid"><label>CEP<input name="ShippingCep" value="@Model.ShippingCep" maxlength="9" data-cep-mask data-viacep required /><small class="bf-field-status" data-viacep-status></small></label><label class="bf-form-grid__full">Rua<input name="ShippingStreet" value="@Model.ShippingStreet" maxlength="180" data-address-street required /></label><label>Número<input name="ShippingNumber" value="@Model.ShippingNumber" maxlength="20" data-address-number required /></label><label>Complemento<input name="ShippingComplement" value="@Model.ShippingComplement" maxlength="120" data-address-complement /></label><label>Bairro<input name="ShippingNeighborhood" value="@Model.ShippingNeighborhood" maxlength="120" data-address-neighborhood required /></label><label>Cidade<input name="ShippingCity" value="@Model.ShippingCity" maxlength="120" data-address-city required /></label><label>Estado<input name="ShippingState" value="@Model.ShippingState" maxlength="2" data-address-state required /></label></div><button class="bf-btn bf-btn--dark" type="submit">Salvar endereço do pedido</button></form></details>
             }
 
             <section class="bf-journey-info" id="rastreamento"><h3>Rastreamento</h3><p>@(Model.TrackingDescription??"Aguardando atualização da loja.")</p>@if(!string.IsNullOrEmpty(Model.TrackingCode)){<p>Código: <strong>@Model.TrackingCode</strong></p>}@if(Model.DeliveredAt.HasValue){<p>Entrega: @Model.DeliveredAt.Value.ToString("dd/MM/yyyy HH:mm")</p>}
@@ -54,23 +50,25 @@
             @if(owner&&Model.Status=="Enviado"){<form asp-action="Journey" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id"/><input type="hidden" name="action" value="received"/><button class="bf-btn bf-btn--dark">Confirmar recebimento</button></form>}
             @if(owner&&Model.Status=="Entregue"){<form asp-action="Journey" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id"/><input type="hidden" name="action" value="refund"/><button class="bf-btn bf-btn--ghost">Solicitar reembolso</button></form>}
             </section>
-            @if(owner&&!string.IsNullOrEmpty(Model.ReviewCoupon)){<p class="bf-alert">Cupom de avaliação: <strong>@Model.ReviewCoupon</strong> · 5% em uma próxima compra. Válido uma vez nesta conta.</p>}
-            @if(Model.Discount>0){<p>Desconto aplicado: @Model.Discount.ToString("C")</p>}
-            @if(owner&&Model.Status=="Entregue"){
-              <section class="bf-review-box"><h3>Experiência com entrega e atendimento</h3>@if(Model.ExperienceRating.HasValue){<p>Experiência já avaliada: @Model.ExperienceRating / 5</p><p>@Model.ExperienceComment</p>}else{<form asp-action="Journey" method="post" class="bf-form bf-review-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id"/><input type="hidden" name="action" value="experience"/><fieldset class="bf-stars" aria-label="Nota da experiência">@for(int star=5;star>=1;star--){<input type="radio" name="rating" value="@star" id="experience-@star" required/><label for="experience-@star">★</label>}</fieldset><label>Comentário<textarea name="comment" minlength="10" maxlength="500" required data-review-comment></textarea><small data-review-count>0/500</small></label><button class="bf-btn bf-btn--dark">Avaliar experiência</button></form>}</section>
-            }
+            
+            
             @if(owner && Model.PaymentMethod.Contains("Cartão") && !Model.PaymentStatus.Contains("Pago") && Model.Status=="Pendente")
             {
                 <form asp-controller="Cart" asp-action="ConfirmPix" asp-route-id="@Model.Id" method="post">@Html.AntiForgeryToken()<button class="bf-btn bf-btn--dark">Simular pagamento do cartão</button></form>
             }
-            <h3>Itens</h3>
+            @if (Model.UserId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value && (Model.Status == "Pendente" || Model.Status == "Confirmado"))
+            {
+                <details class="bf-order-editor"><summary><span><strong>Editar endereço deste pedido</strong><small>Disponível até o início da preparação.</small></span><b>+</b></summary><form asp-action="UpdateDelivery" method="post" class="bf-form bf-form--admin" data-address-form>@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" /><div class="bf-form-grid"><label>CEP<input name="ShippingCep" value="@Model.ShippingCep" maxlength="9" data-cep-mask data-viacep required /><small class="bf-field-status" data-viacep-status></small></label><label class="bf-form-grid__full">Rua<input name="ShippingStreet" value="@Model.ShippingStreet" maxlength="180" data-address-street required /></label><label>Número<input name="ShippingNumber" value="@Model.ShippingNumber" maxlength="20" data-address-number required /></label><label>Complemento<input name="ShippingComplement" value="@Model.ShippingComplement" maxlength="120" data-address-complement /></label><label>Bairro<input name="ShippingNeighborhood" value="@Model.ShippingNeighborhood" maxlength="120" data-address-neighborhood required /></label><label>Cidade<input name="ShippingCity" value="@Model.ShippingCity" maxlength="120" data-address-city required /></label><label>Estado<input name="ShippingState" value="@Model.ShippingState" maxlength="2" data-address-state required /></label></div><button class="bf-btn bf-btn--dark" type="submit">Salvar endereço do pedido</button></form></details>
+            }
+
+            <div class="bf-order-store"><strong>BETA FIT</strong><a href="/Catalog">Ver loja →</a></div>
             <div class="bf-order-items">
                 @foreach (var item in Model.Items)
                 {
                     var existing = reviews.FirstOrDefault(r => r.ProductId == item.ProductId);
                     var rating = existing is null ? 0 : Math.Clamp(existing.Rating, 0, 5);
-                    var stars = new string('★', rating);
-                    var emptyStars = new string('☆', 5 - rating);
+                    var stars = new string('★', (int)rating);
+                    var emptyStars = new string('☆', 5 - (int)Math.Ceiling(rating));
 
                     <article class="bf-order-item">
                         <div class="bf-order-item__media">
@@ -85,7 +83,7 @@
                         </div>
 
                         <div class="bf-order-item__body">
-                            <strong>@item.ProductName</strong>
+                            <a class="bf-order-product-link" href="/Product/@item.ProductId">@item.ProductName</a>
                             @if (!string.IsNullOrWhiteSpace(item.Size))
                             {
                                 <span>Tamanho: <b>@item.Size</b></span>
@@ -96,7 +94,8 @@
 
                             @if (Model.Status == "Entregue" && owner)
                             {
-                                @if (existing is null)
+                                @if (ViewData["ReviewsError"] is string reviewError){<div class="bf-alert bf-alert--error">@reviewError</div>}
+                                else if (existing is null)
                                 {
                                     <div class="bf-review-box">
                                         <strong>Avalie este produto</strong>
@@ -104,11 +103,11 @@
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="orderId" value="@Model.Id" />
                                             <input type="hidden" name="productId" value="@item.ProductId" />
-                                            <fieldset class="bf-stars" aria-label="Nota do produto">@for(int star=5;star>=1;star--){<input type="radio" name="rating" value="@star" id="rating-@item.ProductId-@star" required/><label for="rating-@item.ProductId-@star" title="@star estrelas">★</label>}</fieldset>
+                                            <fieldset class="bf-click-stars" data-star-picker><legend>Sua avaliação</legend><div class="bf-star-options">@for(int step=1;step<=10;step++){var note=step/2m;var starId=$"rating-{item.ProductId}-{item.Size}-{item.Color}-{step}";<span class="bf-half-option"><input type="radio" name="rating" value="@note" id="@starId" required aria-label="@note.ToString("0.0") estrelas"/><label for="@starId" title="@note.ToString("0.0") estrelas"><span aria-hidden="true">★</span></label></span>}</div><output data-star-value>Escolha de 0,5 a 5 estrelas</output></fieldset>
                                             <div class="bf-review-chips">@foreach(var chip in new[]{"Ótima qualidade","Tecido confortável","Tamanho perfeito","Chegou rápido"}){<button type="button" data-review-chip="@chip">@chip</button>}</div>
                                             <label>Conte sua experiência<textarea name="comment" minlength="10" maxlength="500" required data-review-comment></textarea><small data-review-count>0/500</small></label>
                                             <label class="bf-drop-zone"><span>＋ Anexar fotos</span><input type="file" name="photos" accept="image/jpeg,image/png,image/webp" multiple data-review-photos/><small>Até 5 fotos · 5 MB cada</small></label><div class="bf-review-previews"></div>
-                                            <p>Avalie e ganhe um cupom de 5% na próxima compra. Um cupom por pedido, qualquer nota, uso único nesta conta.</p>
+                                            
                                             <button class="bf-btn bf-btn--dark" type="submit">Enviar avaliação</button>
                                         </form>
                                     </div>
@@ -117,7 +116,7 @@
                                 {
                                     <div class="bf-review-existing">
                                         <strong>Produto já avaliado · @existing.ModerationStatus</strong>
-                                        <div aria-label="@rating de 5">@stars@emptyStars</div>
+                                        <div aria-label="@rating de 5"><span class="bf-rating-stars" style="--rating:@rating.ToString(System.Globalization.CultureInfo.InvariantCulture)">★★★★★</span> @rating / 5</div>
                                         @if (!string.IsNullOrWhiteSpace(existing.Comment))
                                         {
                                             <p>@existing.Comment</p>
@@ -138,8 +137,9 @@
                     </article>
                 }
             </div>
+            <dl class="bf-order-totals"><div><dt>Subtotal dos produtos</dt><dd>@Model.Items.Sum(i=>i.Subtotal).ToString("C")</dd></div>@if(Model.Discount>0){<div><dt>Cupom @Model.CouponCode</dt><dd>−@Model.Discount.ToString("C")</dd></div>}<div class="bf-order-total"><dt>Total do pedido</dt><dd>@Model.Total.ToString("C")</dd></div><div><dt>Método de pagamento</dt><dd>@Model.PaymentMethod · @Model.PaymentStatus</dd></div></dl>
         </div>
     </div>
 </section>
 
-<section class="bf-section" id="chat"><div class="bf-container"><h3>Atendimento Beta Fit · pedido #@Model.Id</h3><p>Mensagens deste pedido, visíveis ao cliente e à equipe da loja.</p>@foreach(var message in ViewData["Messages"] as List<OrderMessageDto>??new()){<article class="bf-message"><strong>@(message.IsStaff?"Equipe Beta Fit":"Cliente")</strong><small>@message.CreatedAt.ToLocalTime().ToString("dd/MM HH:mm")</small><p>@message.Text</p></article>}<form asp-action="Journey" method="post" class="bf-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id"/><input type="hidden" name="admin" value="@adminContext.ToString().ToLowerInvariant()"/><input type="hidden" name="action" value="messages"/><label>Mensagem<textarea name="comment" minlength="10" maxlength="500" required></textarea></label><button class="bf-btn bf-btn--dark">Enviar mensagem</button></form></div></section>
+<section class="bf-section" id="chat"><div class="bf-container"><h3>Atendimento Beta Fit · pedido #@Model.Id</h3>@if(ViewData["MessagesError"] is string chatError){<div class="bf-alert bf-alert--error" role="alert">@chatError</div>}<p>Mensagens deste pedido, visíveis ao cliente e à equipe da loja.</p>@foreach(var message in ViewData["Messages"] as List<OrderMessageDto>??new()){<article class="bf-message"><strong>@(message.IsStaff?"Equipe Beta Fit":"Cliente")</strong><small>@message.CreatedAt.ToLocalTime().ToString("dd/MM HH:mm")</small><p>@message.Text</p></article>}<form asp-action="Journey" method="post" class="bf-form">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id"/><input type="hidden" name="admin" value="@adminContext.ToString().ToLowerInvariant()"/><input type="hidden" name="action" value="messages"/><label>Mensagem<textarea name="comment" minlength="10" maxlength="500" required></textarea></label><button class="bf-btn bf-btn--dark">Enviar mensagem</button></form></div></section>

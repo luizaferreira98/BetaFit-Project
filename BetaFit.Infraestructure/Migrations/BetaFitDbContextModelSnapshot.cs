@@ -113,6 +113,47 @@ namespace BetaFit.Infraestructure.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("BetaFit.Domain.Entities.DiscountCoupon", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MaxUses")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Minimum")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Percent")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("Used")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("DiscountCoupons", (string)null);
+                });
+
             modelBuilder.Entity("BetaFit.Domain.Entities.Favorite", b =>
                 {
                     b.Property<int>("Id")
@@ -173,8 +214,9 @@ namespace BetaFit.Infraestructure.Migrations
                     b.Property<string>("ExperienceComment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ExperienceRating")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("ExperienceRating")
+                        .HasPrecision(2, 1)
+                        .HasColumnType("decimal(2,1)");
 
                     b.Property<int>("Installments")
                         .HasColumnType("int");
@@ -575,8 +617,9 @@ namespace BetaFit.Infraestructure.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Rating")
+                        .HasPrecision(2, 1)
+                        .HasColumnType("decimal(2,1)");
 
                     b.Property<string>("UserId")
                         .IsRequired()

@@ -17,38 +17,23 @@ namespace BetaFit.Domain.Entities
     /// </summary>
     public class Category
     {
-        /// <summary>
-        /// Identificador único da categoria (chave primária).
-        /// </summary>
         public int Id { get; set; }
         public string Slug { get; set; } = string.Empty;
         public int? ParentId { get; set; }
         public int SortOrder { get; set; }
         public bool HideWhenOutOfStock { get; set; } = true;
 
-        /// <summary>
-        /// Nome da categoria. Exemplo: "Camisetas", "Leggings".
-        /// </summary>
+        // Nome da categoria. Exemplo: "Camisetas", "Leggings".
         public string Name { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Descrição da categoria.
-        /// </summary>
+        // Descrição da categoria.
         public string Description { get; set; } = string.Empty;
-
-        /// <summary>
-        /// URL da imagem de capa da categoria.
-        /// </summary>
         public string? ImageUrl { get; set; }
 
-        /// <summary>
-        /// Indica se a categoria está ativa e visível no catálogo.
-        /// </summary>
+        // Indica se a categoria está ativa e visível no catálogo.
         public bool IsActive { get; set; } = true;
 
-        /// <summary>
-        /// Data de criação do registro no banco de dados.
-        /// </summary>
+        // Data de criação do registro no banco de dados.
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         // =====================================================================

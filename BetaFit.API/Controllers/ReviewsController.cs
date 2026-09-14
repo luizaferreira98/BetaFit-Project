@@ -40,7 +40,7 @@ public class ReviewsController : ControllerBase
     {
         if(!ModelState.IsValid)return ValidationProblem(ModelState);
         var validation=BetaFit.Application.Services.ReviewPolicy.Validate(dto.Comment,HttpContext.RequestServices.GetRequiredService<IConfiguration>().GetSection("Reviews:BlockedWords").Get<string[]>());if(validation!=null)return BadRequest(new{message=validation});
-        if(dto.PhotoUrls.Count>5||dto.PhotoUrls.Any(u=>!u.StartsWith("/images/reviews/")||u.Contains("..")))return BadRequest(new{message="Mídia inválida."});
+        if(dto.PhotoUrls is null || dto.PhotoUrls.Count>5||dto.PhotoUrls.Any(u=>string.IsNullOrWhiteSpace(u)||!u.StartsWith("/images/reviews/")||u.Contains("..")))return BadRequest(new{message="Mídia inválida."});
         var userId=_users.GetUserId(User)!;
         var order=await _db.Orders.Include(x=>x.Items).FirstOrDefaultAsync(x=>x.Id==orderId && x.UserId==userId);
         if(order is null)return Forbid();
@@ -53,11 +53,11 @@ public class ReviewsController : ControllerBase
         {
             await _db.SaveChangesAsync();
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sql && sql.Number is 2601 or 2627)
         {
             return Conflict(new { message = "Esta avaliação já foi registrada para este produto neste pedido." });
         }
-        if(string.IsNullOrEmpty(order.ReviewCoupon)){order.ReviewCoupon="BF5-"+Guid.NewGuid().ToString("N")[..12].ToUpperInvariant();var owner=await _users.FindByIdAsync(userId);await _users.AddClaimAsync(owner!,new System.Security.Claims.Claim("ReviewCoupon",order.ReviewCoupon));await _db.SaveChangesAsync();}
+
         return Ok(await MapAsync(review));
     }
     [Authorize(Roles="Admin"), HttpGet("moderation")]
@@ -73,6 +73,7 @@ public class ReviewsController : ControllerBase
         var row=await _db.ProductReviews.FindAsync(id); if(row is null)return NotFound();
         row.ModerationStatus=status; await _db.SaveChangesAsync(); return NoContent();
     }
+    private static List<string> ReadPhotos(string? json){try{return (JsonSerializer.Deserialize<List<string>>(json??"[]")??new()).Where(x=>!string.IsNullOrWhiteSpace(x)&&x.StartsWith("/images/reviews/")&&!x.Contains("..")).Take(5).ToList();}catch(JsonException){return new();}}
     private async Task<ReviewDto> MapAsync(ProductReview x)
     {
         var user = await _users.FindByIdAsync(x.UserId);
@@ -83,7 +84,7 @@ public class ReviewsController : ControllerBase
             ModerationStatus=x.ModerationStatus, Id=x.Id, OrderId=x.OrderId, ProductId=x.ProductId,
             UserName=string.IsNullOrWhiteSpace(displayName) ? "Cliente" : displayName,
             Rating=x.Rating, Comment=x.Comment,
-            PhotoUrls=JsonSerializer.Deserialize<List<string>>(x.PhotoUrlsJson)??new(), CreatedAt=x.CreatedAt
+            PhotoUrls=ReadPhotos(x.PhotoUrlsJson), CreatedAt=x.CreatedAt
         };
     }
 }

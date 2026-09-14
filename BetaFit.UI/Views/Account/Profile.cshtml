@@ -1,7 +1,7 @@
 @model UserDto
 @using BetaFit.Application.DTOs
 @{ ViewData["Title"]="Meu perfil"; }
-<section class="bf-page-hero bf-page-hero--compact"><div class="bf-container bf-page-hero__inner"><div><span class="bf-eyebrow bf-eyebrow--dark">Área do cliente</span><h1>Meu perfil</h1><p>Veja seus dados e escolha abaixo exatamente o que deseja alterar.</p></div></div></section>
+<section class="bf-page-hero bf-page-hero--compact bf-profile-hero"><div class="bf-container bf-page-hero__inner"><div><span class="bf-eyebrow bf-eyebrow--dark">Área do cliente</span><h1>Meu perfil</h1><p>Veja seus dados e escolha abaixo exatamente o que deseja alterar.</p></div></div></section>
 <section class="bf-section bf-section--catalog"><div class="bf-container bf-profile-page">
 @if(TempData["Sucesso"] is string ok){<div class="bf-alert" role="status">@ok</div>}
 @if(TempData["Erro"] is string error){<div class="bf-alert bf-alert--error" role="alert">@error</div>}
@@ -28,7 +28,7 @@
 
 
 <a class="bf-account-tile" asp-action="ChangeEmail"><strong>Editar e-mail →</strong><span>Abra a página de troca de e-mail para confirmar seus dados.</span></a>
-    <details class="bf-profile-editor"><summary><span><strong>Editar senha</strong><small>Crie uma senha forte com no máximo 100 caracteres.</small></span><b>+</b></summary><form asp-action="UpdatePassword" method="post" class="bf-form bf-form--admin">@Html.AntiForgeryToken()<div class="bf-form-grid"><label>Senha atual<input name="currentPassword" type="password" maxlength="100" autocomplete="current-password" required /></label><label>Nova senha<input name="newPassword" type="password" minlength="6" maxlength="100" autocomplete="new-password" required /></label><label>Confirmar nova senha<input name="confirmNewPassword" type="password" minlength="6" maxlength="100" autocomplete="new-password" required /></label></div><button class="bf-btn bf-btn--dark" type="submit">Alterar senha</button></form></details>
+    <a class="bf-account-tile" asp-action="ChangePassword"><strong>Editar senha →</strong><span>Altere sua senha em uma página dedicada, com confirmação de segurança.</span></a>
     <details class="bf-profile-editor"><summary><span><strong>Editar endereço</strong><small>O CEP pode preencher automaticamente os dados disponíveis.</small></span><b>+</b></summary><form asp-action="UpdateAddress" method="post" class="bf-form bf-form--admin" data-address-form>@Html.AntiForgeryToken()<div class="bf-form-grid"><label>CPF<input name="Cpf" value="@Model.Cpf" maxlength="14" inputmode="numeric" data-cpf-mask required /></label><label>CEP<input name="Cep" value="@Model.Cep" maxlength="9" inputmode="numeric" data-cep-mask data-viacep required /><small class="bf-field-status" data-viacep-status></small></label><label class="bf-form-grid__full">Rua<input name="Street" value="@Model.Street" maxlength="180" data-address-street required /></label><label>Número<input name="Number" value="@Model.Number" maxlength="20" data-address-number required /></label><label>Complemento<input name="Complement" value="@Model.Complement" maxlength="120" data-address-complement /></label><label>Bairro<input name="Neighborhood" value="@Model.Neighborhood" maxlength="120" data-address-neighborhood required /></label><label>Cidade<input name="City" value="@Model.City" maxlength="120" data-address-city required /></label><label>Estado<input name="State" value="@Model.State" maxlength="2" data-address-state required /></label></div><button class="bf-btn bf-btn--dark" type="submit">Salvar endereço</button></form></details>
 
 </div>

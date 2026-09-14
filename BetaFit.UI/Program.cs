@@ -93,7 +93,7 @@ builder.Services.AddScoped<IDashboardService>(sp =>
 builder.Services.AddScoped<IOrderService>(sp =>
     new HttpOrderService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
 builder.Services.AddScoped<HttpReviewService>(sp =>
-    new HttpReviewService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+    new HttpReviewService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient"),sp.GetRequiredService<ILogger<HttpReviewService>>()));
 builder.Services.AddScoped<HttpCartService>(sp =>
     new HttpCartService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient"), sp.GetRequiredService<IHttpContextAccessor>(), sp.GetRequiredService<IProductService>()));
 builder.Services.AddScoped<HttpFavoriteService>(sp =>

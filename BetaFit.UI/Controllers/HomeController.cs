@@ -65,6 +65,8 @@ namespace BetaFit.UI.Controllers
             return View(viewModel);
         }
 
+        public IActionResult Install() => View();
+        public IActionResult Help() => View();
         public IActionResult Privacy() => View();
         public IActionResult Terms() => View();
 

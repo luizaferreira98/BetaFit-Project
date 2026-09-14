@@ -136,6 +136,7 @@ namespace BetaFit.UI.Controllers
             ViewData["ApiUnavailable"] = apiUnavailable;
             ViewData["RelatedProducts"] = related;
             ViewData["Reviews"] = product is null ? Array.Empty<ReviewDto>() : await _reviewService.GetByProductAsync(id);
+            ViewData["ReviewsError"]=_reviewService.LoadError;
             ViewData["IsFavorite"] = false;
             if (User.Identity?.IsAuthenticated == true && product is not null)
             {

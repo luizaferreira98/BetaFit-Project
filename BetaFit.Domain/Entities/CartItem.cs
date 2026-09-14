@@ -8,5 +8,7 @@ public class CartItem
     public string? Size { get; set; }
     public string? Color { get; set; }
     public int Quantity { get; set; }
+    
+    //Referenciando com o DTO de produtos
     public Product? Product { get; set; }
 }

@@ -38,7 +38,7 @@ public class HttpCartService
             if(p.AvailableColors.Any() && !p.AvailableColors.Contains(color??"",StringComparer.OrdinalIgnoreCase)) return(false,"Selecione uma cor disponível.");
             var items=ReadGuest(); var existing=items.FirstOrDefault(x=>Match(x,productId,size,color));
             if(quantity<1 || quantity>99 || items.Where(x=>x.ProductId==productId).Sum(x=>x.Quantity)+quantity>p.Stock || (existing?.Quantity??0)+quantity>99 || p.Variants.Count>0&&(existing?.Quantity??0)+quantity>(BetaFit.Domain.Entities.VariantInventory.Find(p.Variants,size,color)?.Stock??0)) return(false,"Quantidade indisponível em estoque.");
-            if(existing is null) items.Add(new CartItemDto{ProductId=p.Id,Name=p.Name,Price=p.EffectivePrice,ImageUrl=p.ColorImageUrls.GetValueOrDefault(color??"")??p.ImageUrl,Size=size,Color=color,Quantity=quantity});
+            if(existing is null) items.Add(new CartItemDto{ProductId=p.Id,Name=p.Name,Price=p.EffectivePrice,ImageUrl=p.ColorGalleries.GetValueOrDefault(color??"")?.FirstOrDefault()??p.ColorImageUrls.GetValueOrDefault(color??"")??p.ImageUrl,Size=size,Color=color,Quantity=quantity});
             else existing.Quantity+=quantity;
             SaveGuest(items); return(true,"");
         }

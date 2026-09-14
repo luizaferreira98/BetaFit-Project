@@ -1,3 +1,4 @@
+@inject BetaFit.UI.Services.HttpFavoriteService HeaderFavorites
 @inject BetaFit.UI.Services.HttpCartService HeaderCart
 @inject BetaFit.UI.Services.HttpSiteSettingsService SiteSettingsService
 @inject BetaFit.UI.Services.HttpNotificationService NotificationService
@@ -13,6 +14,7 @@
     var notifications = isAuthenticated ? await NotificationService.GetAsync() : new List<NotificationDto>();
     var adminArea=(isAdmin||isStaff) && (ViewContext.RouteData.Values["controller"]?.ToString()?.StartsWith("Admin")==true || ViewContext.RouteData.Values["controller"]?.ToString()=="Orders" && (ViewContext.RouteData.Values["action"]?.ToString()=="Staff" || Context.Request.Query["admin"]=="true"));
     var cartCount=0;try{cartCount=(await HeaderCart.GetAsync()).Sum(i=>i.Quantity);}catch{}
+    var favoriteCount=0; if(isAuthenticated) { try { favoriteCount=(await HeaderFavorites.GetAsync()).Count; } catch { } }
     var unreadNotifications = notifications.Count(x => !x.IsRead);
 }
 <!DOCTYPE html>
@@ -20,7 +22,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#111111" />
+    <meta name="theme-color" content="#111711" />
+    <link rel="manifest" href="/manifest.json" /><link rel="apple-touch-icon" href="/icons/app-192.png" /><meta name="apple-mobile-web-app-capable" content="yes" />
     <title>@ViewData["Title"] - Beta Fit</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -29,7 +32,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/storefront.css" asp-append-version="true" /><link rel="stylesheet" href="~/css/management.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/account-theme.css" asp-append-version="true" />
-    <script>try{document.documentElement.dataset.theme=localStorage.getItem("betafit-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch{}</script>
+    <link rel="stylesheet" href="~/css/improvements.css" asp-append-version="true" /><link rel="stylesheet" href="~/css/ui-system.css" asp-append-version="true" /><script>try{document.documentElement.dataset.theme=localStorage.getItem("betafit-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch{}</script>
 </head>
 <body>
     <a class="bf-skip-link" href="#main-content">Pular para o conteúdo</a>
@@ -61,7 +64,7 @@
 
             <div id="header-actions" class="bf-header__actions">
                 <button type="button" class="bf-icon-link bf-icon-button" data-theme-toggle aria-label="Ativar modo escuro" title="Alternar tema"><svg class="bf-theme-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14A8 8 0 0 1 10 4a8 8 0 1 0 10 10Z"/></svg><svg class="bf-theme-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button>
-                <a class="bf-icon-link" asp-controller="Favorites" asp-action="Index" aria-label="Favoritos" title="Favoritos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 5c-3-3-6-1-8 1-2-2-5-4-8-1-4 4 2 9 8 14 6-5 12-10 8-14Z"/></svg></a>
+                <a class="bf-icon-link" asp-controller="Favorites" asp-action="Index" aria-label="Favoritos: @favoriteCount produtos" title="Favoritos"><b class="bf-favorite-count">@favoriteCount</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 5c-3-3-6-1-8 1-2-2-5-4-8-1-4 4 2 9 8 14 6-5 12-10 8-14Z"/></svg></a>
                 <a class="bf-icon-link" asp-controller="Cart" asp-action="Index" aria-label="Carrinho" title="Carrinho"><b class="bf-cart-count">@cartCount</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l1 14H4L5 7ZM8 7V5a4 4 0 0 1 8 0v2"/></svg></a>
                 @if (isAuthenticated)
                 {
@@ -70,7 +73,7 @@
                         <span class="bf-user-chip__icon" aria-hidden="true">@userInitial</span>
                         <span class="bf-user-chip__name">Minha conta</span>
                     </a>
-                    <form class="bf-logout-form" asp-controller="Account" asp-action="Logout" method="post" onsubmit="return confirm('Tem certeza que deseja sair da sua conta?');">
+                    <form class="bf-logout-form" asp-controller="Account" asp-action="Logout" method="post" data-confirm="Tem certeza que deseja sair da sua conta?">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="bf-icon-link bf-icon-button" title="Sair" aria-label="Sair">
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M15 8l4 4-4 4M19 12H9" /></svg>
@@ -92,6 +95,8 @@
         @if(adminArea){<div class="bf-admin-shell">@await Html.PartialAsync("_AdminSidebar")<div class="bf-admin-main">@RenderBody()</div></div>}else{@RenderBody()}
     </main>
 
+    <button class="bf-help-tab" type="button" data-help-open aria-controls="bf-help-panel" aria-expanded="false">Ajuda <span aria-hidden="true">?</span></button>
+    <dialog id="bf-help-panel" class="bf-help-panel" aria-labelledby="bf-help-title"><button type="button" class="bf-help-close" data-help-close aria-label="Fechar ajuda">×</button><span class="bf-eyebrow">Beta Fit</span><h2 id="bf-help-title">Como podemos ajudar?</h2><p>Encontre respostas ou acompanhe sua compra.</p><details><summary>Pedidos e entrega</summary><p>Abra Minhas compras para acompanhar seu pedido, cancelar enquanto estiver pendente ou confirmado e conversar com a loja.</p><a href="/Orders/MyOrders">Minhas compras →</a></details><details><summary>Pagamento Pix</summary><p>Copie o código exibido na página do Pix. O pagamento é uma demonstração e não realiza cobranças.</p></details><details><summary>Trocas e reembolsos</summary><p>Após a entrega, abra o pedido para solicitar reembolso ou envie uma mensagem ao atendimento.</p></details><a class="bf-btn bf-btn--dark" href="/Home/Help">Central de ajuda completa →</a></dialog>
     <footer class="bf-footer">
         <div class="bf-container">
             <div class="bf-footer__main">
@@ -109,7 +114,7 @@
                 <div>
                     <h4>Institucional</h4>
                     <ul>
-                        <li><a asp-controller="Home" asp-action="Privacy">Privacidade</a></li>
+                        <li><a href="/Home/Install">Instalar Beta Fit</a></li><li><a asp-controller="Home" asp-action="Help">Central de ajuda</a></li><li><a asp-controller="Home" asp-action="Privacy">Privacidade</a></li>
                         <li><a asp-controller="Home" asp-action="Terms">Termos de uso</a></li>
                         <li><a asp-controller="Home" asp-action="Index" asp-fragment="sobre">Sobre a Beta Fit</a></li>
                     </ul>
@@ -128,10 +133,10 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/improvements.js" asp-append-version="true"></script><script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/storefront.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 <script src="~/js/management.js" asp-append-version="true"></script>
-</body>
+<script src="~/js/pwa.js" asp-append-version="true"></script><script src="~/js/ui-system.js" asp-append-version="true"></script></body>
 </html>
 

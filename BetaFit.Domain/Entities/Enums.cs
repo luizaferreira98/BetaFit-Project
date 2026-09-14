@@ -9,6 +9,7 @@ namespace BetaFit.Domain.Enums
     /// <summary>
     /// Público-alvo do produto.
     /// </summary>
+    /// Variacoes de genero para produtos no catálogo Beta Fit.
     public enum Gender
     {
         Unissex = 0,
@@ -17,6 +18,7 @@ namespace BetaFit.Domain.Enums
     }
 
 
+    //Opcoes de Status de pedido para o sistema de pedidos Beta Fit.
     public enum OrderStatus
     {
         Pendente = 0,

@@ -184,13 +184,15 @@ namespace BetaFit.UI.Controllers
             return RedirectToAction(nameof(ChangeEmail));
         }
 
+        [HttpGet("ChangePassword"), Microsoft.AspNetCore.Authorization.Authorize]
+        public async Task<IActionResult> ChangePassword(){var profile=await GetProfileAsync();if(profile==null)return RedirectToAction(nameof(Login));ViewData["PendingChange"]=await _apiClient.GetFromJsonAsync<PendingChangeStatusDto>("api/profile/pending-change");return View();}
         [HttpPost("UpdatePassword"), ValidateAntiForgeryToken]
         [Microsoft.AspNetCore.Authorization.Authorize]
         public async Task<IActionResult> UpdatePassword(string currentPassword, string newPassword, string confirmNewPassword)
         {
             var profile = await GetProfileAsync(); if (profile is null) return RedirectToAction(nameof(Login));
-            if (newPassword != confirmNewPassword) return await ProfileErrorAsync(profile, "A nova senha e a confirmação não coincidem.");
-            if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length is < 6 or > 100) return await ProfileErrorAsync(profile, "A nova senha deve ter entre 6 e 100 caracteres.");
+            if (newPassword != confirmNewPassword){TempData["Erro"]="A nova senha e a confirmação não coincidem.";return RedirectToAction(nameof(ChangePassword));}
+            if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length is < 6 or > 100){TempData["Erro"]="A nova senha deve ter entre 6 e 100 caracteres.";return RedirectToAction(nameof(ChangePassword));}
             return await SubmitProfileChangeAsync(profile, profile.Email, currentPassword, newPassword, confirmNewPassword);
         }
 
@@ -267,10 +269,10 @@ namespace BetaFit.UI.Controllers
 
         [HttpPost("ConfirmProfileChange"), ValidateAntiForgeryToken]
         [Microsoft.AspNetCore.Authorization.Authorize]
-        public async Task<IActionResult> ConfirmProfileChange(string token)
+        public async Task<IActionResult> ConfirmProfileChange(string token, bool passwordChange=false)
         {
             var response=await _apiClient.PostAsJsonAsync("api/profile/confirm-change",new ConfirmProfileChangeDto{Token=token??""});
-            if(!response.IsSuccessStatusCode){TempData["Erro"]=await ReadApiErrorAsync(response,"Código inválido ou expirado.");return RedirectToAction(nameof(ChangeEmail));}
+            if(!response.IsSuccessStatusCode){TempData["Erro"]=await ReadApiErrorAsync(response,"Código inválido ou expirado.");return RedirectToAction(passwordChange?nameof(ChangePassword):nameof(ChangeEmail));}
             Response.Cookies.Delete(".AspNetCore.Identity.Application");
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             TempData["Sucesso"]="Alterações confirmadas. Entre com os novos dados.";return RedirectToAction(nameof(Login));
@@ -372,9 +374,9 @@ namespace BetaFit.UI.Controllers
         {
             var dto = new UpdateProfileDto { FullName=profile.FullName, Email=email, PhoneNumber=profile.PhoneNumber, BirthDate=profile.BirthDate ?? DateTime.Today.AddYears(-18), Cpf=profile.Cpf, Cep=profile.Cep, Street=profile.Street, Number=profile.Number, Complement=profile.Complement, Neighborhood=profile.Neighborhood, City=profile.City, State=profile.State, CurrentPassword=currentPassword, NewPassword=newPassword, ConfirmNewPassword=confirmNewPassword };
             var response = await _apiClient.PutAsJsonAsync("api/profile", dto);
-            if (!response.IsSuccessStatusCode) return await ProfileErrorAsync(profile, await ReadApiErrorAsync(response, "Não foi possível atualizar a conta."));
+            if (!response.IsSuccessStatusCode){if(!string.IsNullOrEmpty(newPassword)){TempData["Erro"]=await ReadApiErrorAsync(response,"Não foi possível alterar a senha.");return RedirectToAction(nameof(ChangePassword));}return await ProfileErrorAsync(profile,await ReadApiErrorAsync(response,"Não foi possível atualizar a conta."));}
             var result = await response.Content.ReadFromJsonAsync<ProfileChangeResponseDto>();
-            TempData["Sucesso"] = result?.Message ?? "Solicitação registrada."; return RedirectToAction(result?.RequiresVerification == true ? nameof(ChangeEmail) : nameof(Profile));
+            TempData["Sucesso"] = result?.Message ?? "Solicitação registrada."; return RedirectToAction(result?.RequiresVerification == true ? (!string.IsNullOrEmpty(newPassword)?nameof(ChangePassword):nameof(ChangeEmail)) : nameof(Profile));
         }
 
         private Task<IActionResult> ProfileErrorAsync(UserDto profile, string message)

@@ -289,11 +289,14 @@
             const requires = option?.dataset.requiresSize === "true";
             const category = (option?.textContent || "").toLowerCase();
             const shoe = /tênis|tenis|calçado|calcado|calçados/.test(category);
-            picker.classList.remove("is-not-required");
+            picker.hidden = !requires;
+            const measures = document.querySelector("[data-measure-editor]")?.closest("section");
+            if (measures) measures.hidden = !requires;
+            if (!requires) { const value = document.querySelector("[data-measure-editor-value]"); if(value) value.value = "{}"; }
             picker.querySelectorAll('input[name="AvailableSizes"]').forEach((input) => {
                 const value = input.value;
                 const numeric = /^\d+$/.test(value);
-                const show = shoe ? numeric : (!requires || !numeric);
+                const show = requires && (shoe ? numeric : !numeric);
                 input.disabled = !show;
                 input.closest(".bf-size-option")?.classList.toggle("is-hidden", !show);
                 if (!show) input.checked = false;

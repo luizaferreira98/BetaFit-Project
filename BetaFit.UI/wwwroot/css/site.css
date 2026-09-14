@@ -880,13 +880,15 @@ button, input, select, textarea {
     backdrop-filter: blur(14px);
 }
 
+/* Header principal: grid de 3 colunas (logo | menu | ações).
+   O menu fica naturalmente centralizado na coluna do meio. */
 .bf-header__inner {
-    display: grid; /* O display:grid já está sobrescrevendo o display:flex anterior */
+    display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     gap: 24px;
     min-height: 78px;
-    /* Remova a linha justify-items: center; */
+    transition: min-height 320ms var(--bf-ease-out, ease);
 }
 
 .bf-logo {
@@ -897,41 +899,42 @@ button, input, select, textarea {
     justify-self: start;
 }
 
-.bf-logo span {
-    color: var(--bf-lime-dark);
-}
+    .bf-logo span {
+        color: var(--bf-lime-dark);
+    }
 
 .bf-nav {
     justify-self: center;
-    width: auto; /* Remova o width: 100% para não esticar demais */
+    width: auto;
     display: flex;
     justify-content: center;
     gap: 30px;
-}
-
-.bf-nav a {
-    position: relative;
-    padding: 30px 0 27px;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: #343432;
     white-space: nowrap;
 }
 
-.bf-nav a::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 19px;
-    height: 2px;
-    background: var(--bf-lime-dark);
-    transform: scaleX(0);
-    transform-origin: center;
-    transition: transform .2s;
-}
+    .bf-nav a {
+        position: relative;
+        padding: 30px 0 27px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: #343432;
+        white-space: nowrap;
+    }
+
+        .bf-nav a::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 19px;
+            height: 2px;
+            background: var(--bf-lime-dark);
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform .2s;
+        }
 
         .bf-nav a:hover::after, .bf-nav a.is-active::after {
             transform: scaleX(1);
@@ -1021,7 +1024,7 @@ button, input, select, textarea {
     gap: 8px;
     margin-bottom: 13px;
     color: var(--bf-lime);
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 900;
     letter-spacing: .16em;
     text-transform: uppercase;
@@ -1167,7 +1170,7 @@ button, input, select, textarea {
 
 .bf-btn--wide {
     width: 100%;
-    margin-bottom:20px;
+    margin-bottom: 20px;
 }
 
 .bf-text-link {
@@ -2339,7 +2342,7 @@ button, input, select, textarea {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 18px;
-    margin-top:30px; 
+    margin-top: 30px;
 }
 
 .bf-form-grid__full {
@@ -2882,6 +2885,7 @@ button, input, select, textarea {
         width: 100%;
         border-top: 1px solid var(--bf-line);
         margin-top: -1px;
+        justify-content: center;
     }
 
     .bf-header__inner {
@@ -3243,10 +3247,9 @@ button, input, select, textarea {
             min-height: 68px;
         }
 
+/* Nota: o display:grid do .bf-header__inner já está definido acima.
+   Aqui mantemos apenas a transição para evitar sobrescrever o layout. */
 .bf-header__inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     transition: min-height 320ms var(--bf-ease-out);
 }
 
@@ -4634,7 +4637,7 @@ button, input, select, textarea {
     }
 }
 
-\n.bf-card-size-warning {
+.bf-card-size-warning {
     display: block;
     padding: 9px 10px;
     background: #fff5e6;
@@ -4647,7 +4650,6 @@ button, input, select, textarea {
     letter-spacing: .05em;
 }
 
-\n
 /* BetaFit feature polish */
 .bf-product-detail__desc {
     white-space: pre-line;

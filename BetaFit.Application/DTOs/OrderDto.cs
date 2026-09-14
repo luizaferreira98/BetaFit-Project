@@ -15,7 +15,7 @@ namespace BetaFit.Application.DTOs
         public string? TrackingCode {get;set;}
         public string? TrackingDescription {get;set;}
         public DateTime? DeliveredAt {get;set;}
-        public int? ExperienceRating {get;set;}
+        public decimal? ExperienceRating {get;set;}
         public string? ExperienceComment {get;set;}
         public string? ReviewCoupon {get;set;}
         public string? CouponCode {get;set;}
