@@ -26,10 +26,17 @@ namespace BetaFit.Application.Services
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
+
+                // Este endpoint é usado pelo módulo administrativo de
+                // funcionários, portanto clientes (role Usuario) não entram
+                // na listagem.
+                if (!roles.Any(r => IsEmployeeRole(r)))
+                    continue;
+
                 result.Add(new UsuarioDto
                 {
                     Id = user.Id,
-                    UserName = user.UserName ?? string.Empty,
+                    UserName = await ObterNomeAsync(user),
                     Email = user.Email ?? string.Empty,
                     Roles = roles.ToList()
                 });
@@ -48,7 +55,7 @@ namespace BetaFit.Application.Services
             return new UsuarioDto
             {
                 Id = user.Id,
-                UserName = user.UserName ?? string.Empty,
+                UserName = await ObterNomeAsync(user),
                 Email = user.Email ?? string.Empty,
                 Roles = roles.ToList()
             };
@@ -77,7 +84,7 @@ namespace BetaFit.Application.Services
                 await _roleManager.CreateAsync(new IdentityRole(role));
 
             await _userManager.AddToRoleAsync(user, role);
-            await _userManager.AddClaimAsync(user,new System.Security.Claims.Claim("FullName",dto.UserName.Trim()));
+            await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("FullName", dto.UserName.Trim()));
 
             var createdUser = new UsuarioDto
             {
@@ -95,8 +102,20 @@ namespace BetaFit.Application.Services
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return (false, null, "Usuário não encontrado.");
 
-            if (!string.Equals(user.Email,dto.Email.Trim(),StringComparison.OrdinalIgnoreCase))
-                return (false,null,"O e-mail deve ser alterado pelo titular em Meu perfil, com código de confirmação.");
+            if (!string.Equals(user.Email, dto.Email.Trim(), StringComparison.OrdinalIgnoreCase))
+                return (false, null, "O e-mail deve ser alterado pelo titular em Meu perfil, com código de confirmação.");
+
+            if (!string.IsNullOrWhiteSpace(dto.UserName))
+            {
+                var fullNameClaims = await _userManager.GetClaimsAsync(user);
+                var existingFullName = fullNameClaims.FirstOrDefault(c => c.Type == "FullName");
+                var newClaim = new System.Security.Claims.Claim("FullName", dto.UserName.Trim());
+
+                if (existingFullName != null)
+                    await _userManager.ReplaceClaimAsync(user, existingFullName, newClaim);
+                else
+                    await _userManager.AddClaimAsync(user, newClaim);
+            }
 
             var updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
@@ -141,7 +160,7 @@ namespace BetaFit.Application.Services
             var updatedUser = new UsuarioDto
             {
                 Id = user.Id,
-                UserName = user.UserName ?? string.Empty,
+                UserName = await ObterNomeAsync(user),
                 Email = user.Email ?? string.Empty,
                 Roles = rolesAtualizadas.ToList()
             };
@@ -164,15 +183,30 @@ namespace BetaFit.Application.Services
         {
             // Retorna a lista de nomes dos perfis cadastrados no Identity
             await Task.CompletedTask;
-            return new List<string> { "Admin", "Estoquista", "Usuario" };
+            return new List<string> { "Admin", "Gerente", "Estoquista" };
         }
 
         private static string NormalizeRole(string? role) => role?.Trim().ToLowerInvariant() switch
         {
             "admin" => "Admin",
+            "gerente" or "manager" => "Gerente",
             "estoquista" or "funcionario" or "funcionário" => "Estoquista",
-            "usuario" or "usuário" or null or "" => "Usuario",
-            _ => throw new InvalidOperationException("Selecione uma função válida: Admin, Funcionario ou Usuario.")
+            "usuario" or "usuário" => "Usuario",
+            _ => throw new InvalidOperationException("Selecione uma função válida: Admin, Gerente ou Estoquista.")
         };
+        private async Task<string> ObterNomeAsync(IdentityUser user)
+        {
+            var claims = await _userManager.GetClaimsAsync(user);
+            return claims.FirstOrDefault(c => c.Type == "FullName")?.Value
+                   ?? user.UserName
+                   ?? string.Empty;
+        }
+
+        private static bool IsEmployeeRole(string role) =>
+            string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(role, "Gerente", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(role, "Estoquista", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(role, "Funcionario", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(role, "Funcionário", StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BetaFit.Desktop.DTOs;
 using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -144,6 +145,42 @@ namespace BetaFit.Desktop.Forms
 
         }
 
+        // Aceita preços digitados no padrão brasileiro (149,90),
+        // no padrão internacional (149.90) e com separador de milhar.
+        private static bool TentarLerPreco(string texto, out decimal preco)
+        {
+            preco = 0m;
+            if (string.IsNullOrWhiteSpace(texto)) return false;
+
+            texto = texto.Trim().Replace("R$", "", StringComparison.OrdinalIgnoreCase).Trim();
+
+            // Quando os dois separadores aparecem, o último é tratado como
+            // separador decimal. Ex.: 1.499,90 ou 1,499.90.
+            int ultimaVirgula = texto.LastIndexOf(',');
+            int ultimoPonto = texto.LastIndexOf('.');
+
+            if (ultimaVirgula >= 0 && ultimoPonto >= 0)
+            {
+                if (ultimaVirgula > ultimoPonto)
+                    texto = texto.Replace(".", "").Replace(',', '.');
+                else
+                    texto = texto.Replace(",", "");
+
+                return decimal.TryParse(
+                    texto, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
+                    CultureInfo.InvariantCulture, out preco);
+            }
+
+            if (ultimaVirgula >= 0)
+            {
+                return decimal.TryParse(
+                    texto, NumberStyles.Number, CultureInfo.GetCultureInfo("pt-BR"), out preco);
+            }
+
+            return decimal.TryParse(
+                texto, NumberStyles.Number, CultureInfo.InvariantCulture, out preco);
+        }
+
         // =====================================================================
         // SALVAR
         // =====================================================================
@@ -156,9 +193,10 @@ namespace BetaFit.Desktop.Forms
                 return;
             }
 
-            if (!decimal.TryParse(txtPrecoProduto.Text, out decimal preco) || preco <= 0)
+            if (!TentarLerPreco(txtPrecoProduto.Text, out decimal preco) || preco <= 0)
             {
-                BetaFitMessageBox.Aviso(this, "Informe um preço válido maior que zero.", "Validação");
+                BetaFitMessageBox.Aviso(this, "Informe um preço válido maior que zero. Ex.: 149,90", "Validação");
+                txtPrecoProduto.Focus();
                 return;
             }
 

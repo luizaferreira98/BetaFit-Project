@@ -48,13 +48,13 @@ namespace BetaFit.Desktop.Forms
 
             ////Preenche dados dinâmicos de sessão no header
             //lblUsuario.Text = $"👷‍ {SessionManager.Instance.GetDisplayName()}";
-            //lblPerfil.Text = SessionManager.Instance.IsAdmin ? "🔑 Administrador" : "👀 Usuário Comum";
+            //lblPerfil.Text = SessionManager.Instance.IsAdmin ? "🔑 Administrador" : "👀 Funcionário Comum";
             //lblPerfil.ForeColor = SessionManager.Instance.IsAdmin
             //    ? BetaFitThemes.PretoPrimario
             //    : BetaFitThemes.Lima;
             //lblSessao.Text = $"🟢 {SessionManager.Instance.GetEmail()}";
 
-            // Configura permissões baseadas no perfil do usuário
+            // Configura permissões baseadas no perfil do funcionário
             ConfigurarPermissoes();
 
             //Abre a primeira tela que esse papel pode ver
@@ -64,10 +64,10 @@ namespace BetaFit.Desktop.Forms
                 Navegar(new ProdutosUserControl(), btnProdutos);
         }
 
-        // Configura as permissões de visibilidade dos botões com base no perfil do usuário.
+        // Configura as permissões de visibilidade dos botões com base no perfil do funcionário.
         //
         //   Admin      - vê tudo
-        //   Gerente    - vê tudo, menos gestão de funcionários (sem tela própria ainda)
+        //   Gerente    - vê tudo, menos gestão de funcionários
         //   Estoquista - só Produtos/Categorias (foco em catálogo/estoque);
         //                não vê Dashboard nem Pedidos
         private void ConfigurarPermissoes()
@@ -86,6 +86,9 @@ namespace BetaFit.Desktop.Forms
             // Categorias: qualquer funcionário que mexe no catálogo
             // (antes só Admin via esse botão).
             btnCategorias.Visible = isAdmin || isGerente || isEstoquista;
+
+            // Gestão de funcionários: somente o Administrador.
+            btnFuncionarios.Visible = isAdmin;
 
             // Produtos e Meu Perfil não têm restrição — todo funcionário usa.
         }
@@ -112,7 +115,7 @@ namespace BetaFit.Desktop.Forms
             Navegar(new PedidosUserControl(), btnPedidos);
         }
 
-        // Navega para a tela de Categorias
+        // Navega para uma tela interna do conteúdo
         private void Navegar(UserControl control, Guna2Button? botao = null)
         {
             //Remove o UserControl anterior
@@ -136,7 +139,7 @@ namespace BetaFit.Desktop.Forms
         private void AtualizarBotaoAtivo(Guna2Button? botao)
         {
             // Reseta todos os botões da sidebar para o estado "inativo"
-            foreach (var b in new[] { btnDashBoard, btnProdutos, btnCategorias, btnPedidos, btnPerfil })
+            foreach (var b in new[] { btnDashBoard, btnProdutos, btnCategorias, btnPedidos, btnFuncionarios, btnPerfil })
             {
                 b.FillColor = Color.Transparent;
                 b.ForeColor = Color.White;
@@ -185,6 +188,24 @@ namespace BetaFit.Desktop.Forms
         private void btnProdutos_Click(object sender, EventArgs e) => Navegar(new ProdutosUserControl(), btnProdutos);
         private void btnCategorias_Click(object sender, EventArgs e) => Navegar(new CategoriasUserControl(), btnCategorias);
         private void btnPedidos_Click(object sender, EventArgs e) => Navegar(new PedidosUserControl(), btnPedidos);
+        private void btnFuncionarios_Click(object sender, EventArgs e) => Navegar(new FuncionariosUserControl(), btnFuncionarios);
         private void btnPerfil_Click(object sender, EventArgs e) => Navegar(new PerfilUserControl(), btnPerfil);
+        private void btnFecharJanela_Click(object? sender, EventArgs e)
+        {
+            System.Windows.Forms.Application.Exit();
+        }
+
+        private void btnMaximizarJanela_Click(object? sender, EventArgs e)
+        {
+            WindowState = WindowState == FormWindowState.Maximized
+                ? FormWindowState.Normal
+                : FormWindowState.Maximized;
+        }
+
+        private void btnMinimizarJanela_Click(object? sender, EventArgs e)
+        {
+            WindowState = FormWindowState.Minimized;
+        }
+
     }
 }
