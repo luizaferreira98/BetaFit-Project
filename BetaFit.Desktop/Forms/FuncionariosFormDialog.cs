@@ -6,10 +6,10 @@ using System.Windows.Forms;
 namespace BetaFit.Desktop.Forms
 {
     /// <summary>
-    /// Formulário de criação/edição de usuários.
+    /// Formulário de criação/edição de funcionários.
     /// Retorna CreateUsersDto (criação) ou UpdateUsersDto (edição).
     /// </summary>
-    public partial class UsersFormDialog : Form
+    public partial class FuncionariosFormDialog : Form
     {
         // =====================================================================
         // PROPRIEDADES DE SAÍDA
@@ -31,9 +31,9 @@ namespace BetaFit.Desktop.Forms
         // =====================================================================
         // CONSTRUTOR
         // =====================================================================
-        /// <param name="usuariosExistentes">Lista de usuários já cadastrados (para validação de duplicidade, etc.)</param>
-        /// <param name="usuarioExistente">Usuário a editar; null = modo criação</param>
-        public UsersFormDialog(List<string> perfis, UsersResponseDto? usuarioExistente)
+        /// <param name="usuariosExistentes">Lista de funcionários já cadastrados (para validação de duplicidade, etc.)</param>
+        /// <param name="usuarioExistente">Funcionário a editar; null = modo criação</param>
+        public FuncionariosFormDialog(List<string> perfis, UsersResponseDto? usuarioExistente)
         {
             InitializeComponent();
 
@@ -45,19 +45,19 @@ namespace BetaFit.Desktop.Forms
             if (_usuarioExistente != null)
             {
 
-                lblTitulo.Text = "Editar Usuário";
-                lblNome.Text = _usuarioExistente.UserName;
+                lblTitulo.Text = "Editar Funcionário";
+                txtNome.Text = _usuarioExistente.UserName;
                 txtEmail.Text = _usuarioExistente.Email;
 
 
-                if (cmbRoles.Items.Contains(_usuarioExistente.Roles))
+                if (_usuarioExistente.Roles.Count > 0 && cmbRoles.Items.Contains(_usuarioExistente.Roles[0]))
                 {
-                    cmbRoles.SelectedItem = _usuarioExistente.Roles;
+                    cmbRoles.SelectedItem = _usuarioExistente.Roles[0];
                 }
             }
             else
             {
-                lblTitulo.Text = "Novo Usuário";
+                lblTitulo.Text = "Novo Funcionário";
                 if (cmbRoles.Items.Count > 0)
                     cmbRoles.SelectedIndex = 0;
             }
@@ -97,7 +97,7 @@ namespace BetaFit.Desktop.Forms
 
             if (_usuarioExistente == null && string.IsNullOrWhiteSpace(txtSenha.Text))
             {
-                MessageBox.Show("Senha é obrigatória para novos usuários.", "Validação",
+                MessageBox.Show("Senha é obrigatória para novos funcionários.", "Validação",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -121,6 +121,7 @@ namespace BetaFit.Desktop.Forms
                 CreateDto = new CreateUsersDto
                 {
                     Email = txtEmail.Text.Trim(),
+                    UserName = txtNome.Text.Trim(),
                     Password = txtSenha.Text,
                     ConfirmPassword = txtConfSenha.Text,
                     Role = cmbRoles.SelectedItem.ToString()!
@@ -131,6 +132,7 @@ namespace BetaFit.Desktop.Forms
                 UpdateDto = new UpdateUsersDto
                 {
                     Email = txtEmail.Text.Trim(),
+                    UserName = txtNome.Text.Trim(),
                     Password = string.IsNullOrEmpty(txtSenha.Text) ? null : txtSenha.Text,
                     ConfirmPassword = string.IsNullOrEmpty(txtConfSenha.Text) ? null : txtConfSenha.Text,
                     Role = cmbRoles.SelectedItem.ToString()!

@@ -34,6 +34,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Windows.Forms;
 using Guna.UI2.WinForms;
@@ -627,6 +628,122 @@ namespace BetaFit.Desktop.Themes
                 guna.ThemeStyle.AlternatingRowsStyle.BackColor = Admin.FundoLinhaImpar;
                 guna.ThemeStyle.AlternatingRowsStyle.ForeColor = Admin.TextoPrincipal;
             }
+        }
+
+        // =====================================================================
+        // ÍCONES DESENHADOS (GDI+)
+        // =====================================================================
+        // Mesma técnica do CriarIconeCarrinhoVazio (PedidosUserControl): bitmap
+        // de tamanho fixo desenhado com Pen/Brush, sem depender de nenhuma
+        // fonte de emoji. Isso existe porque emoji com seletor de variação
+        // (ex.: 🏋️, ❤️‍🩹) renderizam de forma inconsistente em controles do
+        // WinForms — às vezes vêm com um glifo gigante do Windows e estouram
+        // o tamanho do Label. Um bitmap desenhado nunca "estoura": o tamanho
+        // é sempre exatamente o do Bitmap criado.
+        // =====================================================================
+
+        /// <summary>Ícone de gráfico de barras crescente — selo "EVOLUA".</summary>
+        public static Image CriarIconeGrafico()
+        {
+            var bmp = new Bitmap(28, 28);
+            using var g = Graphics.FromImage(bmp);
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.Clear(Color.Transparent);
+
+            using var caneta = new Pen(Admin.Lima, 2.5f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+            g.DrawLine(caneta, 6, 22, 6, 14);
+            g.DrawLine(caneta, 14, 22, 14, 8);
+            g.DrawLine(caneta, 22, 22, 22, 4);
+            return bmp;
+        }
+
+        /// <summary>Ícone de halter — selo "CONQUISTE".</summary>
+        public static Image CriarIconeHalter()
+        {
+            var bmp = new Bitmap(28, 28);
+            using var g = Graphics.FromImage(bmp);
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.Clear(Color.Transparent);
+
+            using var caneta = new Pen(Admin.Lima, 2.5f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+            g.DrawLine(caneta, 6, 14, 22, 14);
+            using var brush = new SolidBrush(Admin.Lima);
+            g.FillRectangle(brush, 2, 9, 5, 10);
+            g.FillRectangle(brush, 21, 9, 5, 10);
+            return bmp;
+        }
+
+        /// <summary>Ícone de linha de pulso (batimento) — selo "SUPERE".</summary>
+        public static Image CriarIconeCoracao()
+        {
+            var bmp = new Bitmap(28, 28);
+            using var g = Graphics.FromImage(bmp);
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.Clear(Color.Transparent);
+
+            using var caneta = new Pen(Admin.Lima, 2.2f)
+            {
+                LineJoin = LineJoin.Round,
+                StartCap = LineCap.Round,
+                EndCap = LineCap.Round
+            };
+            var pontos = new PointF[] { new(2, 16), new(8, 16), new(11, 6), new(15, 24), new(18, 16), new(26, 16) };
+            g.DrawLines(caneta, pontos);
+            return bmp;
+        }
+
+        /// <summary>Ícone de envelope — campo E-MAIL do login.</summary>
+        public static Image CriarIconeEnvelope()
+        {
+            var bmp = new Bitmap(16, 16);
+            using var g = Graphics.FromImage(bmp);
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.Clear(Color.Transparent);
+
+            using var caneta = new Pen(Admin.Lima, 1.4f) { LineJoin = LineJoin.Round };
+            g.DrawRectangle(caneta, 1, 3, 14, 10);
+            g.DrawLine(caneta, 1, 4, 8, 10);
+            g.DrawLine(caneta, 15, 4, 8, 10);
+            return bmp;
+        }
+
+        /// <summary>Ícone de cadeado — campo SENHA do login.</summary>
+        public static Image CriarIconeCadeado()
+        {
+            var bmp = new Bitmap(16, 16);
+            using var g = Graphics.FromImage(bmp);
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.Clear(Color.Transparent);
+
+            using var caneta = new Pen(Admin.Lima, 1.4f) { LineJoin = LineJoin.Round };
+            g.DrawArc(caneta, 3, 1, 10, 9, 180, 180);
+            using var brush = new SolidBrush(Admin.Lima);
+            g.FillRectangle(brush, 2, 7, 12, 8);
+            return bmp;
+        }
+
+        /// <summary>
+        /// Ícone de olho pro toggle de senha. <paramref name="aberto"/> = true
+        /// desenha o olho normal (senha visível); false desenha o olho
+        /// riscado (senha oculta).
+        /// </summary>
+        public static Image CriarIconeOlho(bool aberto)
+        {
+            var bmp = new Bitmap(20, 20);
+            using var g = Graphics.FromImage(bmp);
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.Clear(Color.Transparent);
+
+            using var caneta = new Pen(Admin.TextoMuted, 1.6f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+            g.DrawArc(caneta, 2, 5, 16, 10, 0, 180);
+            g.DrawArc(caneta, 2, 5, 16, 10, 180, 180);
+            using var brush = new SolidBrush(Admin.TextoMuted);
+            g.FillEllipse(brush, 8, 8, 4, 4);
+
+            if (!aberto)
+                g.DrawLine(caneta, 3, 3, 17, 17);
+
+            return bmp;
         }
     }
 }

@@ -1,10 +1,13 @@
 ﻿using BetaFit.Desktop.Services;
 using BetaFit.Desktop.Helpers;
+using BetaFit.Desktop.Themes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,17 +37,71 @@ namespace BetaFit.Desktop.Forms
             //Guard: não executa em tempo de design
             if (DesignMode) return; //Filtro de seguranca: ela verifica se o form está em tempo de design, se estiver, ele não executa o código abaixo
 
-
-
             //Instancia o serviço de autenticação da API
             _authService = new AuthApiService(); //Criando um objeto apartir da classe AuthApiService
 
+            // ── Ícones desenhados (GDI+, sem depender de fonte de emoji) ──
+            pctIconeEvolua.Image = BetaFitTheme.CriarIconeGrafico();
+            pctIconeConquiste.Image = BetaFitTheme.CriarIconeHalter();
+            pctIconeSupere.Image = BetaFitTheme.CriarIconeCoracao();
+            pctIconeEmail.Image = BetaFitTheme.CriarIconeEnvelope();
+            pctIconeSenha.Image = BetaFitTheme.CriarIconeCadeado();
+            pctToggleSenha.Image = BetaFitTheme.CriarIconeOlho(aberto: txtSenha.UseSystemPasswordChar);
+
+            // ── Fundo do painel esquerdo: foto + gradiente + linhas ──
+            // A foto fica em Assets/academia.png (Content, copiada pro
+            // diretório de saída pelo .csproj — CopyToOutputDirectory), então
+            // é carregada por caminho de arquivo, não como resource embutido.
+            var caminhoFoto = Path.Combine(AppContext.BaseDirectory, "Assets", "academia.png");
+            if (File.Exists(caminhoFoto))
+            {
+                pnlEsquerdo.BackgroundImage = Image.FromFile(caminhoFoto);
+                pnlEsquerdo.BackgroundImageLayout = ImageLayout.Zoom;
+            }
 
             lblVersao.Text = $"Versão {AppConfig.Version} | ©️ {DateTime.Now.Year} BETAFIT";
             lblApi.Text = $"API: {AppConfig.ApiBaseUrl}";
 
             txtEmail.Text = "admin@betafit.com";
             txtSenha.Text = "Admin@123";
+        }
+
+        // Gradiente escuro + linhas diagonais desenhados por cima do painel
+        // esquerdo (e por cima da foto de fundo, quando ela for importada —
+        // o Paint roda depois do BackgroundImage, então não apaga a foto).
+        private void pnlEsquerdo_Paint(object sender, PaintEventArgs e)
+        {
+            var g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            var area = pnlEsquerdo.ClientRectangle;
+
+            // Vinheta: escurece as bordas e deixa o centro um pouco mais
+            // "respirável" — fica melhor tanto com a foto quanto sem ela.
+            using (var gradiente = new LinearGradientBrush(
+                area,
+                Color.FromArgb(235, 5, 5, 5),
+                Color.FromArgb(170, 10, 40, 10),
+                LinearGradientMode.Vertical))
+            {
+                g.FillRectangle(gradiente, area);
+            }
+
+            // Linhas de destaque lima nos dois cantos (igual ao mockup: uma
+            // "moldura" leve de neon subindo do canto inferior-direito e
+            // descendo do canto superior-esquerdo do painel).
+            using var canetaLinha = new Pen(Color.FromArgb(90, BetaFitTheme.Admin.Lima), 2f);
+            g.DrawLine(canetaLinha, 0, 60, 90, -30);
+            g.DrawLine(canetaLinha, 20, 90, 110, -10);
+
+            g.DrawLine(canetaLinha, area.Width - 90, area.Height + 30, area.Width, area.Height - 60);
+            g.DrawLine(canetaLinha, area.Width - 120, area.Height + 10, area.Width - 20, area.Height - 90);
+        }
+
+        // Olho de mostrar/esconder a senha
+        private void pctToggleSenha_Click(object sender, EventArgs e)
+        {
+            txtSenha.UseSystemPasswordChar = !txtSenha.UseSystemPasswordChar;
+            pctToggleSenha.Image = BetaFitTheme.CriarIconeOlho(aberto: txtSenha.UseSystemPasswordChar);
         }
 
 
@@ -96,12 +153,7 @@ namespace BetaFit.Desktop.Forms
 
                 if (success && user != null)
                 {
-                    // ── Trava de acesso: só FUNCIONÁRIOS entram no Desktop ──────
-                    // "Funcionário" = qualquer um dos 3 papéis internos (Admin,
-                    // Gerente, Estoquista). O papel "Usuario" é reservado a
-                    // clientes cadastrados pelo site (BetaFit.UI) e nunca deve
-                    // conseguir abrir o painel administrativo — mesmo logando
-                    // com sucesso na API, essa checagem barra o acesso aqui.
+             
                     bool isFuncionario = user.IsFuncionario;
 
                     if (!isFuncionario)
@@ -113,11 +165,10 @@ namespace BetaFit.Desktop.Forms
                         await _authService.LogoutAsync();
 
                         ExibirErro("⛔ Acesso restrito à equipe BetaFit.");
-                        BetaFitMessageBox.Aviso(
-                            this,
-                            "Este aplicativo é de uso exclusivo da equipe BetaFit.\n" +
+                        MessageBox.Show(
+                            "⛔ Este aplicativo é de uso exclusivo da equipe BetaFit.\n" +
                             "Sua conta não tem permissão de funcionário (Admin, Gerente ou Estoquista).",
-                            "Acesso negado");
+                            "Acesso negado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
@@ -137,7 +188,7 @@ namespace BetaFit.Desktop.Forms
                 else
                 {
                     ExibirErro($"❌ {errorMessage}");
-                    BetaFitMessageBox.Erro(this, errorMessage ?? "Não foi possível fazer login.");
+                    MessageBox.Show($"❌ {errorMessage}");
                 }
 
             }
@@ -145,14 +196,14 @@ namespace BetaFit.Desktop.Forms
             catch (HttpRequestException exHttp)
             {
                 ExibirErro($"❌ Não foi possível conectar à API. \nVerifique se a API está em execução erro do sistema: {exHttp.Message}");
-                BetaFitMessageBox.Erro(this, $"Não foi possível conectar à API.\nVerifique se a API está em execução. Erro do sistema: {exHttp.Message}");
+                MessageBox.Show($"❌ Não foi possível conectar à API. \nVerifique se a API está em execução erro do sistema: {exHttp.Message}");
             }
 
             //Caso 2 de erro
             catch (Exception ex)
             {
                 ExibirErro($"❌ Erro inesperado: {ex.Message}");
-                BetaFitMessageBox.Erro(this, $"Erro inesperado: {ex.Message}");
+                MessageBox.Show($"❌ Erro inesperado: {ex.Message}");
             }
             finally
             {
@@ -195,7 +246,5 @@ namespace BetaFit.Desktop.Forms
             }
 
         }
-
-
     }
 }

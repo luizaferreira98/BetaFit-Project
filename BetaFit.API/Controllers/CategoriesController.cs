@@ -75,7 +75,15 @@ namespace BetaFit.API.Controllers
         [Authorize(Roles = "Admin,Funcionario,Estoquista")]
         public async Task<ActionResult<CategoryDto>> Update(int id, [FromBody] UpdateCategoryDto dto)
         {
-            CategoryDto? category;try{category = await _categoryService.UpdateAsync(id,dto);}catch(InvalidOperationException ex){return BadRequest(new{message=ex.Message});}
+            CategoryDto? category;
+            try
+            {
+                category = await _categoryService.UpdateAsync(id,dto);
+            }
+            catch(InvalidOperationException ex)
+            {
+                return BadRequest(new{message=ex.Message});
+            }
 
             if (category == null)
                 return NotFound(new { message = "Erro ao atualizar categoria." });

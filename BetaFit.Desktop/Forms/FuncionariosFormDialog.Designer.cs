@@ -1,6 +1,6 @@
 ﻿namespace BetaFit.Desktop.Forms
 {
-    partial class UsersFormDialog
+    partial class FuncionariosFormDialog
     {
         /// <summary>
         /// Required designer variable.
@@ -96,7 +96,7 @@
             lblTitulo.Name = "lblTitulo";
             lblTitulo.Size = new Size(160, 34);
             lblTitulo.TabIndex = 4;
-            lblTitulo.Text = "Novo Usuário";
+            lblTitulo.Text = "Novo Funcionário";
             // 
             // txtNome
             // 
@@ -304,7 +304,7 @@
             guna2HtmlLabel5.Name = "guna2HtmlLabel5";
             guna2HtmlLabel5.Size = new Size(76, 17);
             guna2HtmlLabel5.TabIndex = 22;
-            guna2HtmlLabel5.Text = "Usuário ativo";
+            guna2HtmlLabel5.Text = "Funcionário ativo";
             // 
             // txtTelefone
             // 
@@ -380,10 +380,10 @@
             btnSalvar.ShadowDecoration.CustomizableEdges = customizableEdges19;
             btnSalvar.Size = new Size(202, 45);
             btnSalvar.TabIndex = 26;
-            btnSalvar.Text = "💾 SALVAR USUÁRIO";
+            btnSalvar.Text = "💾 SALVAR FUNCIONÁRIO";
             btnSalvar.Click += btnSalvar_Click;
             // 
-            // UsersFormDialog
+            // FuncionariosFormDialog
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -409,8 +409,8 @@
             Controls.Add(lblTitulo);
             Controls.Add(btnFechar);
             FormBorderStyle = FormBorderStyle.None;
-            Name = "UsersFormDialog";
-            Text = "UsersFormDialog";
+            Name = "FuncionariosFormDialog";
+            Text = "FuncionariosFormDialog";
             ResumeLayout(false);
             PerformLayout();
         }

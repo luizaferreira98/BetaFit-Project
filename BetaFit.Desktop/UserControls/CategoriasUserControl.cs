@@ -88,10 +88,15 @@ namespace BetaFit.Desktop.UserControls
 
         private void ConfigurarPermissoes()
         {
-            bool isAdmin = SessionManager.Instance.IsAdmin;
-            btnNovaCategoria.Visible = isAdmin;
-            btnEditarCategoria.Visible = isAdmin;
-            btnExcluirCategoria.Visible = isAdmin;
+            // Gerente e Estoquista também possuem permissão de catálogo.
+            bool podeGerenciarCategorias =
+                SessionManager.Instance.IsAdmin ||
+                SessionManager.Instance.IsGerente ||
+                SessionManager.Instance.IsEstoquista;
+
+            btnNovaCategoria.Visible = podeGerenciarCategorias;
+            btnEditarCategoria.Visible = podeGerenciarCategorias;
+            btnExcluirCategoria.Visible = podeGerenciarCategorias;
         }
 
         //=================================================

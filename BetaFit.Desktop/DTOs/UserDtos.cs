@@ -16,14 +16,16 @@ public sealed class UsuariosResponseDto
 
 public sealed class CreateUsersDto
 {
+    public string UserName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public string ConfirmPassword { get; set; } = string.Empty;
-    public string Role { get; set; } = "Usuario";
+    public string Role { get; set; } = "Estoquista";
 }
 
 public sealed class UpdateUsersDto
 {
+    public string UserName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string? Password { get; set; }
     public string? ConfirmPassword { get; set; }

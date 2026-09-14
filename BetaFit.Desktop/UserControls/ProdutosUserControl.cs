@@ -1,4 +1,5 @@
-﻿using BetaFit.Desktop.DTOs;
+﻿
+using BetaFit.Desktop.DTOs;
 using BetaFit.Desktop.Forms;
 using BetaFit.Desktop.Helpers;
 using BetaFit.Desktop.Services;
@@ -212,10 +213,16 @@ namespace BetaFit.Desktop.UserControls
         //=================================================
         private void ConfigurarPermissoes()
         {
-            bool isAdmin = SessionManager.Instance.IsAdmin;
-            btnNovoProduto.Visible = isAdmin;
-            btnEditarProduto.Visible = isAdmin;
-            btnExcluirProduto.Visible = isAdmin;
+            // O backend permite as operações de catálogo para os três
+            // perfis internos: Admin, Gerente e Estoquista.
+            bool podeGerenciarProdutos =
+                SessionManager.Instance.IsAdmin ||
+                SessionManager.Instance.IsGerente ||
+                SessionManager.Instance.IsEstoquista;
+
+            btnNovoProduto.Visible = podeGerenciarProdutos;
+            btnEditarProduto.Visible = podeGerenciarProdutos;
+            btnExcluirProduto.Visible = podeGerenciarProdutos;
         }
 
         //=================================================
