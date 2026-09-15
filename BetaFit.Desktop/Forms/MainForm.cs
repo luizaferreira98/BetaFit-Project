@@ -29,6 +29,9 @@ namespace BetaFit.Desktop.Forms
         // Serviço de autenticação para logout.
         private AuthApiService _authService = null;
 
+        // Margem entre o botão SAIR e a borda de baixo da sidebar.
+        private const int MargemRodapeSidebar = 24;
+
         public MainForm()
         {
             InitializeComponent();
@@ -46,6 +49,11 @@ namespace BetaFit.Desktop.Forms
             // Atualiza o título com a versão
             this.Text = $"BetaFit Desktop - {AppConfig.Version}";
 
+            // Prepara o comportamento de janela (maximizar sem cobrir a
+            // barra de tarefas + botão SAIR grudado no rodapé da sidebar).
+            AtualizarLimitesDeMaximizacao();
+            PosicionarBotaoLogout();
+
             ////Preenche dados dinâmicos de sessão no header
             //lblUsuario.Text = $"👷‍ {SessionManager.Instance.GetDisplayName()}";
             //lblPerfil.Text = SessionManager.Instance.IsAdmin ? "🔑 Administrador" : "👀 Funcionário Comum";
@@ -62,6 +70,68 @@ namespace BetaFit.Desktop.Forms
                 NavegarParaDashboard();
             else
                 Navegar(new ProdutosUserControl(), btnProdutos);
+        }
+
+        // =====================================================================
+        // COMPORTAMENTO DE JANELA
+        // =====================================================================
+        // A janela usa FormBorderStyle.None (barra de título própria). Nesse
+        // modo o Windows NÃO respeita a área de trabalho ao maximizar: a
+        // janela cobre a barra de tarefas inteira. MaximizedBounds resolve
+        // isso, e precisa ser recalculado quando o usuário arrasta a janela
+        // para outro monitor (resoluções e posição da taskbar podem diferir).
+        // =====================================================================
+        private void AtualizarLimitesDeMaximizacao()
+        {
+            var tela = Screen.FromHandle(this.Handle);
+            MaximizedBounds = tela.WorkingArea;
+        }
+
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            if (DesignMode) return;
+
+            // Mantém o glifo do botão coerente com o estado atual da janela.
+            btnMaximizarJanela.Text = WindowState == FormWindowState.Maximized ? "❐" : "□";
+        }
+
+        // O botão SAIR foi desenhado com Y fixo (744). Com 800px de altura de
+        // cliente e 38px de barra de título, a sidebar tem 762px — ou seja,
+        // ele já nascia cortado; maximizado, ficava boiando no meio.
+        //
+        // Anchor = Bottom não serve aqui: pnlMenu é criado com Size(240, 0) no
+        // Designer e só ganha altura real depois do Dock, então a distância
+        // que o Anchor memoriza sairia errada. Reposicionar no Resize é
+        // determinístico e faz o botão acompanhar qualquer altura de janela.
+        private void PosicionarBotaoLogout()
+        {
+            if (pnlMenu.ClientSize.Height <= 0) return;
+
+            btnLogout.Top = pnlMenu.ClientSize.Height - btnLogout.Height - MargemRodapeSidebar;
+            btnLogout.Left = 16;
+        }
+
+        private void pnlMenu_Resize(object sender, EventArgs e)
+        {
+            if (DesignMode) return;
+            PosicionarBotaoLogout();
+        }
+
+        // Duplo clique na barra de título alterna maximizar/restaurar —
+        // comportamento padrão de qualquer janela do Windows, que a barra
+        // customizada não tinha.
+        private void pnlBarraTitulo_DoubleClick(object? sender, EventArgs e)
+        {
+            AlternarMaximizar();
+        }
+
+        private void AlternarMaximizar()
+        {
+            AtualizarLimitesDeMaximizacao();
+
+            WindowState = WindowState == FormWindowState.Maximized
+                ? FormWindowState.Normal
+                : FormWindowState.Maximized;
         }
 
         // Configura as permissões de visibilidade dos botões com base no perfil do funcionário.
@@ -197,9 +267,7 @@ namespace BetaFit.Desktop.Forms
 
         private void btnMaximizarJanela_Click(object? sender, EventArgs e)
         {
-            WindowState = WindowState == FormWindowState.Maximized
-                ? FormWindowState.Normal
-                : FormWindowState.Maximized;
+            AlternarMaximizar();
         }
 
         private void btnMinimizarJanela_Click(object? sender, EventArgs e)

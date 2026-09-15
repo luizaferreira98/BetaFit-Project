@@ -11,10 +11,11 @@
 // DELETE /api/usuarios/{id}  Remove um usuário
 // =============================================================================
 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using BetaFit.Application.DTOs;
 using BetaFit.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BetaFit.API.Controllers
 {
@@ -49,6 +50,16 @@ namespace BetaFit.API.Controllers
         [HttpDelete("{id}")] // DELETE /api/usuarios/{id}
         public async Task<IActionResult> Delete(string id)
         {
+            // Esse controller é [Authorize(Roles = "Admin")] inteiro, então quem
+            // chama este endpoint é sempre um administrador. Bloquear "id == eu
+            // mesmo" aqui equivale a bloquear a autoexclusão de admin — mesma regra
+            // que já existe na tela de Funcionários do Desktop, mas replicada aqui
+            // como última linha de defesa (a UI pode ser contornada por quem chamar
+            // a API direto; a rota não deve confiar só na validação client-side).
+            var currentUserId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (!string.IsNullOrEmpty(currentUserId) && string.Equals(currentUserId, id, StringComparison.Ordinal))
+                return BadRequest(new { message = "Você não pode excluir a própria conta de administrador." });
+
             var (success, error) = await _usuariosService.DeleteAsync(id);
             if (!success)
                 return BadRequest(new { message = error }); // HTTP 400

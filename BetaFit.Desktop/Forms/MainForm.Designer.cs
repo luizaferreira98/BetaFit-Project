@@ -84,6 +84,7 @@
             pnlMenu.ShadowDecoration.CustomizableEdges = customizableEdges16;
             pnlMenu.Size = new Size(240, 0);
             pnlMenu.TabIndex = 0;
+            pnlMenu.Resize += pnlMenu_Resize;
             // 
             // btnPerfil
             // 
@@ -122,7 +123,7 @@
             btnLogout.FillColor = Color.Black;
             btnLogout.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnLogout.ForeColor = Color.White;
-            btnLogout.Location = new Point(16, 744);
+            btnLogout.Location = new Point(16, 706);
             btnLogout.Name = "btnLogout";
             btnLogout.ShadowDecoration.CustomizableEdges = customizableEdges6;
             btnLogout.Size = new Size(165, 32);
@@ -288,6 +289,7 @@
             pnlBarraTitulo.Name = "pnlBarraTitulo";
             pnlBarraTitulo.Size = new Size(0, 38);
             pnlBarraTitulo.TabIndex = 2;
+            pnlBarraTitulo.DoubleClick += pnlBarraTitulo_DoubleClick;
             pnlBarraTitulo.Controls.Add(btnFecharJanela);
             pnlBarraTitulo.Controls.Add(btnMaximizarJanela);
             pnlBarraTitulo.Controls.Add(btnMinimizarJanela);
@@ -365,6 +367,7 @@
             MinimizeBox = false;
             Text = "MainForm";
             Load += MainForm_Load;
+            Resize += MainForm_Resize;
             pnlMenu.ResumeLayout(false);
             pnlMenu.PerformLayout();
             ResumeLayout(false);

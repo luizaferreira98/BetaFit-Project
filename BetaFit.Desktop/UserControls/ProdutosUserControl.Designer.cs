@@ -119,6 +119,7 @@
             // 
             // btnAtualizarProdutos
             // 
+            btnAtualizarProdutos.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnAtualizarProdutos.BorderRadius = 5;
             btnAtualizarProdutos.Cursor = Cursors.Hand;
             btnAtualizarProdutos.CustomizableEdges = customizableEdges1;
@@ -277,6 +278,7 @@
             // 
             // btnExcluirProduto
             // 
+            btnExcluirProduto.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnExcluirProduto.BackColor = Color.Transparent;
             btnExcluirProduto.BorderColor = Color.FromArgb(60, 60, 60);
             btnExcluirProduto.BorderRadius = 5;
@@ -300,6 +302,7 @@
             // 
             // btnEditarProduto
             // 
+            btnEditarProduto.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnEditarProduto.BackColor = Color.FromArgb(10, 10, 10);
             btnEditarProduto.BorderColor = Color.FromArgb(60, 60, 60);
             btnEditarProduto.BorderRadius = 5;
@@ -323,6 +326,7 @@
             // 
             // btnNovoProduto
             // 
+            btnNovoProduto.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnNovoProduto.BorderRadius = 5;
             btnNovoProduto.Cursor = Cursors.Hand;
             btnNovoProduto.CustomizableEdges = customizableEdges9;
@@ -343,6 +347,7 @@
             // 
             // pnlBusca
             // 
+            pnlBusca.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             pnlBusca.BackColor = Color.FromArgb(10, 10, 10);
             pnlBusca.BorderColor = Color.FromArgb(45, 45, 45);
             pnlBusca.BorderRadius = 8;
@@ -544,6 +549,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoScroll = true;
             BackColor = Color.Black;
             Controls.Add(pnlTabela);
             Controls.Add(pnlBusca);
@@ -553,6 +559,7 @@
             Name = "ProdutosUserControl";
             Size = new Size(1120, 820);
             Load += ProductUserControl_Load;
+            Resize += ProdutosUserControl_Resize;
             ((System.ComponentModel.ISupportInitialize)gridProdutos).EndInit();
             pnlBusca.ResumeLayout(false);
             pnlTabela.ResumeLayout(false);

@@ -38,6 +38,8 @@ namespace BetaFit.Desktop.UserControls
             _profileApiService = new ProfileApiService();
             _usersApiService = new UsersApiService();
 
+            AjustarColunasFormulario();
+
             await CarregarPerfilAsync();
         }
 
@@ -77,8 +79,52 @@ namespace BetaFit.Desktop.UserControls
             lblNomeCompleto.Text = string.IsNullOrWhiteSpace(perfil.FullName)
                 ? "Usuário"
                 : perfil.FullName;
-            lblEmail.Text = perfil.Email;
-            guna2HtmlLabel2.Text = perfil.IsAdmin ? "Administrador" : "Usuário";
+            lblEmailCabecalho.Text = perfil.Email;
+            lblCargo.Text = perfil.IsAdmin ? "Administrador" : "Usuário";
+        }
+
+        //=================================================
+        // LAYOUT RESPONSIVO
+        //=================================================
+        // Os painéis já esticam sozinhos (Anchor Left|Right). O que o Anchor
+        // não faz é redistribuir as DUAS COLUNAS de campos dentro do painel —
+        // ele só empurraria a coluna da direita e deixaria um buraco no meio.
+        // Por isso as larguras são recalculadas aqui, mesma ideia do
+        // DistribuirCards() do DashboardUserControl.
+        //=================================================
+        private void PerfilUserControl_Resize(object sender, EventArgs e)
+        {
+            if (DesignMode) return;
+            AjustarColunasFormulario();
+        }
+
+        private void AjustarColunasFormulario()
+        {
+            if (pnlDadosPessoais == null || pnlDadosPessoais.Width <= 0) return;
+
+            const int margem = 24;   // padding interno do card
+            const int vao = 24;      // espaço entre as duas colunas
+            const int larguraMinima = 220;
+
+            int larguraColuna = (pnlDadosPessoais.Width - (margem * 2) - vao) / 2;
+            if (larguraColuna < larguraMinima) larguraColuna = larguraMinima;
+
+            int colEsquerda = margem;
+            int colDireita = margem + larguraColuna + vao;
+
+            // Coluna da esquerda: nome e e-mail
+            foreach (var c in new Control[] { lblNome, txtNome, lblEmail, txtEmail })
+                c.Left = colEsquerda;
+
+            // Coluna da direita: telefone e nascimento
+            foreach (var c in new Control[] { lblTelefone, txtTelefone, lblNascimento, dtpDNascimento })
+                c.Left = colDireita;
+
+            // Só os campos acompanham a largura; os rótulos ficam no tamanho do texto
+            txtNome.Width = larguraColuna;
+            txtEmail.Width = larguraColuna;
+            txtTelefone.Width = larguraColuna;
+            dtpDNascimento.Width = larguraColuna;
         }
 
         //=================================================
@@ -193,6 +239,22 @@ namespace BetaFit.Desktop.UserControls
             if (string.IsNullOrWhiteSpace(userId))
             {
                 BetaFitMessageBox.Erro(this, "Não foi possível identificar o usuário logado.");
+                return;
+            }
+
+            // Administradores não podem excluir a própria conta por aqui — a tela de
+            // Funcionários já bloqueia isso ao gerenciar outras contas, mas o botão
+            // "Excluir Minha Conta" do Perfil não tinha essa mesma verificação, o que
+            // permitia um admin se auto-excluir (e, no limite, deixar a loja sem
+            // nenhum administrador). A exclusão de um admin deve passar por outro
+            // administrador, na tela de Funcionários.
+            if (SessionManager.Instance.IsAdmin)
+            {
+                BetaFitMessageBox.Aviso(
+                    this,
+                    "Contas de administrador não podem ser excluídas pelo próprio titular. " +
+                    "Peça para outro administrador excluir sua conta pela tela de Funcionários.",
+                    "Operação não permitida");
                 return;
             }
 

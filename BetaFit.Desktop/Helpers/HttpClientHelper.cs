@@ -323,6 +323,56 @@ namespace BetaFit.Desktop.Helpers
         }
 
         /// <summary>
+        /// Envia um arquivo via POST multipart/form-data (upload de imagem, etc).
+        /// Uso: var (ok, url, err) = await http.PostFileAsync("/api/products/upload-image",
+        ///          "image", bytes, "foto.jpg");
+        /// O nome do campo ("image" no exemplo) precisa bater com o parâmetro
+        /// esperado pelo endpoint da API (IFormFile? image).
+        /// Retorna a URL pública da imagem, lida da propriedade "url" do JSON
+        /// de resposta ({ "url": "https://..." }).
+        /// </summary>
+        public async Task<(bool Success, string Url, string ErrorMessage)> PostFileAsync(
+            string endpoint, string nomeCampo, byte[] arquivoBytes, string nomeArquivo)
+        {
+            try
+            {
+                using var content = new MultipartFormDataContent();
+                using var arquivoContent = new ByteArrayContent(arquivoBytes);
+                content.Add(arquivoContent, nomeCampo, nomeArquivo);
+
+                var response = await _client.PostAsync(endpoint, content);
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    try
+                    {
+                        var doc = JsonDocument.Parse(responseBody);
+                        var url = doc.RootElement.TryGetProperty("url", out var urlProp)
+                            ? urlProp.GetString() ?? string.Empty
+                            : string.Empty;
+
+                        return string.IsNullOrWhiteSpace(url)
+                            ? (false, string.Empty, "A API não retornou a URL da imagem enviada.")
+                            : (true, url, string.Empty);
+                    }
+                    catch (JsonException)
+                    {
+                        return (false, string.Empty, "Resposta inesperada da API ao enviar a imagem.");
+                    }
+                }
+
+                var error = TryExtractErrorMessage(responseBody, response.StatusCode);
+                return (false, string.Empty, error);
+            }
+            catch (Exception ex)
+            {
+                var friendly = CategorizeConnectionError(ex, endpoint);
+                return (false, string.Empty, friendly);
+            }
+        }
+
+        /// <summary>
         /// Realiza um POST sem corpo e retorna apenas sucesso/erro.
         /// Útil para logout e ações simples.
         /// </summary>

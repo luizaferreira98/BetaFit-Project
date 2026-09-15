@@ -127,7 +127,34 @@ namespace BetaFit.Desktop.UserControls
             pctIconeVazio.Image = CriarIconeCarrinhoVazio();
             pctIconeVazio.SizeMode = PictureBoxSizeMode.CenterImage;
 
+            AjustarLayoutStatus();
+
             await CarregarDadosAsync();
+        }
+
+        //=================================================
+        // LAYOUT RESPONSIVO DA BARRA DE STATUS/BUSCA
+        //=================================================
+        // lblNovoStatus/cboStatusPedido/btnAtualizarStatusPedido ficam fixos à
+        // esquerda (Anchor=Left). txtPesquisaPedido é Anchor=Right e, quando o
+        // painel encolhe, mantém a margem da direita e anda pra esquerda — a
+        // essa altura ele passa a ficar quase colado no botão "ATUALIZAR
+        // STATUS" desde qualquer redução pequena de largura. Por isso, além da
+        // âncora, o campo também é encolhido aqui para nunca invadir o grupo
+        // da esquerda.
+        private void AjustarLayoutStatus()
+        {
+            if (pnlStatus == null || pnlStatus.Width <= 0) return;
+
+            const int margemEntreGrupos = 16;
+            const int larguraMinimaCampo = 120;
+
+            int limiteEsquerdo = btnAtualizarStatusPedido.Right + margemEntreGrupos;
+            int larguraDisponivel = (pnlStatus.Width - 15) - limiteEsquerdo; // 15 = margem direita do Designer
+
+            int largura = Math.Max(larguraMinimaCampo, larguraDisponivel);
+            txtPesquisaPedido.Width = largura;
+            txtPesquisaPedido.Left = Math.Max(limiteEsquerdo, pnlStatus.Width - largura - 15);
         }
 
         // Ícone de carrinho vazio (contorno cinza + "brilho" lima em cima),
@@ -248,6 +275,31 @@ namespace BetaFit.Desktop.UserControls
             bool semResultados = _pedidosFiltrados.Count == 0;
             pnlTabela.Visible = !semResultados;
             pnlPedidosVazio.Visible = semResultados;
+
+            if (semResultados) CentralizarEstadoVazio();
+        }
+
+        // O ícone, os textos e o botão do estado vazio foram posicionados no
+        // Designer para uma largura fixa (1090px). Como o painel estica junto
+        // com a janela, eles precisam ser recentralizados em relação à largura
+        // real — mesma abordagem usada no DashboardUserControl.
+        private void CentralizarEstadoVazio()
+        {
+            if (pnlPedidosVazio == null || pnlPedidosVazio.Width <= 0) return;
+
+            foreach (var c in new Control[]
+                     { pctIconeVazio, lblTituloVazio, lblSubtituloVazio, btnIrParaProdutos })
+            {
+                if (c == null) continue;
+                c.Left = Math.Max(0, (pnlPedidosVazio.Width - c.Width) / 2);
+            }
+        }
+
+        private void PedidosUserControl_Resize(object sender, EventArgs e)
+        {
+            if (DesignMode) return;
+            CentralizarEstadoVazio();
+            AjustarLayoutStatus();
         }
 
         //=================================================
@@ -400,6 +452,13 @@ namespace BetaFit.Desktop.UserControls
                                 // sempre desenha com as cores de DisabledState.
             btn.Text = pagina.ToString();
             btn.Tag = pagina;
+
+            // Mesmo problema do ProdutosUserControl: Size(32,32) fixo do Designer
+            // só cabe um dígito. Recalcula a largura a partir do texto real;
+            // ReposicionarBotoesPaginacao já usa ctrl.Width, então o
+            // reposicionamento continua correto sozinho.
+            int larguraTexto = TextRenderer.MeasureText(btn.Text, btn.Font).Width;
+            btn.Width = Math.Max(32, larguraTexto + 18);
 
             bool ativa = pagina == _paginaAtual;
             btn.FillColor = ativa ? BetaFitTheme.Admin.Lima : Color.Transparent;

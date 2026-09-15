@@ -79,6 +79,7 @@
             // 
             // btnAtualizarProdutos
             // 
+            btnAtualizarProdutos.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnAtualizarProdutos.BorderRadius = 5;
             btnAtualizarProdutos.Cursor = Cursors.Hand;
             btnAtualizarProdutos.CustomizableEdges = customizableEdges21;
@@ -121,6 +122,7 @@
             // 
             // pnlBotoesCategorias
             // 
+            pnlBotoesCategorias.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             pnlBotoesCategorias.Controls.Add(btnExcluirCategoria);
             pnlBotoesCategorias.Controls.Add(btnEditarCategoria);
             pnlBotoesCategorias.Controls.Add(btnNovaCategoria);
@@ -134,6 +136,7 @@
             // 
             // btnExcluirCategoria
             // 
+            btnExcluirCategoria.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             btnExcluirCategoria.BackColor = Color.Transparent;
             btnExcluirCategoria.BorderColor = Color.Gray;
             btnExcluirCategoria.BorderRadius = 5;
@@ -157,6 +160,7 @@
             // 
             // btnEditarCategoria
             // 
+            btnEditarCategoria.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             btnEditarCategoria.BackColor = Color.Transparent;
             btnEditarCategoria.BorderColor = Color.Gray;
             btnEditarCategoria.BorderRadius = 5;
@@ -180,6 +184,7 @@
             // 
             // btnNovaCategoria
             // 
+            btnNovaCategoria.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             btnNovaCategoria.BorderRadius = 5;
             btnNovaCategoria.Cursor = Cursors.Hand;
             btnNovaCategoria.CustomizableEdges = customizableEdges27;
@@ -380,6 +385,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoScroll = true;
             BackColor = Color.Black;
             Controls.Add(pnlTabela);
             Controls.Add(pnlBotoesCategorias);

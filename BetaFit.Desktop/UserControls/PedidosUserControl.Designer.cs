@@ -129,6 +129,7 @@
             // 
             // btnAtualizarPedidos
             // 
+            btnAtualizarPedidos.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnAtualizarPedidos.BorderRadius = 5;
             btnAtualizarPedidos.Cursor = Cursors.Hand;
             btnAtualizarPedidos.CustomizableEdges = customizableEdges1;
@@ -139,7 +140,7 @@
             btnAtualizarPedidos.FillColor = Color.GreenYellow;
             btnAtualizarPedidos.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnAtualizarPedidos.ForeColor = Color.Black;
-            btnAtualizarPedidos.Location = new Point(851, 18);
+            btnAtualizarPedidos.Location = new Point(957, 18);
             btnAtualizarPedidos.Name = "btnAtualizarPedidos";
             btnAtualizarPedidos.ShadowDecoration.CustomizableEdges = customizableEdges2;
             btnAtualizarPedidos.Size = new Size(148, 45);
@@ -149,6 +150,7 @@
             // 
             // pnlStatus
             // 
+            pnlStatus.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             pnlStatus.BackColor = Color.FromArgb(10, 10, 10);
             pnlStatus.BorderColor = Color.FromArgb(45, 45, 45);
             pnlStatus.Controls.Add(txtPesquisaPedido);
@@ -159,11 +161,12 @@
             pnlStatus.Location = new Point(15, 79);
             pnlStatus.Name = "pnlStatus";
             pnlStatus.ShadowDecoration.CustomizableEdges = customizableEdges10;
-            pnlStatus.Size = new Size(1056, 64);
+            pnlStatus.Size = new Size(1090, 64);
             pnlStatus.TabIndex = 11;
             // 
             // txtPesquisaPedido
             // 
+            txtPesquisaPedido.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             txtPesquisaPedido.BorderColor = Color.FromArgb(45, 45, 45);
             txtPesquisaPedido.BorderRadius = 5;
             txtPesquisaPedido.CustomizableEdges = customizableEdges3;
@@ -177,7 +180,7 @@
             txtPesquisaPedido.Font = new Font("Segoe UI", 9F);
             txtPesquisaPedido.ForeColor = Color.White;
             txtPesquisaPedido.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
-            txtPesquisaPedido.Location = new Point(654, 13);
+            txtPesquisaPedido.Location = new Point(688, 13);
             txtPesquisaPedido.Name = "txtPesquisaPedido";
             txtPesquisaPedido.PlaceholderText = "🔎 Pesquisar por cliente, ID...";
             txtPesquisaPedido.SelectedText = "";
@@ -610,6 +613,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoScroll = true;
             BackColor = Color.Black;
             Controls.Add(lblTituloPedidos);
             Controls.Add(lblDescricaoPedidos);
@@ -620,6 +624,7 @@
             Name = "PedidosUserControl";
             Size = new Size(1120, 820);
             Load += PedidosUserControl_Load;
+            Resize += PedidosUserControl_Resize;
             pnlStatus.ResumeLayout(false);
             pnlStatus.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)gridPedidos).EndInit();

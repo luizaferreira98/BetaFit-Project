@@ -108,9 +108,10 @@
             lblClientes = new Guna.UI2.WinForms.Guna2HtmlLabel();
             pnlColorProdutos = new Guna.UI2.WinForms.Guna2Panel();
             gridUltimosPedidos = new Guna.UI2.WinForms.Guna2DataGridView();
-            colIdUP = new DataGridViewTextBoxColumn();
-            colClienteUP = new DataGridViewTextBoxColumn();
-            colDataUP = new DataGridViewTextBoxColumn();
+            colFotoItem = new DataGridViewImageColumn();
+            colProdutoMaisPedido = new DataGridViewTextBoxColumn();
+            colUnidadesPedidas = new DataGridViewTextBoxColumn();
+            colQtdPedidos = new DataGridViewTextBoxColumn();
             lblUltimosPedidos = new Guna.UI2.WinForms.Guna2HtmlLabel();
             btnAtualizarPedidos = new Guna.UI2.WinForms.Guna2Button();
             pnlTabela = new Guna.UI2.WinForms.Guna2Panel();
@@ -318,6 +319,7 @@
             pnlCardProdutos.BorderRadius = 10;
             pnlCardProdutos.BorderThickness = 1;
             pnlCardProdutos.Controls.Add(pnlIconeProdutos);
+            pnlCardProdutos.Controls.Add(pnlColorProdutos);
             pnlCardProdutos.Controls.Add(lblValorProdutos);
             pnlCardProdutos.Controls.Add(lblProdutos);
             pnlCardProdutos.CustomizableEdges = customizableEdges21;
@@ -450,7 +452,7 @@
             // 
             pnlColorProdutos.BackColor = Color.GreenYellow;
             pnlColorProdutos.CustomizableEdges = customizableEdges31;
-            pnlColorProdutos.Location = new Point(565, 79);
+            pnlColorProdutos.Location = new Point(0, 0);
             pnlColorProdutos.Name = "pnlColorProdutos";
             pnlColorProdutos.ShadowDecoration.CustomizableEdges = customizableEdges32;
             pnlColorProdutos.Size = new Size(6, 100);
@@ -471,7 +473,7 @@
             gridUltimosPedidos.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             gridUltimosPedidos.ColumnHeadersHeight = 30;
             gridUltimosPedidos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
-            gridUltimosPedidos.Columns.AddRange(new DataGridViewColumn[] { colIdUP, colClienteUP, colDataUP });
+            gridUltimosPedidos.Columns.AddRange(new DataGridViewColumn[] { colFotoItem, colProdutoMaisPedido, colUnidadesPedidas, colQtdPedidos });
             dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = Color.White;
             dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F);
@@ -497,28 +499,40 @@
             gridUltimosPedidos.ThemeStyle.RowsStyle.Font = new Font("Segoe UI", 9F);
             gridUltimosPedidos.ThemeStyle.RowsStyle.Height = 25;
             // 
-            // colIdUP
+            // colFotoItem
             // 
-            colIdUP.HeaderText = "Produto";
-            colIdUP.Name = "colIdUP";
-            colIdUP.ReadOnly = true;
-            colIdUP.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            colFotoItem.HeaderText = "Foto";
+            colFotoItem.Name = "colFotoItem";
+            colFotoItem.ReadOnly = true;
+            colFotoItem.Width = 70;
+            colFotoItem.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            colFotoItem.Resizable = DataGridViewTriState.False;
+            colFotoItem.SortMode = DataGridViewColumnSortMode.NotSortable;
+            colFotoItem.ImageLayout = DataGridViewImageCellLayout.Zoom;
+            colFotoItem.DefaultCellStyle.Padding = new Padding(3);
             // 
-            // colClienteUP
+            // colProdutoMaisPedido
             // 
-            colClienteUP.HeaderText = "Unidades pedidas";
-            colClienteUP.Name = "colClienteUP";
-            colClienteUP.ReadOnly = true;
-            colClienteUP.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            colClienteUP.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            colProdutoMaisPedido.HeaderText = "Produto";
+            colProdutoMaisPedido.Name = "colProdutoMaisPedido";
+            colProdutoMaisPedido.ReadOnly = true;
+            colProdutoMaisPedido.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             // 
-            // colDataUP
+            // colUnidadesPedidas
             // 
-            colDataUP.HeaderText = "Nº de pedidos";
-            colDataUP.Name = "colDataUP";
-            colDataUP.ReadOnly = true;
-            colDataUP.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            colDataUP.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            colUnidadesPedidas.HeaderText = "Unidades pedidas";
+            colUnidadesPedidas.Name = "colUnidadesPedidas";
+            colUnidadesPedidas.ReadOnly = true;
+            colUnidadesPedidas.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colUnidadesPedidas.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            // 
+            // colQtdPedidos
+            // 
+            colQtdPedidos.HeaderText = "Nº de pedidos";
+            colQtdPedidos.Name = "colQtdPedidos";
+            colQtdPedidos.ReadOnly = true;
+            colQtdPedidos.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            colQtdPedidos.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             // 
             // lblUltimosPedidos
             // 
@@ -533,6 +547,7 @@
             // 
             // btnAtualizarPedidos
             // 
+            btnAtualizarPedidos.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnAtualizarPedidos.BorderRadius = 5;
             btnAtualizarPedidos.Cursor = Cursors.Hand;
             btnAtualizarPedidos.CustomizableEdges = customizableEdges33;
@@ -553,6 +568,7 @@
             // 
             // pnlTabela
             // 
+            pnlTabela.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             pnlTabela.BackColor = Color.FromArgb(10, 10, 10);
             pnlTabela.BorderColor = Color.FromArgb(45, 45, 45);
             pnlTabela.BorderRadius = 10;
@@ -650,12 +666,13 @@
             // 
             // PnlPedidosVazios
             // 
+            PnlPedidosVazios.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             PnlPedidosVazios.Controls.Add(pctIconeVazio);
             PnlPedidosVazios.Controls.Add(lblTituloVazio);
             PnlPedidosVazios.Controls.Add(lblSubtituloVazio);
             PnlPedidosVazios.Controls.Add(btnIrParaProdutos);
             PnlPedidosVazios.CustomizableEdges = customizableEdges49;
-            PnlPedidosVazios.Location = new Point(12, 227);
+            PnlPedidosVazios.Location = new Point(15, 230);
             PnlPedidosVazios.Name = "PnlPedidosVazios";
             PnlPedidosVazios.ShadowDecoration.CustomizableEdges = customizableEdges50;
             PnlPedidosVazios.Size = new Size(1090, 576);
@@ -716,12 +733,12 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoScroll = true;
             BackColor = Color.Black;
             Controls.Add(lblTituloDashboard);
             Controls.Add(lblDescricaoDashboard);
             Controls.Add(btnAtualizarPedidos);
             Controls.Add(lblUltimosPedidos);
-            Controls.Add(pnlColorProdutos);
             Controls.Add(pnlCardClientes);
             Controls.Add(pnlCardProdutos);
             Controls.Add(pnlCardPedidos);
@@ -731,6 +748,7 @@
             Name = "DashboardUserControl";
             Size = new Size(1120, 820);
             Load += DashboardUserControl_Load;
+            Resize += DashboardUserControl_Resize;
             pnlCardFaturamento.ResumeLayout(false);
             pnlCardFaturamento.PerformLayout();
             pnlIconeFaturamento.ResumeLayout(false);
@@ -780,9 +798,10 @@
         private Guna.UI2.WinForms.Guna2Panel pnlColorProdutos;
         private Guna.UI2.WinForms.Guna2DataGridView gridUltimosPedidos;
         private Guna.UI2.WinForms.Guna2HtmlLabel lblUltimosPedidos;
-        private DataGridViewTextBoxColumn colIdUP;
-        private DataGridViewTextBoxColumn colClienteUP;
-        private DataGridViewTextBoxColumn colDataUP;
+        private DataGridViewImageColumn colFotoItem;
+        private DataGridViewTextBoxColumn colProdutoMaisPedido;
+        private DataGridViewTextBoxColumn colUnidadesPedidas;
+        private DataGridViewTextBoxColumn colQtdPedidos;
         private Guna.UI2.WinForms.Guna2Button btnAtualizarPedidos;
         private Guna.UI2.WinForms.Guna2Panel pnlIconeFaturamento;
         private Guna.UI2.WinForms.Guna2Panel pnlIconeCategorias;

@@ -114,7 +114,32 @@ namespace BetaFit.Desktop.Forms
             FormBorderStyle = FormBorderStyle.None;
             StartPosition = FormStartPosition.CenterParent;
             ShowInTaskbar = false;
-            ClientSize = new Size(420, 240);
+
+            // Largura fixa do card; a altura é calculada dinamicamente logo
+            // abaixo, de acordo com o tamanho da mensagem (evita texto cortado
+            // quando a mensagem é longa, como "Confirmar Exclusão" de produtos
+            // com nome grande).
+            const int larguraCard = 420;
+            const int larguraMensagem = larguraCard - 56; // 28px de margem de cada lado
+            const int alturaMinimaMensagem = 40;
+
+            var fonteMensagem = new Font(BetaFitTheme.FonteBase, 10F, FontStyle.Regular);
+            var tamanhoTexto = TextRenderer.MeasureText(
+                string.IsNullOrEmpty(_mensagem) ? " " : _mensagem,
+                fonteMensagem,
+                new Size(larguraMensagem, 0),
+                TextFormatFlags.WordBreak | TextFormatFlags.TextBoxControl);
+            int alturaMensagem = Math.Max(alturaMinimaMensagem, tamanhoTexto.Height + 4);
+
+            const int topoMensagem = 90;
+            const int espacoAposMensagem = 34; // respiro entre a mensagem e os botões
+            const int alturaBotao = 40;
+            const int margemInferior = 24;
+
+            int alturaCard = topoMensagem + alturaMensagem + espacoAposMensagem + alturaBotao + margemInferior;
+            alturaCard = Math.Max(alturaCard, 200); // nunca menor que o mínimo original
+
+            ClientSize = new Size(larguraCard, alturaCard);
             BackColor = Color.FromArgb(15, 15, 15);
             Text = titulo;
             KeyPreview = true;
@@ -200,18 +225,18 @@ namespace BetaFit.Desktop.Forms
             {
                 BackColor = Color.Transparent,
                 Text = _mensagem,
-                Font = new Font(BetaFitTheme.FonteBase, 10F, FontStyle.Regular),
+                Font = fonteMensagem,
                 ForeColor = Color.FromArgb(210, 210, 210),
-                Location = new Point(28, 90),
-                Size = new Size(ClientSize.Width - 56, 88),
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
+                AutoSize = false,
+                Location = new Point(28, topoMensagem),
+                Size = new Size(larguraMensagem, alturaMensagem),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
             };
             pnlCartao.Controls.Add(lblMensagem);
 
             // -----------------------------------------------------------
             // Rodapé de botões
             // -----------------------------------------------------------
-            int alturaBotao = 40;
             int larguraBotaoPrimario = _confirmacao ? 130 : 140;
             int y = ClientSize.Height - alturaBotao - 24;
 

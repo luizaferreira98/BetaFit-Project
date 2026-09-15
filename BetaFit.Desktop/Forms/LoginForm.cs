@@ -46,7 +46,9 @@ namespace BetaFit.Desktop.Forms
             pctIconeSupere.Image = BetaFitTheme.CriarIconeCoracao();
             pctIconeEmail.Image = BetaFitTheme.CriarIconeEnvelope();
             pctIconeSenha.Image = BetaFitTheme.CriarIconeCadeado();
-            pctToggleSenha.Image = BetaFitTheme.CriarIconeOlho(aberto: txtSenha.UseSystemPasswordChar);
+            // "Aberto" = senha visível. UseSystemPasswordChar == true significa
+            // que a senha está oculta, então o ícone precisa ser o inverso.
+            pctToggleSenha.Image = BetaFitTheme.CriarIconeOlho(aberto: !txtSenha.UseSystemPasswordChar);
 
             // ── Fundo do painel esquerdo: foto + gradiente + linhas ──
             // A foto fica em Assets/academia.png (Content, copiada pro
@@ -101,7 +103,8 @@ namespace BetaFit.Desktop.Forms
         private void pctToggleSenha_Click(object sender, EventArgs e)
         {
             txtSenha.UseSystemPasswordChar = !txtSenha.UseSystemPasswordChar;
-            pctToggleSenha.Image = BetaFitTheme.CriarIconeOlho(aberto: txtSenha.UseSystemPasswordChar);
+            // "Aberto" = senha visível (UseSystemPasswordChar == false)
+            pctToggleSenha.Image = BetaFitTheme.CriarIconeOlho(aberto: !txtSenha.UseSystemPasswordChar);
         }
 
 
@@ -153,7 +156,7 @@ namespace BetaFit.Desktop.Forms
 
                 if (success && user != null)
                 {
-             
+
                     bool isFuncionario = user.IsFuncionario;
 
                     if (!isFuncionario)

@@ -57,7 +57,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 // Configuração de Cookie Authentication para a API
-builder.Services.Configure<Microsoft.AspNetCore.Identity.SecurityStampValidatorOptions>(options=>options.ValidationInterval=TimeSpan.Zero);
+builder.Services.Configure<Microsoft.AspNetCore.Identity.SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.Zero);
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Events.OnRedirectToLogin = context =>
@@ -152,13 +152,19 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseExceptionHandler(handler=>handler.Run(async context=>{
-    var error=context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()?.Error;
-    app.Logger.LogError(error,"Falha na API {Path}. Referência: {TraceId}",context.Request.Path,context.TraceIdentifier);
-    context.Response.StatusCode=500;
-    await context.Response.WriteAsJsonAsync(new {message="Não foi possível concluir a operação. Consulte o log da API.",traceId=context.TraceIdentifier});
+app.UseExceptionHandler(handler => handler.Run(async context => {
+    var error = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()?.Error;
+    app.Logger.LogError(error, "Falha na API {Path}. Referência: {TraceId}", context.Request.Path, context.TraceIdentifier);
+    context.Response.StatusCode = 500;
+    await context.Response.WriteAsJsonAsync(new { message = "Não foi possível concluir a operação. Consulte o log da API.", traceId = context.TraceIdentifier });
 }));
 app.UseHttpsRedirection();
+
+// Serve arquivos estáticos de wwwroot (usado pelas imagens de produto
+// enviadas via POST /api/products/upload-image, a partir do Desktop).
+Directory.CreateDirectory(Path.Combine(app.Environment.ContentRootPath, "wwwroot", "images", "products"));
+app.UseStaticFiles();
+
 app.UseRouting();
 app.UseCors("UiCors");
 

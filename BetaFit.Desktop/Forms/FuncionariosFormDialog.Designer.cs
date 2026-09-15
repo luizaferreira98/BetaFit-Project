@@ -94,7 +94,7 @@
             lblTitulo.ForeColor = SystemColors.ControlLightLight;
             lblTitulo.Location = new Point(12, 12);
             lblTitulo.Name = "lblTitulo";
-            lblTitulo.Size = new Size(160, 34);
+            lblTitulo.Size = new Size(208, 34);
             lblTitulo.TabIndex = 4;
             lblTitulo.Text = "Novo Funcionário";
             // 
@@ -109,7 +109,7 @@
             txtNome.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
             txtNome.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
             txtNome.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
-            txtNome.FillColor = Color.DimGray;
+            txtNome.FillColor = Color.FromArgb(24, 24, 24);
             txtNome.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
             txtNome.Font = new Font("Segoe UI", 9F);
             txtNome.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
@@ -144,7 +144,7 @@
             txtEmail.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
             txtEmail.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
             txtEmail.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
-            txtEmail.FillColor = Color.DimGray;
+            txtEmail.FillColor = Color.FromArgb(24, 24, 24);
             txtEmail.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
             txtEmail.Font = new Font("Segoe UI", 9F);
             txtEmail.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
@@ -179,7 +179,7 @@
             txtSenha.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
             txtSenha.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
             txtSenha.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
-            txtSenha.FillColor = Color.DimGray;
+            txtSenha.FillColor = Color.FromArgb(24, 24, 24);
             txtSenha.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
             txtSenha.Font = new Font("Segoe UI", 9F);
             txtSenha.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
@@ -214,7 +214,7 @@
             txtConfSenha.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
             txtConfSenha.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
             txtConfSenha.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
-            txtConfSenha.FillColor = Color.DimGray;
+            txtConfSenha.FillColor = Color.FromArgb(24, 24, 24);
             txtConfSenha.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
             txtConfSenha.Font = new Font("Segoe UI", 9F);
             txtConfSenha.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
@@ -255,7 +255,7 @@
             cmbRoles.CustomizableEdges = customizableEdges10;
             cmbRoles.DrawMode = DrawMode.OwnerDrawFixed;
             cmbRoles.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbRoles.FillColor = Color.DimGray;
+            cmbRoles.FillColor = Color.FromArgb(24, 24, 24);
             cmbRoles.FocusedColor = Color.FromArgb(94, 148, 255);
             cmbRoles.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
             cmbRoles.Font = new Font("Segoe UI", 10F);
@@ -302,7 +302,7 @@
             guna2HtmlLabel5.ForeColor = SystemColors.ButtonFace;
             guna2HtmlLabel5.Location = new Point(53, 443);
             guna2HtmlLabel5.Name = "guna2HtmlLabel5";
-            guna2HtmlLabel5.Size = new Size(76, 17);
+            guna2HtmlLabel5.Size = new Size(98, 17);
             guna2HtmlLabel5.TabIndex = 22;
             guna2HtmlLabel5.Text = "Funcionário ativo";
             // 
@@ -317,7 +317,7 @@
             txtTelefone.DisabledState.FillColor = Color.FromArgb(226, 226, 226);
             txtTelefone.DisabledState.ForeColor = Color.FromArgb(138, 138, 138);
             txtTelefone.DisabledState.PlaceholderForeColor = Color.FromArgb(138, 138, 138);
-            txtTelefone.FillColor = Color.DimGray;
+            txtTelefone.FillColor = Color.FromArgb(24, 24, 24);
             txtTelefone.FocusedState.BorderColor = Color.FromArgb(94, 148, 255);
             txtTelefone.Font = new Font("Segoe UI", 9F);
             txtTelefone.HoverState.BorderColor = Color.FromArgb(94, 148, 255);
@@ -387,7 +387,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(64, 64, 64);
+            BackColor = Color.FromArgb(15, 15, 15);
             ClientSize = new Size(396, 626);
             Controls.Add(btnSalvar);
             Controls.Add(btnCancelar);

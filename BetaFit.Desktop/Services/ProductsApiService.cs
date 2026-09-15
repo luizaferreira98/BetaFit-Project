@@ -86,5 +86,16 @@ namespace BetaFit.Desktop.Services
         {
             return await _http.DeleteAsync($"/api/products/{id}");
         }
+
+        /// <summary>
+        /// Envia uma imagem local (escolhida no formulário) para a API via
+        /// POST /api/products/upload-image e retorna a URL pública gerada.
+        /// Requer perfil Admin/Funcionário/Estoquista (verificado pela API).
+        /// </summary>
+        public async Task<(bool Success, string Url, string ErrorMessage)>
+            UploadImagemAsync(byte[] imagemBytes, string nomeArquivo)
+        {
+            return await _http.PostFileAsync("/api/products/upload-image", "image", imagemBytes, nomeArquivo);
+        }
     }
 }

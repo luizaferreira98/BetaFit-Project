@@ -1,5 +1,4 @@
-﻿
-using BetaFit.Desktop.DTOs;
+﻿using BetaFit.Desktop.DTOs;
 using BetaFit.Desktop.Forms;
 using BetaFit.Desktop.Helpers;
 using BetaFit.Desktop.Services;
@@ -92,7 +91,34 @@ namespace BetaFit.Desktop.UserControls
 
             gridProdutos.ColumnHeaderMouseClick += gridProdutos_ColumnHeaderMouseClick;
 
+            AjustarLayoutBusca();
+
             await CarregarDadosAsync();
+        }
+
+        //=================================================
+        // LAYOUT RESPONSIVO DA BARRA DE BUSCA
+        //=================================================
+        // btnNovoProduto/btnEditarProduto/btnExcluirProduto são Anchor=Right e
+        // andam juntos quando o painel encolhe. txtPesquisa não tem âncora (fica
+        // parado), então em qualquer janela mais estreita que o design ele acaba
+        // por baixo dos botões. Aqui o campo é encolhido para nunca invadir o
+        // espaço do botão mais à esquerda do grupo (btnNovoProduto).
+        private void ProdutosUserControl_Resize(object sender, EventArgs e)
+        {
+            if (DesignMode) return;
+            AjustarLayoutBusca();
+        }
+
+        private void AjustarLayoutBusca()
+        {
+            if (pnlBusca == null || pnlBusca.Width <= 0) return;
+
+            const int margemEntreCampoEBotoes = 12;
+            const int larguraMinimaCampo = 120;
+
+            int espacoDisponivel = btnNovoProduto.Left - margemEntreCampoEBotoes - txtPesquisa.Left;
+            txtPesquisa.Width = Math.Max(larguraMinimaCampo, espacoDisponivel);
         }
 
         //=================================================
@@ -356,6 +382,15 @@ namespace BetaFit.Desktop.UserControls
                                 // e sempre desenha com as cores de DisabledState (por isso ficavam todos cinza)
             btn.Text = pagina.ToString();
             btn.Tag = pagina;
+
+            // O Designer criou esses botões com Size(32,32) fixo, pensado pra
+            // um único dígito. Com 2+ dígitos (ex.: página "11") o texto
+            // estourava a largura e ficava cortado, mostrando só o último
+            // caractere. Aqui a largura é recalculada a partir do texto real,
+            // e ReposicionarBotoesPaginacao (abaixo) já usa ctrl.Width, então
+            // o reposicionamento continua correto sozinho.
+            int larguraTexto = TextRenderer.MeasureText(btn.Text, btn.Font).Width;
+            btn.Width = Math.Max(32, larguraTexto + 18);
 
             bool ativa = pagina == _paginaAtual;
             btn.FillColor = ativa ? BetaFitTheme.Admin.Lima : Color.Transparent;

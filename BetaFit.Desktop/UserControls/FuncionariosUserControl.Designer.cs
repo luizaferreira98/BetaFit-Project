@@ -87,6 +87,7 @@
             // 
             // pnlBusca
             // 
+            pnlBusca.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             pnlBusca.BackColor = Color.FromArgb(10, 10, 10);
             pnlBusca.BorderColor = Color.FromArgb(45, 45, 45);
             pnlBusca.BorderRadius = 8;
@@ -123,6 +124,7 @@
             // 
             // btnNovoFuncionario
             // 
+            btnNovoFuncionario.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnNovoFuncionario.BorderRadius = 5;
             btnNovoFuncionario.Cursor = Cursors.Hand;
             btnNovoFuncionario.CustomizableEdges = customizableEdges3;
@@ -139,6 +141,7 @@
             // 
             // btnEditarFuncionario
             // 
+            btnEditarFuncionario.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnEditarFuncionario.BorderColor = Color.FromArgb(60, 60, 60);
             btnEditarFuncionario.BorderRadius = 5;
             btnEditarFuncionario.BorderThickness = 1;
@@ -157,6 +160,7 @@
             // 
             // btnExcluirFuncionario
             // 
+            btnExcluirFuncionario.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnExcluirFuncionario.BorderColor = Color.FromArgb(60, 60, 60);
             btnExcluirFuncionario.BorderRadius = 5;
             btnExcluirFuncionario.BorderThickness = 1;
@@ -216,6 +220,7 @@
             dataGridViewCellStyle3.SelectionForeColor = Color.Black;
             dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
             gridFuncionarios.DefaultCellStyle = dataGridViewCellStyle3;
+            gridFuncionarios.Dock = DockStyle.Fill;
             gridFuncionarios.GridColor = Color.FromArgb(45, 45, 45);
             gridFuncionarios.Location = new Point(0, 0);
             gridFuncionarios.MultiSelect = false;
@@ -364,6 +369,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoScroll = true;
             BackColor = Color.Black;
             Controls.Add(pnlTabela);
             Controls.Add(pnlBusca);
@@ -372,6 +378,7 @@
             Name = "FuncionariosUserControl";
             Size = new Size(1120, 820);
             Load += FuncionariosUserControl_Load;
+            Resize += FuncionariosUserControl_Resize;
             pnlBusca.ResumeLayout(false);
             pnlTabela.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)gridFuncionarios).EndInit();

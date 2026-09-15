@@ -25,6 +25,10 @@ namespace BetaFit.Desktop.UserControls
         private OrdersApiService _ordersApiService = null!;
         private List<BetaFit.Desktop.DTOs.OrderResponseDto> _todosPedidos = new();
 
+        // Os 4 cards de estatística, na ordem em que aparecem na tela.
+        // Guardados aqui pra que o Resize consiga redistribuí-los.
+        private Guna.UI2.WinForms.Guna2Panel[] _cards = Array.Empty<Guna.UI2.WinForms.Guna2Panel>();
+
 
         public DashboardUserControl()
         {
@@ -45,6 +49,12 @@ namespace BetaFit.Desktop.UserControls
 
             // Tema escuro do grid (mesmo usado em Pedidos/Produtos/Categorias)
             BetaFitTheme.AplicarEstiloGridEscuro(gridUltimosPedidos);
+
+            // Coluna de foto do item mais pedido.
+            ConfigurarColunaFoto();
+
+            _cards = new[] { pnlCardFaturamento, pnlCardPedidos, pnlCardProdutos, pnlCardClientes };
+            AjustarLayoutResponsivo();
 
             // Ícones dos 4 cards de estatística — desenhados via GDI+ (não
             // emoji), mesmo motivo do estado vazio: emoji grande em
@@ -71,6 +81,93 @@ namespace BetaFit.Desktop.UserControls
 
         }
 
+        // =====================================================================
+        // LAYOUT RESPONSIVO
+        // =====================================================================
+        // Os cards e o conteúdo do estado vazio têm posição absoluta vinda do
+        // Designer (desenhado em 1120x820). Anchor sozinho não resolve: ele
+        // sabe grudar numa borda, mas não sabe DISTRIBUIR quatro caixas ao
+        // longo da largura. Por isso o reposicionamento é feito aqui.
+        // =====================================================================
+
+        private void DashboardUserControl_Resize(object sender, EventArgs e)
+        {
+            if (DesignMode) return;
+            AjustarLayoutResponsivo();
+        }
+
+        private void AjustarLayoutResponsivo()
+        {
+            DistribuirCards();
+            CentralizarEstadoVazio();
+        }
+
+        // Espalha os 4 cards igualmente na largura útil, respeitando a mesma
+        // margem lateral (15px) e o mesmo vão (15px) do Designer.
+        private void DistribuirCards()
+        {
+            if (_cards.Length == 0) return;
+
+            const int margem = 15;
+            const int vao = 15;
+
+            int larguraUtil = ClientSize.Width - (margem * 2);
+            if (larguraUtil <= 0) return;
+
+            int larguraCard = (larguraUtil - (vao * (_cards.Length - 1))) / _cards.Length;
+
+            // Abaixo de um certo ponto o card fica ilegível — aí é melhor
+            // deixar o AutoScroll do UserControl entrar em ação.
+            const int larguraMinima = 220;
+            if (larguraCard < larguraMinima) larguraCard = larguraMinima;
+
+            int x = margem;
+            foreach (var card in _cards)
+            {
+                card.Left = x;
+                card.Width = larguraCard;
+                x += larguraCard + vao;
+
+                // A faixa colorida da esquerda acompanha a altura do card.
+                foreach (Control filho in card.Controls)
+                {
+                    if (filho.Width <= 6)
+                        filho.Height = card.Height;
+                }
+            }
+        }
+
+        // O ícone, os textos e o botão do estado vazio foram posicionados
+        // "no olho" pra uma largura de 1090px. Aqui eles são recentralizados
+        // de verdade em relação ao painel.
+        private void CentralizarEstadoVazio()
+        {
+            if (PnlPedidosVazios == null || PnlPedidosVazios.Width <= 0) return;
+
+            foreach (var c in new Control[]
+                     { pctIconeVazio, lblTituloVazio, lblSubtituloVazio, btnIrParaProdutos })
+            {
+                if (c == null) continue;
+                c.Left = Math.Max(0, (PnlPedidosVazios.Width - c.Width) / 2);
+            }
+        }
+
+        // =====================================================================
+        // COLUNA DE FOTO DO ITEM MAIS PEDIDO
+        // =====================================================================
+        // A foto vem junto no próprio pedido: OrderItemResponseDto.ImageUrl já
+        // é preenchida pela API (OrderService busca o produto). Ou seja, não é
+        // preciso nenhuma requisição extra a /api/products aqui.
+        // =====================================================================
+        private void ConfigurarColunaFoto()
+        {
+            if (!gridUltimosPedidos.Columns.Contains("colFotoItem")) return;
+
+            var colFoto = (DataGridViewImageColumn)gridUltimosPedidos.Columns["colFotoItem"];
+            colFoto.ImageLayout = DataGridViewImageCellLayout.Zoom;
+            colFoto.DefaultCellStyle.NullValue = ImagemProdutoHelper.Placeholder;
+            colFoto.DefaultCellStyle.Padding = new Padding(3);
+        }
 
         //Carregar dados do usuario
         private async Task CarregarDadosAsync()
@@ -124,7 +221,12 @@ namespace BetaFit.Desktop.UserControls
                         ? $"Produto #{g.Key.ProductId}"
                         : g.Key.ProductName,
                     Unidades = g.Sum(i => i.Quantity),
-                    Pedidos = g.Count()
+                    Pedidos = g.Count(),
+
+                    // Nem todo item do pedido traz a foto (produto excluído,
+                    // pedido antigo). Pega a primeira URL não vazia do grupo.
+                    ImageUrl = g.Select(i => i.ImageUrl)
+                                .FirstOrDefault(u => !string.IsNullOrWhiteSpace(u))
                 })
                 .OrderByDescending(x => x.Unidades)
                 .ThenByDescending(x => x.Pedidos)
@@ -133,15 +235,32 @@ namespace BetaFit.Desktop.UserControls
 
             foreach (var item in itensMaisPedidos)
             {
-                gridUltimosPedidos.Rows.Add(
+                int idxLinha = gridUltimosPedidos.Rows.Add(
+                    ImagemProdutoHelper.Placeholder,  // colFotoItem (trocada em segundo plano)
                     item.Produto,
                     item.Unidades,
                     item.Pedidos
                 );
+
+                // Fire-and-forget de propósito: a lista já aparece preenchida
+                // com o placeholder e cada foto entra assim que chega.
+                _ = CarregarFotoLinhaAsync(idxLinha, item.ImageUrl);
             }
 
             AtualizarRodapePaginacaoDashboard(itensMaisPedidos.Count, itensMaisPedidos.Count);
             AtualizarEstadoVazioDashboard(itensMaisPedidos.Count == 0);
+        }
+
+        private async Task CarregarFotoLinhaAsync(int indiceLinha, string? imageUrl)
+        {
+            var imagem = await ImagemProdutoHelper.ObterAsync(imageUrl);
+
+            // Entre o disparo e a resposta o usuário pode ter saído da tela
+            // ou atualizado a lista — daí a checagem defensiva.
+            if (IsDisposed || gridUltimosPedidos.IsDisposed) return;
+            if (indiceLinha >= gridUltimosPedidos.Rows.Count) return;
+
+            gridUltimosPedidos.Rows[indiceLinha].Cells["colFotoItem"].Value = imagem;
         }
 
         // Alterna entre o grid e o estado vazio.
@@ -149,6 +268,8 @@ namespace BetaFit.Desktop.UserControls
         {
             pnlTabela.Visible = !semResultados;
             PnlPedidosVazios.Visible = semResultados;
+
+            if (semResultados) CentralizarEstadoVazio();
         }
 
         private void AtualizarRodapePaginacaoDashboard(int exibidos, int totalItens)

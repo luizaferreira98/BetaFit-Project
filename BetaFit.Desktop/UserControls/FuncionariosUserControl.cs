@@ -1,5 +1,4 @@
-﻿
-using BetaFit.Desktop.DTOs;
+﻿using BetaFit.Desktop.DTOs;
 using BetaFit.Desktop.Forms;
 using BetaFit.Desktop.Helpers;
 using BetaFit.Desktop.Services;
@@ -63,6 +62,8 @@ namespace BetaFit.Desktop.UserControls
 
                 gridFuncionarios.MultiSelect = false;
 
+                AjustarLayoutBusca();
+
                 await CarregarDadosAsync();
             }
             catch (Exception ex)
@@ -73,6 +74,31 @@ namespace BetaFit.Desktop.UserControls
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
+        }
+
+        //=================================================
+        // LAYOUT RESPONSIVO DA BARRA DE BUSCA
+        //=================================================
+        // Mesmo problema do ProdutosUserControl: os três botões (Anchor=Right)
+        // andam juntos quando o painel encolhe, mas txtPesquisa não tem âncora
+        // e fica parado, ficando por baixo dos botões em janelas mais estreitas
+        // que o design. O campo é encolhido para nunca invadir o botão mais à
+        // esquerda do grupo (btnNovoFuncionario).
+        private void FuncionariosUserControl_Resize(object sender, EventArgs e)
+        {
+            if (DesignMode) return;
+            AjustarLayoutBusca();
+        }
+
+        private void AjustarLayoutBusca()
+        {
+            if (pnlBusca == null || pnlBusca.Width <= 0) return;
+
+            const int margemEntreCampoEBotoes = 12;
+            const int larguraMinimaCampo = 120;
+
+            int espacoDisponivel = btnNovoFuncionario.Left - margemEntreCampoEBotoes - txtPesquisa.Left;
+            txtPesquisa.Width = Math.Max(larguraMinimaCampo, espacoDisponivel);
         }
 
         //=================================================
