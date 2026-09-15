@@ -713,48 +713,46 @@ document.querySelectorAll('[data-hero-carousel]').forEach(carousel => {
     const start = () => { clearInterval(timer); if (slides.length > 1) timer = setInterval(() => show(current + 1), 6500); };
     carousel.querySelector('[data-hero-prev]')?.addEventListener('click', () => { show(current - 1); start(); }); carousel.querySelector('[data-hero-next]')?.addEventListener('click', () => { show(current + 1); start(); }); dots.forEach((d, i) => d.addEventListener('click', () => { show(i); start(); })); start();
 });
-document.querySelectorAll('[data-product-rail]').forEach(rail => { const track = rail.querySelector('.bf-product-rail__track'); rail.querySelector('[data-rail-prev]')?.addEventListener('click', () => track.scrollBy({ left: -340, behavior: 'smooth' })); rail.querySelector('[data-rail-next]')?.addEventListener('click', () => track.scrollBy({ left: 340, behavior: 'smooth' })); });
+// Never leave a broken product card blank: legacy records that do not yet have
+// a matching asset receive the same neutral Beta Fit fallback image.
+document.addEventListener('error', event => {
+    const image = event.target;
+    if (!(image instanceof HTMLImageElement) || image.dataset.imageFallbackApplied === 'true') return;
+    if (!image.getAttribute('src')?.startsWith('/images/products/')) return;
+    image.dataset.imageFallbackApplied = 'true';
+    image.src = '/images/products/betafit_progression_line_clean.png';
+}, true);
+// Compact carousel for the benefits strip below the hero.
+document.querySelectorAll('[data-event-carousel]').forEach(carousel => {
+    const slides = [...carousel.querySelectorAll('[data-event-slide]')];
+    const dots = [...carousel.querySelectorAll('[data-event-dot]')];
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let current = 0, timer;
+    const show = index => {
+        current = (index + slides.length) % slides.length;
+        slides.forEach((slide, i) => slide.classList.toggle('is-active', i === current));
+        dots.forEach((dot, i) => dot.classList.toggle('is-active', i === current));
+    };
+    // This loop is deliberately restarted after the last item so the green
+    // strip keeps rotating forever without reaching a dead end.
+    const start = () => { clearInterval(timer); if (slides.length > 1 && !reduceMotion) timer = setInterval(() => show(current + 1), 2200); };
+    carousel.querySelector('[data-event-prev]')?.addEventListener('click', () => { show(current - 1); start(); });
+    carousel.querySelector('[data-event-next]')?.addEventListener('click', () => { show(current + 1); start(); });
+    dots.forEach((dot, index) => dot.addEventListener('click', () => { show(index); start(); }));
+    show(0); start();
+});
+document.querySelectorAll('[data-product-rail]').forEach(rail => {
+    const track = rail.querySelector('.bf-product-rail__track');
+    if (!track) return;
+    const step = direction => {
+        const card = track.querySelector('.bf-product-card');
+        const amount = card ? card.getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || '0') : track.clientWidth;
+        track.scrollBy({ left: direction * amount, behavior: 'smooth' });
+    };
+    rail.querySelector('[data-rail-prev]')?.addEventListener('click', () => step(-1));
+    rail.querySelector('[data-rail-next]')?.addEventListener('click', () => step(1));
+});
 const drawer = document.querySelector('[data-filter-drawer]'); document.querySelector('[data-filter-open]')?.addEventListener('click', () => { drawer?.classList.add('is-open'); drawer?.setAttribute('aria-hidden', 'false'); }); drawer?.querySelectorAll('[data-filter-close]').forEach(x => x.addEventListener('click', () => { drawer.classList.remove('is-open'); drawer.setAttribute('aria-hidden', 'true'); }));
 document.querySelectorAll('[data-select-all]').forEach(all => all.addEventListener('change', () => all.closest('form')?.querySelectorAll('[data-select-item]').forEach(x => x.checked = all.checked)));
 document.querySelectorAll('[data-notifications-toggle]').forEach(button => button.addEventListener('click', event => { event.stopPropagation(); button.closest('[data-notifications]')?.classList.toggle('is-open'); })); document.addEventListener('click', () => document.querySelectorAll('[data-notifications].is-open').forEach(x => x.classList.remove('is-open')));
 document.querySelectorAll('input[name="size"]').forEach(input=>input.addEventListener('change',()=>{const label=document.querySelector('[data-selected-size]');if(label)label.textContent=input.value;}));
-
-
-// Mantém os valores dos formulários após um refresh quando a página exibiu erros.
-(() => {
-    const storagePrefix = 'betafit:form:';
-    const hasErrors = form => Boolean(form.querySelector('.validation-summary-errors, .input-validation-error, .field-validation-error, .bf-alert--error'));
-    const getKey = form => storagePrefix + location.pathname + ':' + (form.getAttribute('action') || location.pathname);
-
-    document.querySelectorAll('form').forEach(form => {
-        const fields = [...form.querySelectorAll('input, textarea, select')]
-            .filter(field => field.name && !['password', 'file', 'hidden'].includes(field.type));
-        if (!fields.length) return;
-
-        const key = getKey(form);
-        let saved = null;
-        try { saved = JSON.parse(sessionStorage.getItem(key) || 'null'); } catch { saved = null; }
-
-        if (saved && hasErrors(form)) {
-            fields.forEach(field => {
-                if (!(field.name in saved)) return;
-                if (field.type === 'checkbox' || field.type === 'radio') field.checked = saved[field.name] === field.value;
-                else field.value = saved[field.name];
-            });
-        } else if (!hasErrors(form)) {
-            sessionStorage.removeItem(key);
-        }
-
-        const save = () => {
-            const values = {};
-            fields.forEach(field => {
-                if (field.type === 'checkbox' || field.type === 'radio') {
-                    if (field.checked) values[field.name] = field.value;
-                } else values[field.name] = field.value;
-            });
-            sessionStorage.setItem(key, JSON.stringify(values));
-        };
-        fields.forEach(field => field.addEventListener('input', save));
-        fields.forEach(field => field.addEventListener('change', save));
-    });
-})();

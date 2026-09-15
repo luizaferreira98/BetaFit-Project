@@ -30,8 +30,6 @@
 
         @if (User.IsInRole("Admin"))
         {
-            <a class="@(controller == "AdminShipping" ? "is-active" : "")" href="/Admin/Shipping">▱ Fretes e entregas</a>
-            <a class="@(controller == "AdminReports" ? "is-active" : "")" href="/Admin/Reports">▤ Relatórios da loja</a>
             <a class="@(action == "Coupons" ? "is-active" : "")"
                href="/Admin/Coupons">% Cupons de desconto</a>
         }

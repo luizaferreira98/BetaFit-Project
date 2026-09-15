@@ -33,14 +33,13 @@
     <link rel="stylesheet" href="~/css/storefront.css" asp-append-version="true" /><link rel="stylesheet" href="~/css/management.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/account-theme.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/improvements.css" asp-append-version="true" /><link rel="stylesheet" href="~/css/ui-system.css" asp-append-version="true" /><script>try{document.documentElement.dataset.theme=localStorage.getItem("betafit-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch{}</script>
-<link rel="stylesheet" href="~/css/store-updates.css" asp-append-version="true" />
 </head>
 <body>
     <a class="bf-skip-link" href="#main-content">Pular para o conteúdo</a>
 
     <div class="bf-announcement">
         <div class="bf-container bf-announcement__inner">
-            <span>@(siteSettings.Announcement.Equals("Frete grátis em compras acima de R$ 299,90", StringComparison.OrdinalIgnoreCase) ? "Calcule o frete no carrinho · opções por CEP" : siteSettings.Announcement)</span>
+            <span>@siteSettings.Announcement</span>
             <span class="bf-announcement__right">Projeto demonstrativo · Preços sem venda real</span>
         </div>
     </div>
@@ -97,7 +96,7 @@
     </main>
 
     <button class="bf-help-tab" type="button" data-help-open aria-controls="bf-help-panel" aria-expanded="false">Ajuda <span aria-hidden="true">?</span></button>
-    <dialog id="bf-help-panel" class="bf-help-panel" aria-labelledby="bf-help-title"><button type="button" class="bf-help-close" data-help-close aria-label="Fechar ajuda">×</button><span class="bf-eyebrow">Beta Fit</span><h2 id="bf-help-title">Como podemos ajudar?</h2><p>Encontre respostas ou acompanhe sua compra.</p><details><summary>Pedidos e entrega</summary><p>Abra Minhas compras para acompanhar seu pedido, cancelar enquanto estiver pendente ou confirmado e conversar com a loja.</p><a href="/Orders/MyOrders">Minhas compras →</a></details><details><summary>Pagamento Pix</summary><p>Copie o código exibido na página do Pix. O pagamento é uma demonstração e não realiza cobranças.</p></details><details><summary>Trocas e reembolsos</summary><p>Após a entrega, abra o pedido para solicitar reembolso ou envie uma mensagem ao atendimento.</p></details><a class="bf-btn bf-btn--ghost" href="/Home/Help#chat">Conversar com o assistente virtual</a><a class="bf-btn bf-btn--dark" href="/Home/Help">Central de ajuda completa →</a></dialog>
+    <dialog id="bf-help-panel" class="bf-help-panel" aria-labelledby="bf-help-title"><button type="button" class="bf-help-close" data-help-close aria-label="Fechar ajuda">×</button><span class="bf-eyebrow">Beta Fit</span><h2 id="bf-help-title">Como podemos ajudar?</h2><p>Encontre respostas ou acompanhe sua compra.</p><details><summary>Pedidos e entrega</summary><p>Abra Minhas compras para acompanhar seu pedido, cancelar enquanto estiver pendente ou confirmado e conversar com a loja.</p><a href="/Orders/MyOrders">Minhas compras →</a></details><details><summary>Pagamento Pix</summary><p>Copie o código exibido na página do Pix. O pagamento é uma demonstração e não realiza cobranças.</p></details><details><summary>Trocas e reembolsos</summary><p>Após a entrega, abra o pedido para solicitar reembolso ou envie uma mensagem ao atendimento.</p></details><a class="bf-btn bf-btn--dark" href="/Home/Help">Central de ajuda completa →</a></dialog>
     <footer class="bf-footer">
         <div class="bf-container">
             <div class="bf-footer__main">
@@ -138,6 +137,6 @@
     <script src="~/js/storefront.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 <script src="~/js/management.js" asp-append-version="true"></script>
-<script src="~/js/pwa.js" asp-append-version="true"></script><script src="~/js/ui-system.js" asp-append-version="true"></script><script src="~/js/store-updates.js" asp-append-version="true"></script><script src="~/js/shipping.js" asp-append-version="true"></script></body>
+<script src="~/js/pwa.js" asp-append-version="true"></script><script src="~/js/ui-system.js" asp-append-version="true"></script></body>
 </html>
 

@@ -94,6 +94,8 @@ namespace BetaFit.UI.Controllers
                 var all = query.ToList();
                 viewModel.TotalCount = all.Count;
                 viewModel.TotalPages = (int)Math.Ceiling(all.Count / (double)viewModel.PageSize);
+                if (viewModel.TotalPages > 0)
+                    viewModel.Page = Math.Min(viewModel.Page, viewModel.TotalPages);
                 viewModel.Items = all
                     .Skip((viewModel.Page - 1) * viewModel.PageSize)
                     .Take(viewModel.PageSize)

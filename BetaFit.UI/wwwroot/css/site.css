@@ -6387,3 +6387,23 @@ body {
         padding: 20px
     }
 }
+
+
+/* BETA FIT IMAGE DISPLAY FIX v4 */
+.bf-product-card__media--carousel {
+    overflow: hidden;
+    background: #101510 !important;
+}
+
+    .bf-product-card__media--carousel .bf-product-card__slides > img,
+    .bf-product-card__media--carousel .bf-product-card__slides > img.is-active {
+        object-fit: contain !important;
+        object-position: center center !important;
+        transform: scale(1) !important;
+        transition: opacity .38s ease !important;
+        background: #101510 !important;
+    }
+
+    .bf-product-card__media--carousel:hover .bf-product-card__slides > img.is-active {
+        transform: scale(1) !important;
+    }

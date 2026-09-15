@@ -14,10 +14,9 @@ public class CartController : Controller
     private readonly IOrderService _orderService;
     private readonly HttpCartService _cart;
     private readonly HttpProfileService _profile;
-    private readonly HttpClient _api;
 
-    public CartController(IOrderService orderService, HttpCartService cart, HttpProfileService profile, IHttpClientFactory factory)
-    { _orderService = orderService; _cart = cart; _profile = profile; _api = factory.CreateClient("ApiClient"); }
+    public CartController(IOrderService orderService, HttpCartService cart, HttpProfileService profile)
+    { _orderService = orderService; _cart = cart; _profile = profile; }
 
     [HttpGet("")]
     public async Task<IActionResult> Index()
@@ -27,7 +26,6 @@ public class CartController : Controller
             var items = await _cart.GetAsync();
             if (HttpContext.Items["GuestCartWarning"] is string warning) TempData["Error"] = warning;
             ViewData["Title"] = "Carrinho";
-            ViewData["ShippingCep"] = HttpContext.Session.GetString("ShippingCep") ?? "";
             ViewData["Total"] = items.Sum(x => x.Subtotal);
             ViewData["ItemCount"] = items.Sum(x => x.Quantity);
             return View(items.Select(x => new CartItem { ProductId = x.ProductId, Name = x.Name, Price = x.Price, ImageUrl = x.ImageUrl, Size = x.Size, Color = x.Color, Quantity = x.Quantity }).ToList());
@@ -48,7 +46,7 @@ public class CartController : Controller
     {
         var items = await _cart.GetAsync();
         if (!items.Any()) return RedirectToAction(nameof(Index));
-        var vm = new CheckoutViewModel { Items = ToViewItems(items), Cep = HttpContext.Session.GetString("ShippingCep") ?? "" };
+        var vm = new CheckoutViewModel { Items = ToViewItems(items) };
         try
         {
             var profile = await _profile.GetAsync();
@@ -56,12 +54,13 @@ public class CartController : Controller
             {
                 ApplySavedAddress(vm, profile);
                 vm.HasSavedAddress = HasCompleteAddress(vm);
-                vm.Cpf = profile.Cpf ?? string.Empty;
+                if (vm.HasSavedAddress)
+                    vm.Cpf = string.Empty;
                 ApplySavedCard(vm, profile, true);
             }
         }
         catch (HttpRequestException) { /* o formulário ainda permite preenchimento manual */ }
-        return await CheckoutView(vm);
+        return View(vm);
     }
 
     [Authorize, HttpPost("Checkout"), ValidateAntiForgeryToken]
@@ -73,7 +72,7 @@ public class CartController : Controller
 
         UserDto? profile = null;
         try { profile = await _profile.GetAsync(); }
-        catch (HttpRequestException) { ModelState.AddModelError(string.Empty, "Não foi possível confirmar os dados do seu perfil agora."); return await CheckoutView(vm); }
+        catch (HttpRequestException) { ModelState.AddModelError(string.Empty, "Não foi possível confirmar os dados do seu perfil agora."); return View(vm); }
 
         var hasSavedAddress = profile is not null && HasCompleteAddress(profile);
         ApplySavedCard(vm, profile);
@@ -84,40 +83,35 @@ public class CartController : Controller
             vm.HasSavedAddress = true;
             foreach (var field in AddressFields) ModelState.Remove(field);
 
-
+            var typedCpf = DigitsOnly(vm.Cpf);
+            var savedCpf = DigitsOnly(profile!.Cpf);
+            if (!string.IsNullOrWhiteSpace(savedCpf) && !string.Equals(typedCpf, savedCpf, StringComparison.Ordinal))
+                ModelState.AddModelError(nameof(vm.Cpf), "Informe o CPF cadastrado no seu perfil para confirmar esta compra.");
         }
 
-        // Reutiliza o CPF do perfil autenticado, sem pedir confirmação a cada compra.
-        if (!string.IsNullOrWhiteSpace(profile?.Cpf))
-        {
-            vm.Cpf = profile.Cpf;
-            ModelState.Remove(nameof(vm.Cpf));
-        }
-        if (!ModelState.IsValid) return await CheckoutView(vm);
+        if (!ModelState.IsValid) return View(vm);
 
-        if (!decimal.TryParse(vm.ExpectedTotal, System.Globalization.NumberStyles.AllowDecimalPoint, System.Globalization.CultureInfo.InvariantCulture, out var expectedTotal))
-        { ModelState.AddModelError("", "Calcule o frete e confira o total antes de confirmar."); return await CheckoutView(vm); }
         var usesCard = vm.PaymentMethod is "Credito" or "Debito";
         if (usesCard)
         {
             if (vm.UseSavedCard && vm.HasSavedCard)
             {
                 if (!vm.SavedCards.Any(x => x.Id == vm.SelectedCardId && x.Type == vm.PaymentMethod && BetaFit.Application.Services.DemoWallet.ValidExpiry(x.Expiry)))
-                { ModelState.AddModelError(string.Empty, "Selecione um cartão válido do tipo escolhido."); return await CheckoutView(vm); }
+                { ModelState.AddModelError(string.Empty, "Selecione um cartão válido do tipo escolhido."); return View(vm); }
             }
             else
             {
                 var number = DigitsOnly(vm.CardNumber);
                 var code = DigitsOnly(vm.CardSecurityCode);
                 if (string.IsNullOrWhiteSpace(vm.CardHolderName) || vm.CardHolderName.Length > 120 || number.Length is < 13 or > 19 || code.Length is < 3 or > 4 || string.IsNullOrWhiteSpace(vm.CardExpiry))
-                { ModelState.AddModelError(string.Empty, "Cadastre um cartão válido para continuar com crédito ou débito."); return await CheckoutView(vm); }
+                { ModelState.AddModelError(string.Empty, "Cadastre um cartão válido para continuar com crédito ou débito."); return View(vm); }
                 var cardResult = await _profile.SaveCardAsync(new PaymentCardDto { CardHolderName = vm.CardHolderName, CardNumber = number, Expiry = vm.CardExpiry, SecurityCode = code, Type = vm.PaymentMethod });
-                if (!cardResult.Ok) { ModelState.AddModelError(string.Empty, cardResult.Message); return await CheckoutView(vm); }
+                if (!cardResult.Ok) { ModelState.AddModelError(string.Empty, cardResult.Message); return View(vm); }
                 profile = await _profile.GetAsync(); vm.SelectedCardId = profile?.Cards.LastOrDefault()?.Id; ApplySavedCard(vm, profile);
             }
         }
 
-        // Na primeira compra, o endereço e o CPF são gravados para reutilização nos próximos checkouts.
+        // Na primeira compra, o endereço e o CPF são gravados para que os próximos checkouts peçam somente o CPF.
         if (!hasSavedAddress || string.IsNullOrWhiteSpace(profile?.Cpf))
         {
             var saved = await _profile.SaveCheckoutAddressAsync(new CheckoutAddressDto
@@ -131,7 +125,7 @@ public class CartController : Controller
                 City = vm.City,
                 State = vm.State
             });
-            if (!saved.Ok) { ModelState.AddModelError(string.Empty, saved.Message); return await CheckoutView(vm); }
+            if (!saved.Ok) { ModelState.AddModelError(string.Empty, saved.Message); return View(vm); }
         }
 
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -139,7 +133,6 @@ public class CartController : Controller
         var dto = new CreateOrderDto
         {
             Items = vm.Items.Select(c => new CreateOrderItemDto { ProductId = c.ProductId, Quantity = c.Quantity, Size = c.Size, Color = c.Color }).ToList(),
-            ShippingRuleId = vm.ShippingRuleId, ExpectedTotal = expectedTotal,
             CouponCode = vm.CouponCode,
             PaymentMethod = vm.PaymentMethod,
             CustomerCpf = new string(vm.Cpf.Where(char.IsDigit).ToArray()),
@@ -164,61 +157,7 @@ public class CartController : Controller
             return RedirectToAction("Details", "Orders", new { id = order.Id });
         }
         catch (HttpRequestException) { TempData["Error"] = "Não foi possível criar o pedido agora."; return RedirectToAction(nameof(Index)); }
-        catch (InvalidOperationException ex) { ModelState.AddModelError(string.Empty, ex.Message); return await CheckoutView(vm); }
-    }
-
-    private async Task<IActionResult> CheckoutView(CheckoutViewModel vm)
-    {
-        try
-        {
-            using var response = await _api.PostAsJsonAsync("api/shipping/quote", new ShippingQuoteRequest { Cep = vm.Cep, CouponCode = vm.CouponCode,
-                Items = vm.Items.Select(i => new CreateOrderItemDto { ProductId=i.ProductId, Quantity=i.Quantity, Size=i.Size, Color=i.Color }).ToList() });
-            response.EnsureSuccessStatusCode();
-            vm.ShippingQuote = await response.Content.ReadFromJsonAsync<ShippingQuoteDto>();
-        }
-        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or System.Text.Json.JsonException)
-        { vm.ShippingQuote = new ShippingQuoteDto { Subtotal = vm.Total, ShippingError = "Não foi possível consultar o frete. Tente novamente." }; }
-        if (vm.ShippingQuote?.Options.Any(o => o.RuleId == vm.ShippingRuleId) != true)
-            vm.ShippingRuleId = vm.ShippingQuote?.Options.FirstOrDefault()?.RuleId;
-        vm.ExpectedTotal = vm.ShippingRuleId.HasValue && vm.ShippingQuote?.CouponError is null ? vm.PayableTotal.ToString(System.Globalization.CultureInfo.InvariantCulture) : null;
-        ModelState.Remove(nameof(vm.ExpectedTotal));
-        return View("Checkout", vm);
-    }
-
-    [HttpPost("ShippingQuote"), ValidateAntiForgeryToken, ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public async Task<IActionResult> ShippingQuote(string? cep, string? couponCode, bool useSavedAddress = false)
-    {
-        try
-        {
-            if (useSavedAddress && User.Identity?.IsAuthenticated == true)
-            {
-                var profile = await _profile.GetAsync();
-                if (profile is not null && HasCompleteAddress(profile)) cep = profile.Cep;
-            }
-            var items = await _cart.GetAsync();
-            if (!items.Any()) return BadRequest(new { message = "Seu carrinho está vazio." });
-            if (!useSavedAddress && System.Text.RegularExpressions.Regex.IsMatch(cep ?? "", @"^\d{5}-?\d{3}$"))
-                HttpContext.Session.SetString("ShippingCep", cep!);
-            using var response = await _api.PostAsJsonAsync("api/shipping/quote", new ShippingQuoteRequest { Cep = cep, CouponCode = couponCode,
-                Items = items.Select(i => new CreateOrderItemDto { ProductId=i.ProductId, Quantity=i.Quantity, Size=i.Size, Color=i.Color }).ToList() });
-            return new ContentResult { StatusCode = (int)response.StatusCode, ContentType = "application/json", Content = await response.Content.ReadAsStringAsync() };
-        }
-        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
-        { return StatusCode(503, new { message = "Não foi possível calcular o frete. Tente novamente." }); }
-    }
-
-    [Authorize, HttpGet("CouponPreview"), ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public async Task<IActionResult> CouponPreview(string? code)
-    {
-        if (string.IsNullOrWhiteSpace(code) || code.Length > 40)
-            return BadRequest(new { message = "Informe um código de cupom válido." });
-        try
-        {
-            using var response = await _api.GetAsync("api/cart/coupon-preview?code=" + Uri.EscapeDataString(code));
-            return new ContentResult { StatusCode = (int)response.StatusCode, ContentType = "application/json", Content = await response.Content.ReadAsStringAsync() };
-        }
-        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
-        { return StatusCode(503, new { message = "Não foi possível consultar o cupom. Tente novamente." }); }
+        catch (InvalidOperationException ex) { ModelState.AddModelError(string.Empty, ex.Message); return View(vm); }
     }
 
     [Authorize, HttpGet("Pix/{id:int}")]
