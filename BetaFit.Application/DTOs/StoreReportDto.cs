@@ -6,6 +6,7 @@ public class StoreReportDto
     public DateTime To { get; set; }
     public int Orders { get; set; }
     public int PaidOrders { get; set; }
+    public decimal ShippingRevenue { get; set; }
     public decimal Revenue { get; set; }
     public decimal Discounts { get; set; }
     public decimal AverageTicket => PaidOrders == 0 ? 0 : Revenue / PaidOrders;
@@ -25,6 +26,7 @@ public class ReportDayDto
 {
     public DateTime Date { get; set; }
     public int Orders { get; set; }
+    public decimal ShippingRevenue { get; set; }
     public decimal Revenue { get; set; }
     public decimal Discounts { get; set; }
 }

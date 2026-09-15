@@ -250,6 +250,20 @@ namespace BetaFit.Infraestructure.Migrations
                         .HasMaxLength(120)
                         .HasColumnType("nvarchar(120)");
 
+                    b.Property<decimal>("ShippingCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("ShippingMaxDays")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShippingMethod")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("ShippingMinDays")
+                        .HasColumnType("int");
+
                     b.Property<string>("ShippingNeighborhood")
                         .HasMaxLength(120)
                         .HasColumnType("nvarchar(120)");
@@ -257,6 +271,9 @@ namespace BetaFit.Infraestructure.Migrations
                     b.Property<string>("ShippingNumber")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<int?>("ShippingRuleId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ShippingState")
                         .HasMaxLength(2)
@@ -632,6 +649,51 @@ namespace BetaFit.Infraestructure.Migrations
                         .IsUnique();
 
                     b.ToTable("ProductReviews", (string)null);
+                });
+
+            modelBuilder.Entity("BetaFit.Domain.Entities.ShippingRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("CepEnd")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
+                    b.Property<string>("CepStart")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
+                    b.Property<decimal?>("FreeAbove")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("MaxDays")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinDays")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShippingRules");
                 });
 
             modelBuilder.Entity("BetaFit.Domain.Entities.SiteSettings", b =>

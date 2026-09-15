@@ -40,7 +40,7 @@
 
     <div class="bf-announcement">
         <div class="bf-container bf-announcement__inner">
-            <span>@siteSettings.Announcement</span>
+            <span>@(siteSettings.Announcement.Equals("Frete grátis em compras acima de R$ 299,90", StringComparison.OrdinalIgnoreCase) ? "Calcule o frete no carrinho · opções por CEP" : siteSettings.Announcement)</span>
             <span class="bf-announcement__right">Projeto demonstrativo · Preços sem venda real</span>
         </div>
     </div>
@@ -138,6 +138,6 @@
     <script src="~/js/storefront.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 <script src="~/js/management.js" asp-append-version="true"></script>
-<script src="~/js/pwa.js" asp-append-version="true"></script><script src="~/js/ui-system.js" asp-append-version="true"></script><script src="~/js/store-updates.js" asp-append-version="true"></script></body>
+<script src="~/js/pwa.js" asp-append-version="true"></script><script src="~/js/ui-system.js" asp-append-version="true"></script><script src="~/js/store-updates.js" asp-append-version="true"></script><script src="~/js/shipping.js" asp-append-version="true"></script></body>
 </html>
 

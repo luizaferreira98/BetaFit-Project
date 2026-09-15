@@ -16,14 +16,14 @@ public static class StoreReport
         return new StoreReportDto
         {
             From = from.Date, To = to.Date, Orders = orders.Count, PaidOrders = paid.Count,
-            Revenue = paid.Sum(o => o.Total), Discounts = paid.Sum(o => o.Discount),
+            ShippingRevenue = paid.Sum(o => o.ShippingCost), Revenue = paid.Sum(o => o.Total - o.ShippingCost), Discounts = paid.Sum(o => o.Discount),
             Products = paid.SelectMany(o => o.Items).GroupBy(i => i.ProductId)
                 .Select(g => new ReportProductDto { ProductId = g.Key, Name = g.Last().ProductName,
                     Quantity = g.Sum(i => i.Quantity), Orders = g.Select(i => i.OrderId).Distinct().Count(),
                     Gross = g.Sum(i => i.UnitPrice * i.Quantity) })
                 .OrderByDescending(p => p.Quantity).ThenBy(p => p.Name).ToList(),
             Days = paid.GroupBy(o => o.CreatedAt.Date).OrderBy(g => g.Key)
-                .Select(g => new ReportDayDto { Date = g.Key, Orders = g.Count(), Revenue = g.Sum(o => o.Total), Discounts = g.Sum(o => o.Discount) }).ToList(),
+                .Select(g => new ReportDayDto { Date = g.Key, Orders = g.Count(), ShippingRevenue = g.Sum(o => o.ShippingCost), Revenue = g.Sum(o => o.Total - o.ShippingCost), Discounts = g.Sum(o => o.Discount) }).ToList(),
             Statuses = orders.GroupBy(o => o.Status).OrderBy(g => g.Key)
                 .Select(g => new ReportStatusDto { Status = g.Key.ToString(), Orders = g.Count() }).ToList()
         };

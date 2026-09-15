@@ -1,6 +1,6 @@
 (() => {
     const input = document.querySelector('[data-coupon-input]');
-    if (!input) return;
+    if (!input || document.querySelector('[data-shipping-calculator]')) return;
     const feedback = document.querySelector('[data-coupon-feedback]');
     const total = document.querySelector('[data-checkout-total]');
     const row = document.querySelector('[data-coupon-row]');
@@ -58,6 +58,7 @@
     const normalize = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
     const reply = value => {
         const text = normalize(value);
+        if (/frete|cep|prazo/.test(text)) return 'Informe o CEP no carrinho para consultar as opções, valores e prazos. A gratuidade depende da regra de entrega e do valor dos produtos após cupons. No checkout, escolha a entrega antes de confirmar. O prazo estimado conta em dias úteis após a postagem.';
         if (/cupom|cupon|desconto|promoc/.test(text)) return 'Digite o cupom no checkout para ver o desconto e o novo total. Confira a compra mínima, a validade e o limite de usos. Cada cliente pode usar o mesmo cupom uma vez.';
         if (/cancel|reembolso|troca|devol/.test(text)) return 'Em Minhas compras, abra o pedido. Você pode cancelar enquanto estiver pendente ou confirmado. Após a entrega, a opção de solicitar reembolso fica disponível. Para outros casos, envie uma mensagem no atendimento do pedido.';
         if (/pix|boleto|cartao|pagamento|pagar/.test(text)) return 'Escolha Pix, boleto, crédito ou débito no checkout. Os pagamentos deste projeto são demonstrativos. Para Pix e boleto, abra o pedido e use a confirmação de pagamento da simulação.';

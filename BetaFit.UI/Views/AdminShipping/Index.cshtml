@@ -1,0 +1,19 @@
+@model List<BetaFit.Application.DTOs.ShippingRuleDto>
+@{ ViewData["Title"] = "Fretes e entregas"; }
+<section class="bf-section"><div class="bf-container">
+<span class="bf-eyebrow">Administração</span><h1>Fretes e entregas</h1>
+<p>Defina as opções de entrega por faixa de CEP. Regras sobrepostas aparecem como opções para o cliente escolher. Desative uma regra na edição para deixar de oferecê-la.</p>
+<p class="bf-alert">A regra inicial é um exemplo: R$ 19,90, de 5 a 10 dias úteis, grátis a partir de R$ 299,90. Revise os valores, prazos e regiões atendidas de acordo com a sua loja.</p>
+@if(TempData["Success"] is string ok){<p class="bf-alert" role="status">@ok</p>}
+@if((ViewData["Error"] ?? TempData["Error"]) is string error){<p class="bf-alert bf-alert--error" role="alert">@error</p>}
+<div class="bf-toolbar"><a class="bf-btn bf-btn--dark" href="/Admin/Shipping/New">Adicionar regra de frete</a></div>
+<div class="bf-shipping-rule-grid">
+@foreach(var rule in Model){
+<article class="bf-shipping-rule-card"><header><h2>@rule.Name</h2><span class="bf-status-tag">@(rule.Active ? "Ativa" : "Desativada")</span></header>
+<dl><dt>Faixa de CEP</dt><dd>@rule.CepStart.Insert(5, "-") a @rule.CepEnd.Insert(5, "-")</dd><dt>Preço</dt><dd>@rule.Price.ToString("C")</dd><dt>Prazo após postagem</dt><dd>@rule.MinDays a @rule.MaxDays dias úteis</dd><dt>Frete grátis</dt><dd>@(rule.FreeAbove.HasValue ? "A partir de " + rule.FreeAbove.Value.ToString("C") + " após cupons" : "Sem limite de gratuidade configurado")</dd></dl>
+<a class="bf-btn bf-btn--ghost" href="/Admin/Shipping/@rule.Id/Edit">Editar regra</a></article>
+}
+</div>
+@if(Model.Count == 0 && ViewData["Error"] is null){<p>Nenhuma regra cadastrada. Adicione uma regra ativa para habilitar entregas.</p>}
+<p>Alterações afetam novas cotações. O valor e o prazo dos pedidos já criados ficam preservados.</p>
+</div></section>

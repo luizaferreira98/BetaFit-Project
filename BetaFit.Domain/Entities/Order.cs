@@ -56,6 +56,11 @@ namespace BetaFit.Domain.Entities
 
         // Dados de rastreio do pedido, caso o pedido tenha sido enviado. Exemplo: "BR1234567890".
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public decimal ShippingCost { get; set; }
+        public string? ShippingMethod { get; set; }
+        public int? ShippingMinDays { get; set; }
+        public int? ShippingMaxDays { get; set; }
+        public int? ShippingRuleId { get; set; }
         public decimal Total { get; set; }
 
 

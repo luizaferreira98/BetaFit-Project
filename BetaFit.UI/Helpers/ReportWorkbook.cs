@@ -18,17 +18,17 @@ public static class ReportWorkbook
                 new object[] { "Início", report.From.ToString("dd/MM/yyyy") },
                 new object[] { "Fim (inclusive)", report.To.ToString("dd/MM/yyyy") },
                 new object[] { "Pedidos criados", report.Orders }, new object[] { "Pedidos pagos elegíveis", report.PaidOrders },
-                new object[] { "Faturamento após cupons (R$)", report.Revenue }, new object[] { "Descontos de cupons (R$)", report.Discounts },
+                new object[] { "Faturamento de produtos após cupons (R$)", report.Revenue }, new object[] { "Frete recebido (R$)", report.ShippingRevenue }, new object[] { "Descontos de cupons (R$)", report.Discounts },
                 new object[] { "Ticket médio (R$)", Math.Round(report.AverageTicket, 2) },
                 new object[] { "Critério", "Data de criação do pedido. Faturamento e ranking: pagos, excluindo cancelados e pedidos em reembolso." },
                 new object[] { "Produtos", "Valor bruto por produto antes do cupom; usa preços registrados no pedido." }
             }),
             ("Produtos mais pedidos", new() { new object[] { "ID", "Produto", "Unidades", "Pedidos pagos", "Valor antes do cupom (R$)" } }),
-            ("Faturamento diário", new() { new object[] { "Data", "Pedidos pagos", "Faturamento (R$)", "Cupons (R$)" } }),
+            ("Faturamento diário", new() { new object[] { "Data", "Pedidos pagos", "Produtos (R$)", "Cupons (R$)", "Frete (R$)" } }),
             ("Status dos pedidos", new() { new object[] { "Status atual", "Quantidade" } })
         };
         sheets[1].Rows.AddRange(report.Products.Select(p => new object[] { p.ProductId, p.Name, p.Quantity, p.Orders, p.Gross }));
-        sheets[2].Rows.AddRange(report.Days.Select(d => new object[] { d.Date.ToString("dd/MM/yyyy"), d.Orders, d.Revenue, d.Discounts }));
+        sheets[2].Rows.AddRange(report.Days.Select(d => new object[] { d.Date.ToString("dd/MM/yyyy"), d.Orders, d.Revenue, d.Discounts, d.ShippingRevenue }));
         sheets[3].Rows.AddRange(report.Statuses.Select(s => new object[] { s.Status, s.Orders }));
         using var buffer = new MemoryStream();
         using (var zip = new ZipArchive(buffer, ZipArchiveMode.Create, true))

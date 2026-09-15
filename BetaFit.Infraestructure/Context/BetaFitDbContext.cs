@@ -62,6 +62,7 @@ namespace BetaFit.Infraestructure.Context
         /// Tabela de Pedidos no banco de dados.
         /// </summary>
         public DbSet<DiscountCoupon> DiscountCoupons {get;set;}
+        public DbSet<ShippingRule> ShippingRules { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderMessage> OrderMessages {get;set;}
 
@@ -101,6 +102,13 @@ namespace BetaFit.Infraestructure.Context
             modelBuilder.Entity<Order>().Property(p=>p.ExperienceRating).HasPrecision(2,1);
             modelBuilder.Entity<Product>().Property(p=>p.SalePrice).HasPrecision(18,2);
             modelBuilder.Entity<Order>().Property(p=>p.Discount).HasPrecision(18,2);
+            modelBuilder.Entity<Order>().Property(p=>p.ShippingCost).HasPrecision(18,2);
+            modelBuilder.Entity<Order>().Property(p=>p.ShippingMethod).HasMaxLength(100);
+            modelBuilder.Entity<ShippingRule>().Property(p=>p.Name).HasMaxLength(100).IsRequired();
+            modelBuilder.Entity<ShippingRule>().Property(p=>p.CepStart).HasMaxLength(8).IsRequired();
+            modelBuilder.Entity<ShippingRule>().Property(p=>p.CepEnd).HasMaxLength(8).IsRequired();
+            modelBuilder.Entity<ShippingRule>().Property(p=>p.Price).HasPrecision(18,2);
+            modelBuilder.Entity<ShippingRule>().Property(p=>p.FreeAbove).HasPrecision(18,2);
             modelBuilder.Entity<OrderItem>().Property(p=>p.OriginalPrice).HasPrecision(18,2);
             modelBuilder.Entity<OrderMessage>().HasOne<Order>().WithMany().HasForeignKey(m=>m.OrderId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<OrderMessage>().Property(m=>m.Text).HasMaxLength(500);

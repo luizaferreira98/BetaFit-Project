@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BetaFit.Infraestructure.Migrations
 {
     /// <inheritdoc />
-    public partial class banco2 : Migration
+    public partial class Banco1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -123,6 +123,11 @@ namespace BetaFit.Infraestructure.Migrations
                     ShippingCity = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: true),
                     ShippingState = table.Column<string>(type: "nvarchar(2)", maxLength: 2, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ShippingCost = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    ShippingMethod = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ShippingMinDays = table.Column<int>(type: "int", nullable: true),
+                    ShippingMaxDays = table.Column<int>(type: "int", nullable: true),
+                    ShippingRuleId = table.Column<int>(type: "int", nullable: true),
                     Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     PaymentId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
@@ -182,6 +187,26 @@ namespace BetaFit.Infraestructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProductReviews", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShippingRules",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CepStart = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
+                    CepEnd = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    MinDays = table.Column<int>(type: "int", nullable: false),
+                    MaxDays = table.Column<int>(type: "int", nullable: false),
+                    FreeAbove = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true),
+                    Active = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShippingRules", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -654,6 +679,9 @@ namespace BetaFit.Infraestructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "ProductReviews");
+
+            migrationBuilder.DropTable(
+                name: "ShippingRules");
 
             migrationBuilder.DropTable(
                 name: "SiteSettings");

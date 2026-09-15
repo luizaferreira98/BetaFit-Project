@@ -16,13 +16,14 @@
     </div>
     <p class="bf-report-controls">Para baixar em PDF, escolha “Salvar como PDF” na janela de impressão.</p>
     <h2>@Model.From.ToString("dd/MM/yyyy") a @Model.To.ToString("dd/MM/yyyy")</h2>
-    <p>Dados demonstrativos, agrupados pela data de criação do pedido. Faturamento e ranking consideram pedidos pagos, excluindo cancelados e pedidos em reembolso. O faturamento já desconta os cupons.</p>
+    <p>Dados demonstrativos, agrupados pela data de criação do pedido. Faturamento e ranking consideram pedidos pagos, excluindo cancelados e pedidos em reembolso. O faturamento e o ticket médio consideram somente os produtos após cupons. O frete recebido aparece separadamente.</p>
     <div class="bf-stat-grid">
         <article><small>Pedidos criados</small><strong>@Model.Orders</strong></article>
         <article><small>Pedidos pagos elegíveis</small><strong>@Model.PaidOrders</strong></article>
         <article><small>Faturamento</small><strong>@Model.Revenue.ToString("C")</strong></article>
         <article><small>Ticket médio</small><strong>@Model.AverageTicket.ToString("C")</strong></article>
     </div>
+    <p>Frete recebido nos pedidos elegíveis: <strong>@Model.ShippingRevenue.ToString("C")</strong></p>
     <p>Descontos de cupons nos pedidos elegíveis: <strong>@Model.Discounts.ToString("C")</strong></p>
     @if (Model.Orders == 0) { <p class="bf-alert">Nenhum pedido encontrado neste período.</p> }
     <h2>Produtos mais pedidos</h2><p>Ordenados por unidades em pedidos pagos. Valores por produto antes do cupom.</p>
@@ -31,9 +32,9 @@
     @if (Model.Products.Count == 0) { <tr><td colspan="4">Sem produtos em pedidos pagos neste período.</td></tr> }
     </tbody></table></div>
     <h2>Faturamento por dia</h2>
-    <div class="bf-table-scroll"><table class="bf-admin-table"><thead><tr><th>Data do pedido</th><th>Pedidos pagos</th><th>Cupons</th><th>Faturamento</th></tr></thead><tbody>
-    @foreach (var d in Model.Days) { <tr><td>@d.Date.ToString("dd/MM/yyyy")</td><td>@d.Orders</td><td>@d.Discounts.ToString("C")</td><td>@d.Revenue.ToString("C")</td></tr> }
-    @if (Model.Days.Count == 0) { <tr><td colspan="4">Sem faturamento neste período.</td></tr> }
+    <div class="bf-table-scroll"><table class="bf-admin-table"><thead><tr><th>Data do pedido</th><th>Pedidos pagos</th><th>Cupons</th><th>Produtos</th><th>Frete</th></tr></thead><tbody>
+    @foreach (var d in Model.Days) { <tr><td>@d.Date.ToString("dd/MM/yyyy")</td><td>@d.Orders</td><td>@d.Discounts.ToString("C")</td><td>@d.Revenue.ToString("C")</td><td>@d.ShippingRevenue.ToString("C")</td></tr> }
+    @if (Model.Days.Count == 0) { <tr><td colspan="5">Sem faturamento neste período.</td></tr> }
     </tbody></table></div>
     <h2>Situação atual dos pedidos do período</h2>
     <div class="bf-table-scroll"><table class="bf-admin-table"><thead><tr><th>Status</th><th>Quantidade</th></tr></thead><tbody>

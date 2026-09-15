@@ -3,6 +3,11 @@ using BetaFit.Infraestructure.Context;
 using Microsoft.EntityFrameworkCore;
 namespace BetaFit.Infraestructure.Repositories;
 public class CouponRepository(BetaFitDbContext db):ICouponRepository {
+ public async Task<(string Code,decimal Discount)> PreviewAsync(string code,string userId,decimal subtotal){
+  var normalized=code.Trim().ToUpperInvariant();var coupon=await db.DiscountCoupons.AsNoTracking().SingleOrDefaultAsync(x=>x.Code==normalized)??throw new InvalidOperationException("Cupom não encontrado.");
+  if(await db.Orders.AnyAsync(x=>x.UserId==userId&&x.CouponCode==normalized))throw new InvalidOperationException("Você já utilizou este cupom.");
+  return(coupon.Code,coupon.Calculate(subtotal,DateTime.UtcNow));
+ }
  public async Task<(string Code,decimal Discount)> RedeemAsync(string code,string userId,decimal subtotal){
   var normalized=code.Trim().ToUpperInvariant();var coupon=await db.DiscountCoupons.SingleOrDefaultAsync(x=>x.Code==normalized)??throw new InvalidOperationException("Cupom não encontrado.");
   if(await db.Orders.AnyAsync(x=>x.UserId==userId&&x.CouponCode==normalized))throw new InvalidOperationException("Você já utilizou este cupom.");

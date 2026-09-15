@@ -25,6 +25,11 @@ namespace BetaFit.Application.DTOs
         public string UserName { get; set; } = string.Empty;
         public string UserId { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
+        public decimal ShippingCost { get; set; }
+        public string? ShippingMethod { get; set; }
+        public int? ShippingMinDays { get; set; }
+        public int? ShippingMaxDays { get; set; }
+        public int? ShippingRuleId { get; set; }
         public decimal Total { get; set; }
         public string Status { get; set; } = string.Empty;
         public string? PaymentId { get; set; }
@@ -57,6 +62,8 @@ namespace BetaFit.Application.DTOs
 
     public class CreateOrderDto
     {
+        [Required, Range(1, int.MaxValue)] public int? ShippingRuleId { get; set; }
+        [Required, Range(typeof(decimal), "0", "999999999.99", ParseLimitsInInvariantCulture = true)] public decimal? ExpectedTotal { get; set; }
         [StringLength(60)] public string? CouponCode {get;set;}
         [StringLength(40)] public string? SavedCardId { get; set; }
         [Range(1,12)] public int Installments { get; set; } = 1;

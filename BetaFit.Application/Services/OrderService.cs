@@ -11,6 +11,7 @@ namespace BetaFit.Application.Services
     public class OrderService : IOrderService
     {
         private readonly ICouponRepository _coupons;
+        private readonly IShippingService _shipping;
         private readonly IOrderRepository _orderRepository;
         private readonly IProductRepository _productRepository;
         private readonly UserManager<IdentityUser> _userManager;    
@@ -18,11 +19,11 @@ namespace BetaFit.Application.Services
         public OrderService(
             IOrderRepository orderRepository,
             IProductRepository productRepository,
-            UserManager<IdentityUser> userManager, ICouponRepository coupons)
+            UserManager<IdentityUser> userManager, ICouponRepository coupons, IShippingService shipping)
         {
             _orderRepository = orderRepository;
             _productRepository = productRepository;
-            _userManager = userManager; _coupons=coupons;
+            _userManager = userManager; _coupons=coupons; _shipping=shipping;
         }
 
         public async Task<List<OrderDto>> GetAllAsync()
@@ -57,7 +58,7 @@ namespace BetaFit.Application.Services
                     CustomerCpf = order.CustomerCpf, ShippingCep = order.ShippingCep, ShippingStreet = order.ShippingStreet, ShippingNumber = order.ShippingNumber, ShippingComplement = order.ShippingComplement, ShippingNeighborhood = order.ShippingNeighborhood, ShippingCity = order.ShippingCity, ShippingState = order.ShippingState,
                     UserName = await ObterNomeUsuarioAsync(order.UserId),
                     CreatedAt = order.CreatedAt,
-                    Total = order.Total,
+                    ShippingCost=order.ShippingCost, ShippingMethod=order.ShippingMethod, ShippingMinDays=order.ShippingMinDays, ShippingMaxDays=order.ShippingMaxDays, ShippingRuleId=order.ShippingRuleId, Total = order.Total,
                     Status = order.Status.ToString(),
                     PaymentId = order.PaymentId,
                     PaymentMethod = order.PaymentMethod,
@@ -101,7 +102,7 @@ namespace BetaFit.Application.Services
                     CustomerCpf = order.CustomerCpf, ShippingCep = order.ShippingCep, ShippingStreet = order.ShippingStreet, ShippingNumber = order.ShippingNumber, ShippingComplement = order.ShippingComplement, ShippingNeighborhood = order.ShippingNeighborhood, ShippingCity = order.ShippingCity, ShippingState = order.ShippingState,
                     UserName = nomeUsuario,
                     CreatedAt = order.CreatedAt,
-                    Total = order.Total,
+                    ShippingCost=order.ShippingCost, ShippingMethod=order.ShippingMethod, ShippingMinDays=order.ShippingMinDays, ShippingMaxDays=order.ShippingMaxDays, ShippingRuleId=order.ShippingRuleId, Total = order.Total,
                     Status = order.Status.ToString(),
                     PaymentId = order.PaymentId,
                     PaymentMethod = order.PaymentMethod,
@@ -147,7 +148,7 @@ namespace BetaFit.Application.Services
                 CustomerCpf = order.CustomerCpf, ShippingCep = order.ShippingCep, ShippingStreet = order.ShippingStreet, ShippingNumber = order.ShippingNumber, ShippingComplement = order.ShippingComplement, ShippingNeighborhood = order.ShippingNeighborhood, ShippingCity = order.ShippingCity, ShippingState = order.ShippingState,
                 UserName = await ObterNomeUsuarioAsync(order.UserId),
                 CreatedAt = order.CreatedAt,
-                Total = order.Total,
+                ShippingCost=order.ShippingCost, ShippingMethod=order.ShippingMethod, ShippingMinDays=order.ShippingMinDays, ShippingMaxDays=order.ShippingMaxDays, ShippingRuleId=order.ShippingRuleId, Total = order.Total,
                 Status = order.Status.ToString(),
                 PaymentId = order.PaymentId,
                 PaymentMethod = order.PaymentMethod,
@@ -231,7 +232,18 @@ namespace BetaFit.Application.Services
                 total += orderItem.UnitPrice * orderItem.Quantity;
             }
 
-            if(!string.IsNullOrWhiteSpace(dto.CouponCode)){var coupon=await _coupons.RedeemAsync(dto.CouponCode,userId,total);order.CouponCode=coupon.Code;order.Discount=coupon.Discount;total-=coupon.Discount;}
+            // Prévia não consome o cupom. Frete e valor esperado são conferidos antes das mutações.
+            var subtotal = total;
+            if(!string.IsNullOrWhiteSpace(dto.CouponCode)){var coupon=await _coupons.PreviewAsync(dto.CouponCode,userId,subtotal);order.CouponCode=coupon.Code;order.Discount=coupon.Discount;total-=coupon.Discount;}
+            var options = await _shipping.QuoteAsync(dto.ShippingCep, total);
+            var delivery = options.FirstOrDefault(o => o.RuleId == dto.ShippingRuleId)
+                ?? throw new InvalidOperationException("Selecione uma opção de entrega disponível para o CEP.");
+            total += delivery.Cost;
+            if (!dto.ExpectedTotal.HasValue || dto.ExpectedTotal.Value != total)
+                throw new InvalidOperationException("Os valores da compra ou do frete mudaram. Recalcule e confira o total antes de confirmar.");
+            order.ShippingCost=delivery.Cost; order.ShippingMethod=delivery.Name;
+            order.ShippingMinDays=delivery.MinDays; order.ShippingMaxDays=delivery.MaxDays; order.ShippingRuleId=delivery.RuleId;
+            if(!string.IsNullOrWhiteSpace(dto.CouponCode)) await _coupons.RedeemAsync(dto.CouponCode,userId,subtotal);
             foreach(var item in order.Items){var p=await _productRepository.GetByIdAsync(item.ProductId);VariantInventory.Change(p!,item.Size,item.Color,-item.Quantity);}
             order.Total = total;
             if(dto.PaymentMethod=="Boleto") {order.BoletoDigits=DemoBoleto.Create(total);order.BoletoDueAt=DateTime.Today.AddDays(3); }
@@ -245,7 +257,7 @@ namespace BetaFit.Application.Services
                 CustomerCpf = order.CustomerCpf, ShippingCep = order.ShippingCep, ShippingStreet = order.ShippingStreet, ShippingNumber = order.ShippingNumber, ShippingComplement = order.ShippingComplement, ShippingNeighborhood = order.ShippingNeighborhood, ShippingCity = order.ShippingCity, ShippingState = order.ShippingState,
                 UserName = await ObterNomeUsuarioAsync(order.UserId),
                 CreatedAt = order.CreatedAt,
-                Total = order.Total,
+                ShippingCost=order.ShippingCost, ShippingMethod=order.ShippingMethod, ShippingMinDays=order.ShippingMinDays, ShippingMaxDays=order.ShippingMaxDays, ShippingRuleId=order.ShippingRuleId, Total = order.Total,
                 Status = order.Status.ToString(),
                 PaymentId = order.PaymentId,
                 PaymentMethod = order.PaymentMethod,
@@ -339,6 +351,9 @@ namespace BetaFit.Application.Services
             var order = await _orderRepository.GetByIdAsync(id);
             if (order is null || !string.Equals(order.UserId, userId, StringComparison.Ordinal)) return (false, "Pedido não encontrado.");
             if (order.Status is not (OrderStatus.Pendente or OrderStatus.Confirmado)) return (false, "O endereço só pode ser alterado antes da preparação do pedido.");
+            // Um novo CEP pode mudar preço e prazo; exige novo checkout, inclusive após pagamento.
+            if (order.ShippingMethod is not null && Digits(order.ShippingCep) != Digits(dto.ShippingCep))
+                return (false, "Para mudar o CEP, cancele e refaça o pedido com o frete recalculado. Neste pedido você pode corrigir os demais dados do endereço.");
             order.ShippingCep = Digits(dto.ShippingCep);
             order.ShippingStreet = dto.ShippingStreet.Trim();
             order.ShippingNumber = dto.ShippingNumber.Trim();
