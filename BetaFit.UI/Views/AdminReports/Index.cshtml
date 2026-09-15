@@ -1,0 +1,43 @@
+@model BetaFit.Application.DTOs.StoreReportDto
+@{ ViewData["Title"] = "Relatórios da loja"; }
+<section class="bf-section bf-report"><div class="bf-container">
+    <span class="bf-eyebrow">Administração</span><h1>Relatórios da loja</h1>
+    <p>Produtos mais pedidos, faturamento e situação dos pedidos por período.</p>
+    <form method="get" class="bf-form bf-toolbar bf-report-controls">
+        <label>De<input type="date" name="from" value="@Model.From.ToString("yyyy-MM-dd")" required /></label>
+        <label>Até<input type="date" name="to" value="@Model.To.ToString("yyyy-MM-dd")" required /></label>
+        <button class="bf-btn bf-btn--dark" type="submit">Gerar relatório</button>
+    </form>
+    @if (ViewData["ReportError"] is string error) { <p class="bf-alert bf-alert--error" role="alert">@error</p> }
+    else {
+    <div class="bf-toolbar bf-report-controls">
+        <button type="button" class="bf-btn bf-btn--dark" data-report-print>Imprimir / salvar em PDF</button>
+        <a class="bf-btn bf-btn--ghost" href="@Url.Action("Index", "AdminReports", new { from = Model.From.ToString("yyyy-MM-dd"), to = Model.To.ToString("yyyy-MM-dd"), format = "excel" })">Exportar Excel (.xlsx)</a>
+    </div>
+    <p class="bf-report-controls">Para baixar em PDF, escolha “Salvar como PDF” na janela de impressão.</p>
+    <h2>@Model.From.ToString("dd/MM/yyyy") a @Model.To.ToString("dd/MM/yyyy")</h2>
+    <p>Dados demonstrativos, agrupados pela data de criação do pedido. Faturamento e ranking consideram pedidos pagos, excluindo cancelados e pedidos em reembolso. O faturamento já desconta os cupons.</p>
+    <div class="bf-stat-grid">
+        <article><small>Pedidos criados</small><strong>@Model.Orders</strong></article>
+        <article><small>Pedidos pagos elegíveis</small><strong>@Model.PaidOrders</strong></article>
+        <article><small>Faturamento</small><strong>@Model.Revenue.ToString("C")</strong></article>
+        <article><small>Ticket médio</small><strong>@Model.AverageTicket.ToString("C")</strong></article>
+    </div>
+    <p>Descontos de cupons nos pedidos elegíveis: <strong>@Model.Discounts.ToString("C")</strong></p>
+    @if (Model.Orders == 0) { <p class="bf-alert">Nenhum pedido encontrado neste período.</p> }
+    <h2>Produtos mais pedidos</h2><p>Ordenados por unidades em pedidos pagos. Valores por produto antes do cupom.</p>
+    <div class="bf-table-scroll"><table class="bf-admin-table"><thead><tr><th>Produto</th><th>Unidades</th><th>Pedidos</th><th>Valor bruto</th></tr></thead><tbody>
+    @foreach (var p in Model.Products) { <tr><td>@p.Name</td><td>@p.Quantity</td><td>@p.Orders</td><td>@p.Gross.ToString("C")</td></tr> }
+    @if (Model.Products.Count == 0) { <tr><td colspan="4">Sem produtos em pedidos pagos neste período.</td></tr> }
+    </tbody></table></div>
+    <h2>Faturamento por dia</h2>
+    <div class="bf-table-scroll"><table class="bf-admin-table"><thead><tr><th>Data do pedido</th><th>Pedidos pagos</th><th>Cupons</th><th>Faturamento</th></tr></thead><tbody>
+    @foreach (var d in Model.Days) { <tr><td>@d.Date.ToString("dd/MM/yyyy")</td><td>@d.Orders</td><td>@d.Discounts.ToString("C")</td><td>@d.Revenue.ToString("C")</td></tr> }
+    @if (Model.Days.Count == 0) { <tr><td colspan="4">Sem faturamento neste período.</td></tr> }
+    </tbody></table></div>
+    <h2>Situação atual dos pedidos do período</h2>
+    <div class="bf-table-scroll"><table class="bf-admin-table"><thead><tr><th>Status</th><th>Quantidade</th></tr></thead><tbody>
+    @foreach (var s in Model.Statuses) { <tr><td>@s.Status</td><td>@s.Orders</td></tr> }
+    </tbody></table></div>
+    }
+</div></section>

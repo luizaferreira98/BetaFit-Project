@@ -20,7 +20,7 @@ public class CategoryService : ICategoryService
  public async Task<CategoryDto> CreateAsync(CreateCategoryDto dto){var c=new Category();await Apply(c,dto.Name,dto.Slug,dto.ParentId,dto.SortOrder,dto.IsActive,dto.HideWhenOutOfStock);await repo.AddAsync(c);return (await GetByIdAsync(c.Id))!;}
  public async Task<CategoryDto?> UpdateAsync(int id,UpdateCategoryDto dto){var c=await repo.GetByIdAsync(id);if(c==null)return null;await Apply(c,dto.Name,dto.Slug,dto.ParentId,dto.SortOrder,dto.IsActive,dto.HideWhenOutOfStock);await repo.UpdateAsync(c);return await GetByIdAsync(id);}
  async Task Apply(Category c,string name,string slug,int? parent,int order,bool active,bool hide){
-  var all=(await repo.GetAllAsync()).ToList();var normalized=Slugify(string.IsNullOrWhiteSpace(slug)?name:slug);
+  var all=(await repo.GetAllAsync()).ToList();var normalized=Slugify(string.IsNullOrWhiteSpace(slug)?(string.IsNullOrWhiteSpace(c.Slug)?name:c.Slug):slug);
   if(name.Trim().Length is <2 or >100||normalized.Length is <2 or >100)throw new InvalidOperationException("Informe nome e slug entre 2 e 100 caracteres.");
   if(all.Any(x=>x.Id!=c.Id&&(x.Slug==normalized||string.IsNullOrEmpty(x.Slug)&&Slugify(x.Name)==normalized)))throw new InvalidOperationException("Esta URL já pertence a outra categoria.");
   var seen=new HashSet<int>{c.Id};var node=parent;while(node.HasValue){if(!seen.Add(node.Value))throw new InvalidOperationException("Uma categoria não pode ser filha de si mesma ou criar um ciclo.");var p=all.FirstOrDefault(x=>x.Id==node);if(p==null)throw new InvalidOperationException("Categoria pai não encontrada.");node=p.ParentId;}

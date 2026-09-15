@@ -332,6 +332,102 @@ namespace BetaFit.Infraestructure.Identity
             }
 
 
+            // =====================================================================
+            // 2.1. SEED DOS ARQUIVOS DE PRODUTO DO CATÁLOGO
+            // Garante que todas as imagens existentes no catálogo tenham produto,
+            // categoria e tipo (Gender), inclusive quando o banco já foi populado.
+            // =====================================================================
+            var catalogAssets = new[]
+            {
+                new { File = "Camisa Asta Costa.png", Name = "Camisa Asta Costa", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "Camisa Asta Frente.png", Name = "Camisa Asta Frente", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "Camisa Nami Frente.png", Name = "Camisa Nami Frente", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "Camisa Nami.png", Name = "Camisa Nami", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "Camisa Satoro Gojo Frente.png", Name = "Camisa Satoro Gojo Frente", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "Camisa Satoro Gojo.png", Name = "Camisa Satoro Gojo", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "Camisa Zoro Costa.png", Name = "Camisa Zoro Costa", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "Camisa Zoro Frente.png", Name = "Camisa Zoro Frente", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "Gemini_Generated_Image_66mtea66mtea66mt (1).jpg", Name = "Gemini Generated Image 66mtea66mtea66mt", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "Gemini_Generated_Image_p2umigp2umigp2um (1).jpg", Name = "Gemini Generated Image P2umigp2umigp2um", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "betafit_bone_branco.png", Name = "Betafit Bone Branco", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "betafit_bone_grafite.png", Name = "Betafit Bone Grafite", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "betafit_bone_preto.png", Name = "Betafit Bone Preto", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "betafit_bone_verde_neon.png", Name = "Betafit Bone Verde Neon", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "betafit_calca_cinza_com_camiseta.png", Name = "Betafit Calca Cinza Com Camiseta", Category = "Leggings", Gender = Gender.Unissex, Price = 149.90m },
+                new { File = "betafit_calca_feminina_grafite.png", Name = "Betafit Calca Feminina Grafite", Category = "Leggings", Gender = Gender.Feminino, Price = 149.90m },
+                new { File = "betafit_calca_feminina_neon.png", Name = "Betafit Calca Feminina Neon", Category = "Leggings", Gender = Gender.Feminino, Price = 149.90m },
+                new { File = "betafit_core_discipline_clean.png", Name = "Betafit Core Discipline Clean", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "betafit_galao_grafite_urso_9x16.png", Name = "Betafit Galao Grafite Urso 9x16", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "betafit_galao_preto_beta_9x16.png", Name = "Betafit Galao Preto Beta 9x16", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "betafit_moletom_masculino.png", Name = "Betafit Moletom Masculino", Category = "Moletons", Gender = Gender.Masculino, Price = 199.90m },
+                new { File = "betafit_power_elements_robusto.png", Name = "Betafit Power Elements Robusto", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "betafit_progression_line_clean.png", Name = "Betafit Progression Line Clean", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "betafit_regata_cinza_frente_urso.png", Name = "Betafit Regata Cinza Frente Urso", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "betafit_regata_cinza_textura.png", Name = "Betafit Regata Cinza Textura", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "betafit_regata_preta_textura.png", Name = "Betafit Regata Preta Textura", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "betafit_shaker_branco_urso_9x16.png", Name = "Betafit Shaker Branco Urso 9x16", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "betafit_shaker_preto_beta_9x16.png", Name = "Betafit Shaker Preto Beta 9x16", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "betafit_short_feminino_9x16.png.png", Name = "Betafit Short Feminino 9x16.png", Category = "Shorts", Gender = Gender.Feminino, Price = 89.90m },
+                new { File = "betafit_short_feminino_branco.png", Name = "Betafit Short Feminino Branco", Category = "Shorts", Gender = Gender.Feminino, Price = 89.90m },
+                new { File = "betafit_short_masculino_9x16.png", Name = "Betafit Short Masculino 9x16", Category = "Shorts", Gender = Gender.Masculino, Price = 89.90m },
+                new { File = "betafit_short_masculino_branco.png", Name = "Betafit Short Masculino Branco", Category = "Shorts", Gender = Gender.Masculino, Price = 89.90m },
+                new { File = "composicao_dois_modelos_costas_c (1).png", Name = "Composicao Dois Modelos Costas C", Category = "Camisetas", Gender = Gender.Unissex, Price = 99.90m },
+                new { File = "foto_direita_9x16_corpo.jpg - Cr (1).png", Name = "Foto Direita 9x16 Corpo.jpg Cr", Category = "Tênis", Gender = Gender.Unissex, Price = 299.90m },
+                new { File = "foto_individual_01.png - Crop (1).png", Name = "Foto Individual 01.png Crop", Category = "Tênis", Gender = Gender.Unissex, Price = 299.90m },
+                new { File = "foto_individual_04.png", Name = "Foto Individual 04", Category = "Tênis", Gender = Gender.Unissex, Price = 299.90m },
+                new { File = "foto_individual_05.png", Name = "Foto Individual 05", Category = "Tênis", Gender = Gender.Unissex, Price = 299.90m },
+                new { File = "foto_individual_06.png", Name = "Foto Individual 06", Category = "Tênis", Gender = Gender.Unissex, Price = 299.90m },
+                new { File = "foto_individual_07.png", Name = "Foto Individual 07", Category = "Tênis", Gender = Gender.Unissex, Price = 299.90m },
+                new { File = "foto_meio_9x16_corpo.png", Name = "Foto Meio 9x16 Corpo", Category = "Tênis", Gender = Gender.Unissex, Price = 299.90m },
+                new { File = "garrafa_centro_9x16.png", Name = "Garrafa Centro 9x16", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "garrafa_direita_9x16.png", Name = "Garrafa Direita 9x16", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "garrafa_esquerda_9x16.png", Name = "Garrafa Esquerda 9x16", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "garrafa_ferrari_9x16.png", Name = "Garrafa Ferrari 9x16", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "garrafa_luffy_9x16.png", Name = "Garrafa Luffy 9x16", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "garrafa_mercedes_9x16.png", Name = "Garrafa Mercedes 9x16", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "garrafa_noelle_9x16.png", Name = "Garrafa Noelle 9x16", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "garrafa_red_bull_racing_9x16.png", Name = "Garrafa Red Bull Racing 9x16", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "garrafa_sanji_9x16.png", Name = "Garrafa Sanji 9x16", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "garrafa_sem_texto_alca_02.png", Name = "Garrafa Sem Texto Alca 02", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "garrafa_yuno_9x16.png", Name = "Garrafa Yuno 9x16", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "garrafa_zoro_9x16.png", Name = "Garrafa Zoro 9x16", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+                new { File = "homem_costas_mercedes_betafit_mi (1).png", Name = "Homem Costas Mercedes Betafit Mi", Category = "Camisetas", Gender = Gender.Masculino, Price = 99.90m },
+                new { File = "homem_costas_sem_protecao_9x16.j (1).png", Name = "Homem Costas Sem Protecao 9x16.j", Category = "Camisetas", Gender = Gender.Masculino, Price = 99.90m },
+                new { File = "homem_ferrari_costas_academia_9x (1).png", Name = "Homem Ferrari Costas Academia 9x", Category = "Camisetas", Gender = Gender.Masculino, Price = 99.90m },
+                new { File = "homem_ferrari_frente_academia_9x (1).png", Name = "Homem Ferrari Frente Academia 9x", Category = "Camisetas", Gender = Gender.Masculino, Price = 99.90m },
+                new { File = "homem_frente_mercedes_betafit_9x (1).png", Name = "Homem Frente Mercedes Betafit 9x", Category = "Camisetas", Gender = Gender.Masculino, Price = 99.90m },
+                new { File = "homem_sem_bracos_cruzados_9x16.j (1).png", Name = "Homem Sem Bracos Cruzados 9x16.j", Category = "Camisetas", Gender = Gender.Masculino, Price = 99.90m },
+                new { File = "mulher_costas_betafit_mais_trein (1).png", Name = "Mulher Costas Betafit Mais Trein", Category = "Camisetas", Gender = Gender.Feminino, Price = 99.90m },
+                new { File = "mulher_costas_mais_treinada_v2_9 (1).png", Name = "Mulher Costas Mais Treinada V2 9", Category = "Camisetas", Gender = Gender.Feminino, Price = 99.90m },
+                new { File = "mulher_ferrari_costas_academia_9 (1).png", Name = "Mulher Ferrari Costas Academia 9", Category = "Camisetas", Gender = Gender.Feminino, Price = 99.90m },
+                new { File = "mulher_ferrari_frente_academia_9 (1).png", Name = "Mulher Ferrari Frente Academia 9", Category = "Camisetas", Gender = Gender.Feminino, Price = 99.90m },
+                new { File = "mulher_frente_9x16.jpg - Crop 9_ (1).png", Name = "Mulher Frente 9x16.jpg Crop 9", Category = "Camisetas", Gender = Gender.Feminino, Price = 99.90m },
+                new { File = "mulher_separada_9x16.jpg - Crop (1).png", Name = "Mulher Separada 9x16.jpg Crop", Category = "Camisetas", Gender = Gender.Feminino, Price = 99.90m },
+                new { File = "shaker_betafit_9x16.png", Name = "Shaker Betafit 9x16", Category = "Acessórios", Gender = Gender.Unissex, Price = 49.90m },
+            };
+
+            foreach (var asset in catalogAssets)
+            {
+                var imageUrl = $"/images/products/{asset.File}";
+                if (await context.Products.AnyAsync(p => p.ImageUrl == imageUrl)) continue;
+
+                var categoryEntity = await context.Categories.FirstAsync(c => c.Name == asset.Category);
+                await context.Products.AddAsync(new Product
+                {
+                    Name = asset.Name,
+                    Description = $"{asset.Name} da coleção Beta Fit.",
+                    Price = asset.Price,
+                    ImageUrl = imageUrl,
+                    ImageUrlsJson = JsonSerializer.Serialize(new[] { imageUrl }),
+                    Gender = asset.Gender,
+                    CategoryId = categoryEntity.Id,
+                    IsFeatured = false,
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
+                });
+            }
+            await context.SaveChangesAsync();
+
             // Corrige dados de demonstração antigos: acessórios não ganham tamanho inventado e tênis usam numeração.
             var shoeCategory = await context.Categories.FirstOrDefaultAsync(c => c.Name == "Tênis");
             if (shoeCategory is not null)

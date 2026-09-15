@@ -14,9 +14,10 @@ public class CartController : Controller
     private readonly IOrderService _orderService;
     private readonly HttpCartService _cart;
     private readonly HttpProfileService _profile;
+    private readonly HttpClient _api;
 
-    public CartController(IOrderService orderService, HttpCartService cart, HttpProfileService profile)
-    { _orderService = orderService; _cart = cart; _profile = profile; }
+    public CartController(IOrderService orderService, HttpCartService cart, HttpProfileService profile, IHttpClientFactory factory)
+    { _orderService = orderService; _cart = cart; _profile = profile; _api = factory.CreateClient("ApiClient"); }
 
     [HttpGet("")]
     public async Task<IActionResult> Index()
@@ -54,8 +55,7 @@ public class CartController : Controller
             {
                 ApplySavedAddress(vm, profile);
                 vm.HasSavedAddress = HasCompleteAddress(vm);
-                if (vm.HasSavedAddress)
-                    vm.Cpf = string.Empty;
+                vm.Cpf = profile.Cpf ?? string.Empty;
                 ApplySavedCard(vm, profile, true);
             }
         }
@@ -83,12 +83,15 @@ public class CartController : Controller
             vm.HasSavedAddress = true;
             foreach (var field in AddressFields) ModelState.Remove(field);
 
-            var typedCpf = DigitsOnly(vm.Cpf);
-            var savedCpf = DigitsOnly(profile!.Cpf);
-            if (!string.IsNullOrWhiteSpace(savedCpf) && !string.Equals(typedCpf, savedCpf, StringComparison.Ordinal))
-                ModelState.AddModelError(nameof(vm.Cpf), "Informe o CPF cadastrado no seu perfil para confirmar esta compra.");
+
         }
 
+        // Reutiliza o CPF do perfil autenticado, sem pedir confirmação a cada compra.
+        if (!string.IsNullOrWhiteSpace(profile?.Cpf))
+        {
+            vm.Cpf = profile.Cpf;
+            ModelState.Remove(nameof(vm.Cpf));
+        }
         if (!ModelState.IsValid) return View(vm);
 
         var usesCard = vm.PaymentMethod is "Credito" or "Debito";
@@ -111,7 +114,7 @@ public class CartController : Controller
             }
         }
 
-        // Na primeira compra, o endereço e o CPF são gravados para que os próximos checkouts peçam somente o CPF.
+        // Na primeira compra, o endereço e o CPF são gravados para reutilização nos próximos checkouts.
         if (!hasSavedAddress || string.IsNullOrWhiteSpace(profile?.Cpf))
         {
             var saved = await _profile.SaveCheckoutAddressAsync(new CheckoutAddressDto
@@ -158,6 +161,20 @@ public class CartController : Controller
         }
         catch (HttpRequestException) { TempData["Error"] = "Não foi possível criar o pedido agora."; return RedirectToAction(nameof(Index)); }
         catch (InvalidOperationException ex) { ModelState.AddModelError(string.Empty, ex.Message); return View(vm); }
+    }
+
+    [Authorize, HttpGet("CouponPreview"), ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public async Task<IActionResult> CouponPreview(string? code)
+    {
+        if (string.IsNullOrWhiteSpace(code) || code.Length > 40)
+            return BadRequest(new { message = "Informe um código de cupom válido." });
+        try
+        {
+            using var response = await _api.GetAsync("api/cart/coupon-preview?code=" + Uri.EscapeDataString(code));
+            return new ContentResult { StatusCode = (int)response.StatusCode, ContentType = "application/json", Content = await response.Content.ReadAsStringAsync() };
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+        { return StatusCode(503, new { message = "Não foi possível consultar o cupom. Tente novamente." }); }
     }
 
     [Authorize, HttpGet("Pix/{id:int}")]

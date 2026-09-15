@@ -8,9 +8,9 @@
 
 @if (Model.HasSavedAddress)
 {
-    <div class="bf-form-section bf-checkout-confirmation"><div class="bf-form-section__head"><span>01</span><div><strong>Confirme seu CPF</strong><small>Seu endereço está salvo. Para sua segurança, informe somente o CPF antes de escolher o pagamento.</small></div></div>
+    <div class="bf-form-section bf-checkout-confirmation"><div class="bf-form-section__head"><span>01</span><div><strong>Endereço de entrega</strong><small>Seu endereço está salvo. Escolha abaixo a forma de pagamento.</small></div></div>
         <div class="bf-order-address"><p><strong>@Model.Street, @Model.Number</strong>@if(!string.IsNullOrWhiteSpace(Model.Complement)){<text> · @Model.Complement</text>}</p><p>@Model.Neighborhood · @Model.City/@Model.State · CEP @Model.Cep</p><a class="bf-text-link" asp-controller="Account" asp-action="Profile">Alterar endereço no perfil</a></div>
-        <label class="bf-checkout-cpf">CPF de confirmação<input asp-for="Cpf" maxlength="14" data-cpf-mask inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" data-checkout-group="profile"/><span asp-validation-for="Cpf" class="text-danger"></span></label>
+        @if (string.IsNullOrWhiteSpace(Model.Cpf)) { <label class="bf-checkout-cpf">CPF para cadastro<input asp-for="Cpf" maxlength="14" data-cpf-mask inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" data-checkout-group="profile"/><span asp-validation-for="Cpf" class="text-danger"></span></label> }
     </div>
 }
 else
@@ -51,8 +51,8 @@ else
         <p class="bf-form-hint">Para testar, use 4111111111111111, uma validade futura e qualquer CVV de 3 dígitos. O sistema guarda somente bandeira, final e validade.</p>
     </div>
 </div>
-<label>Cupom de desconto (opcional)<input asp-for="CouponCode" maxlength="40" placeholder="Ex.: BEMVINDO10"/><small>Desconto validado ao confirmar o pedido. Um uso por cliente; sujeito à validade e compra mínima.</small></label><div class="bf-form-actions"><a class="bf-btn bf-btn--ghost" asp-action="Index">Voltar ao carrinho</a><button class="bf-btn bf-btn--dark" type="submit">Confirmar pedido <span>→</span></button></div></form>
-<aside class="bf-cart-summary"><span>Resumo da compra</span>@foreach(var item in Model.Items){<div class="bf-cart-summary__items"><span>@item.Name × @item.Quantity</span><strong>@((item.Price*item.Quantity).ToString("C"))</strong></div>}<div class="bf-cart-summary__total"><strong>Total</strong><strong>@Model.Total.ToString("C")</strong></div><small>Pedido criado apenas para demonstração, sem pagamento real.</small></aside>
+<label>Cupom de desconto (opcional)<input asp-for="CouponCode" maxlength="40" placeholder="Ex.: BEMVINDO10" data-coupon-input data-preview-url="@Url.Action("CouponPreview", "Cart")"/><small data-coupon-feedback role="status" aria-live="polite">Digite o cupom para consultar o desconto. Um uso por cliente.</small></label><div class="bf-form-actions"><a class="bf-btn bf-btn--ghost" asp-action="Index">Voltar ao carrinho</a><button class="bf-btn bf-btn--dark" type="submit">Confirmar pedido <span>→</span></button></div></form>
+<aside class="bf-cart-summary"><span>Resumo da compra</span>@foreach(var item in Model.Items){<div class="bf-cart-summary__items"><span>@item.Name × @item.Quantity</span><strong>@((item.Price*item.Quantity).ToString("C"))</strong></div>}<div class="bf-cart-summary__items"><span>Subtotal</span><strong data-checkout-subtotal>@Model.Total.ToString("C")</strong></div><div class="bf-cart-summary__items" data-coupon-row hidden><span>Desconto do cupom</span><strong data-coupon-discount></strong></div><div class="bf-cart-summary__total" aria-live="polite"><strong>Total</strong><strong data-checkout-total data-subtotal="@Model.Total.ToString(System.Globalization.CultureInfo.InvariantCulture)">@Model.Total.ToString("C")</strong></div><small>Pedido criado apenas para demonstração, sem pagamento real.</small></aside>
 </div></div></section>
 
 @section Scripts { @await Html.PartialAsync("_ValidationScriptsPartial") }

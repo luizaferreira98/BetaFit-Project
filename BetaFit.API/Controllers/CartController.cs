@@ -25,6 +25,29 @@ public class CartController : ControllerBase
         return Ok(items.Select(Map));
     }
 
+    [HttpGet("coupon-preview"), ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public async Task<IActionResult> CouponPreview(string? code)
+    {
+        if (string.IsNullOrWhiteSpace(code) || code.Length > 40)
+            return BadRequest(new { message = "Informe um código de cupom válido." });
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        var normalized = code.Trim().ToUpperInvariant();
+        var coupon = await _db.DiscountCoupons.AsNoTracking().SingleOrDefaultAsync(x => x.Code == normalized);
+        if (coupon is null) return BadRequest(new { message = "Cupom não encontrado." });
+        if (await _db.Orders.AnyAsync(x => x.UserId == userId && x.CouponCode == normalized))
+            return BadRequest(new { message = "Você já utilizou este cupom." });
+        var items = await _db.CartItems.AsNoTracking().Include(x => x.Product)
+            .Where(x => x.UserId == userId && x.Product != null && x.Product.IsActive).ToListAsync();
+        if (items.Count == 0) return BadRequest(new { message = "Seu carrinho está vazio." });
+        var subtotal = items.Sum(x => (x.Product!.SalePrice ?? x.Product.Price) * x.Quantity);
+        try
+        {
+            var discount = coupon.Calculate(subtotal, DateTime.UtcNow);
+            return Ok(new { code = coupon.Code, percent = coupon.Percent, subtotal, discount, total = subtotal - discount });
+        }
+        catch (InvalidOperationException ex) { return BadRequest(new { message = ex.Message }); }
+    }
+
     [HttpPost]
     public async Task<ActionResult<CartItemDto>> Add([FromBody] AddCartItemDto dto)
     {

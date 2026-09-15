@@ -718,3 +718,43 @@ const drawer = document.querySelector('[data-filter-drawer]'); document.querySel
 document.querySelectorAll('[data-select-all]').forEach(all => all.addEventListener('change', () => all.closest('form')?.querySelectorAll('[data-select-item]').forEach(x => x.checked = all.checked)));
 document.querySelectorAll('[data-notifications-toggle]').forEach(button => button.addEventListener('click', event => { event.stopPropagation(); button.closest('[data-notifications]')?.classList.toggle('is-open'); })); document.addEventListener('click', () => document.querySelectorAll('[data-notifications].is-open').forEach(x => x.classList.remove('is-open')));
 document.querySelectorAll('input[name="size"]').forEach(input=>input.addEventListener('change',()=>{const label=document.querySelector('[data-selected-size]');if(label)label.textContent=input.value;}));
+
+
+// Mantém os valores dos formulários após um refresh quando a página exibiu erros.
+(() => {
+    const storagePrefix = 'betafit:form:';
+    const hasErrors = form => Boolean(form.querySelector('.validation-summary-errors, .input-validation-error, .field-validation-error, .bf-alert--error'));
+    const getKey = form => storagePrefix + location.pathname + ':' + (form.getAttribute('action') || location.pathname);
+
+    document.querySelectorAll('form').forEach(form => {
+        const fields = [...form.querySelectorAll('input, textarea, select')]
+            .filter(field => field.name && !['password', 'file', 'hidden'].includes(field.type));
+        if (!fields.length) return;
+
+        const key = getKey(form);
+        let saved = null;
+        try { saved = JSON.parse(sessionStorage.getItem(key) || 'null'); } catch { saved = null; }
+
+        if (saved && hasErrors(form)) {
+            fields.forEach(field => {
+                if (!(field.name in saved)) return;
+                if (field.type === 'checkbox' || field.type === 'radio') field.checked = saved[field.name] === field.value;
+                else field.value = saved[field.name];
+            });
+        } else if (!hasErrors(form)) {
+            sessionStorage.removeItem(key);
+        }
+
+        const save = () => {
+            const values = {};
+            fields.forEach(field => {
+                if (field.type === 'checkbox' || field.type === 'radio') {
+                    if (field.checked) values[field.name] = field.value;
+                } else values[field.name] = field.value;
+            });
+            sessionStorage.setItem(key, JSON.stringify(values));
+        };
+        fields.forEach(field => field.addEventListener('input', save));
+        fields.forEach(field => field.addEventListener('change', save));
+    });
+})();
