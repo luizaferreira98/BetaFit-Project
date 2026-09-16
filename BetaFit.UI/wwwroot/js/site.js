@@ -8,55 +8,8 @@
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // ---------------------------------------------------------------------
-    // Global page motion layer
-    // ---------------------------------------------------------------------
-    const transition = document.createElement("div");
-    transition.className = "bf-page-transition";
-    transition.setAttribute("aria-hidden", "true");
-    transition.innerHTML = '<span class="bf-page-transition__mark">BF</span>';
-    body.appendChild(transition);
-
-    requestAnimationFrame(() => body.classList.add("bf-page-ready"));
-
-    window.addEventListener("pageshow", () => {
-        transition.classList.remove("is-leaving");
-        body.classList.add("bf-page-ready");
-    });
-
-    // Smooth visual transition between Razor pages. Forms and external links
-    // are intentionally untouched so existing application behavior remains.
-    if (!prefersReducedMotion) {
-        document.addEventListener("click", (event) => {
-            const link = event.target.closest("a[href]");
-            if (!link) return;
-            if (event.defaultPrevented) return;
-            if (link.target && link.target !== "_self") return;
-            if (link.hasAttribute("download")) return;
-
-            const rawHref = link.getAttribute("href");
-            if (!rawHref || rawHref.startsWith("#") || rawHref.startsWith("javascript:")) return;
-
-            let url;
-            try {
-                url = new URL(rawHref, window.location.href);
-            } catch {
-                return;
-            }
-
-            if (url.origin !== window.location.origin) return;
-            if (url.pathname === window.location.pathname && url.search === window.location.search) return;
-
-            event.preventDefault();
-            transition.classList.add("is-leaving");
-            body.classList.add("bf-page-leaving");
-
-            window.setTimeout(() => {
-                window.location.href = url.href;
-            }, 180);
-        });
-    }
-
+    // Native navigation is handled by page-loading.js without redirect delays.
+    body.classList.add("bf-page-ready");
     // ---------------------------------------------------------------------
     // Scroll reveal with staggered motion
     // ---------------------------------------------------------------------
@@ -395,14 +348,6 @@
         });
     });
 
-    // ---------------------------------------------------------------------
-    // Keep the logout confirmation from being replaced by the page transition.
-    // ---------------------------------------------------------------------
-    document.querySelectorAll(".bf-logout-form").forEach((form) => {
-        form.addEventListener("submit", () => {
-            body.classList.add("bf-page-leaving");
-        });
-    });
 })();
 
 
@@ -520,14 +465,30 @@ document.querySelectorAll('input[type="date"][name="BirthDate"]').forEach(input 
     input.max = new Date().toISOString().slice(0, 10);
 });
 
-// Product image zoom: hover on desktop and click-to-zoom on touch devices.
+// Product image zoom: works on the actual product gallery stage.
 (() => {
-    document.querySelectorAll(".bf-gallery__main").forEach(main => {
-        const img = main.querySelector("img"); if (!img) return;
-        const reset = () => { img.style.transform = "scale(1)"; img.style.transformOrigin = "50% 50%"; };
-        main.addEventListener("pointermove", e => { if (!window.matchMedia("(hover:hover) and (pointer:fine)").matches) return; const r = main.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width * 100; const y = (e.clientY - r.top) / r.height * 100; img.style.transformOrigin = `${x}% ${y}%`; img.style.transform = "scale(1.8)"; });
-        main.addEventListener("pointerleave", reset);
-        main.addEventListener("click", () => { if (window.matchMedia("(hover:hover) and (pointer:fine)").matches) return; img.classList.toggle("is-zoomed"); img.style.transform = img.classList.contains("is-zoomed") ? "scale(1.7)" : "scale(1)"; });
+    document.querySelectorAll(".bf-product-gallery__stage").forEach(stage => {
+        const img = stage.querySelector("img");
+        if (!img) return;
+        const finePointer = window.matchMedia("(hover:hover) and (pointer:fine)");
+        stage.addEventListener("pointermove", e => {
+            if (!finePointer.matches || stage.classList.contains("is-image-zoomed")) return;
+            const r = stage.getBoundingClientRect();
+            const x = Math.max(0, Math.min(100, ((e.clientX - r.left) / r.width) * 100));
+            const y = Math.max(0, Math.min(100, ((e.clientY - r.top) / r.height) * 100));
+            img.style.transformOrigin = `${x}% ${y}%`;
+            img.style.transform = "scale(1.22)";
+        });
+        stage.addEventListener("pointerleave", () => {
+            if (!stage.classList.contains("is-image-zoomed")) {
+                img.style.transformOrigin = "center";
+                img.style.transform = "";
+            }
+        });
+        stage.addEventListener("click", e => {
+            if (e.target.closest("button")) return;
+            if (!finePointer.matches) stage.classList.toggle("is-image-zoomed");
+        });
     });
 })();
 
@@ -722,36 +683,19 @@ document.addEventListener('error', event => {
     image.dataset.imageFallbackApplied = 'true';
     image.src = '/images/products/betafit_progression_line_clean.png';
 }, true);
-// Compact carousel for the benefits strip below the hero.
+// Message-only announcement strip: rotates automatically, without arrows or dots.
 document.querySelectorAll('[data-event-carousel]').forEach(carousel => {
     const slides = [...carousel.querySelectorAll('[data-event-slide]')];
-    const dots = [...carousel.querySelectorAll('[data-event-dot]')];
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let current = 0, timer;
+    if (slides.length <= 1) { slides[0]?.classList.add('is-active'); return; }
+    let current = 0;
     const show = index => {
         current = (index + slides.length) % slides.length;
         slides.forEach((slide, i) => slide.classList.toggle('is-active', i === current));
-        dots.forEach((dot, i) => dot.classList.toggle('is-active', i === current));
     };
-    // This loop is deliberately restarted after the last item so the green
-    // strip keeps rotating forever without reaching a dead end.
-    const start = () => { clearInterval(timer); if (slides.length > 1 && !reduceMotion) timer = setInterval(() => show(current + 1), 2200); };
-    carousel.querySelector('[data-event-prev]')?.addEventListener('click', () => { show(current - 1); start(); });
-    carousel.querySelector('[data-event-next]')?.addEventListener('click', () => { show(current + 1); start(); });
-    dots.forEach((dot, index) => dot.addEventListener('click', () => { show(index); start(); }));
-    show(0); start();
+    show(0);
+    window.setInterval(() => show(current + 1), 2800);
 });
-document.querySelectorAll('[data-product-rail]').forEach(rail => {
-    const track = rail.querySelector('.bf-product-rail__track');
-    if (!track) return;
-    const step = direction => {
-        const card = track.querySelector('.bf-product-card');
-        const amount = card ? card.getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || '0') : track.clientWidth;
-        track.scrollBy({ left: direction * amount, behavior: 'smooth' });
-    };
-    rail.querySelector('[data-rail-prev]')?.addEventListener('click', () => step(-1));
-    rail.querySelector('[data-rail-next]')?.addEventListener('click', () => step(1));
-});
+
 const drawer = document.querySelector('[data-filter-drawer]'); document.querySelector('[data-filter-open]')?.addEventListener('click', () => { drawer?.classList.add('is-open'); drawer?.setAttribute('aria-hidden', 'false'); }); drawer?.querySelectorAll('[data-filter-close]').forEach(x => x.addEventListener('click', () => { drawer.classList.remove('is-open'); drawer.setAttribute('aria-hidden', 'true'); }));
 document.querySelectorAll('[data-select-all]').forEach(all => all.addEventListener('change', () => all.closest('form')?.querySelectorAll('[data-select-item]').forEach(x => x.checked = all.checked)));
 document.querySelectorAll('[data-notifications-toggle]').forEach(button => button.addEventListener('click', event => { event.stopPropagation(); button.closest('[data-notifications]')?.classList.toggle('is-open'); })); document.addEventListener('click', () => document.querySelectorAll('[data-notifications].is-open').forEach(x => x.classList.remove('is-open')));

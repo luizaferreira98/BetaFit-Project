@@ -49,18 +49,11 @@ namespace BetaFit.UI.Controllers
                 var categories = await _categoryService.GetAllAsync();
                 viewModel.Categories = categories.Where(c => c.IsVisible).OrderBy(c=>c.SortOrder).ToList();
                 var visibleCategories=viewModel.Categories.Select(c=>c.Id).ToHashSet();var products = (await _productService.GetAllAsync()).Where(p => p.IsActive&&visibleCategories.Contains(p.CategoryId)).ToList();viewModel.FeaturedProducts=viewModel.FeaturedProducts.Where(p=>visibleCategories.Contains(p.CategoryId)).ToList();
-                // A página inicial tinha os mesmos produtos em "Novidades" e, logo abaixo,
-                // outra vez nas coleções. Mantemos uma seleção recente curta e removemos os
-                // seus ids das prateleiras seguintes para que cada produto apareça uma vez.
-                viewModel.RecentProducts = products.OrderByDescending(p => p.CreatedAt).Take(8).ToList();
-                var displayedProductIds = viewModel.RecentProducts.Select(p => p.Id).ToHashSet();
+                viewModel.RecentProducts = products.OrderByDescending(p => p.CreatedAt).Take(12).ToList();
                 viewModel.ProductsByCategory = viewModel.Categories
-                    .Where(c => products.Any(p => p.CategoryId == c.Id && !displayedProductIds.Contains(p.Id)))
+                    .Where(c => products.Any(p => p.CategoryId == c.Id))
                     .GroupBy(c => c.Name)
-                    .ToDictionary(g => g.Key, g => (IReadOnlyList<BetaFit.Application.DTOs.ProductDto>)products
-                        .Where(p => g.Any(c => c.Id == p.CategoryId) && !displayedProductIds.Contains(p.Id))
-                        .Take(12)
-                        .ToList());
+                    .ToDictionary(g => g.Key, g => (IReadOnlyList<BetaFit.Application.DTOs.ProductDto>)products.Where(p => g.Any(c => c.Id == p.CategoryId)).Take(12).ToList());
                 viewModel.SiteSettings = await _siteSettings.GetAsync();
             }
             catch (HttpRequestException)

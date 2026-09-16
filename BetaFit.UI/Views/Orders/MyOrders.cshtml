@@ -1,11 +1,137 @@
 @model IEnumerable<OrderDto>
 @using BetaFit.UI.Helpers
-@{ViewData["Title"]="Minhas compras";var selected=ViewData["SelectedStatus"]?.ToString()??"all";var counts=ViewData["OrderCounts"] as Dictionary<string,int>??new();}
-<section class="bf-section"><div class="bf-container"><h1>Minhas compras</h1><nav class="bf-tabs" aria-label="Status dos pedidos">@foreach(var tab in OrderJourney.Tabs){<a class="@(selected==tab.Key?"is-active":"")" href="@Url.Action("MyOrders",new{status=tab.Key,search=ViewData["Search"]})">@tab.Label (@counts.GetValueOrDefault(tab.Key))</a>}</nav><form method="get" class="bf-form bf-toolbar"><input type="hidden" name="status" value="@selected"/><input name="search" value="@ViewData["Search"]" placeholder="Buscar por loja, produto ou número do pedido"/><button class="bf-btn bf-btn--dark">Buscar</button><a href="/Orders/MyOrders">Limpar</a></form>
-@if(TempData["Success"] is string ok){<p class="bf-alert">@ok</p>}@if(TempData["Error"] is string err){<p class="bf-alert bf-alert--error">@err</p>}
-@foreach(var order in Model){var group=OrderJourney.Group(order);<article class="bf-purchase-card"><header><div><strong>BETAFIT</strong> <a href="/Orders/Details/@order.Id#chat">Chat</a> · <a href="/">Ver loja</a><small>Pedido #@order.Id · @order.CreatedAt.ToString("dd/MM/yyyy")</small></div><div><span class="bf-status-tag @(group=="done"?"is-active":"is-inactive")">@OrderJourney.Label(order)</span><small>@order.TrackingDescription</small></div></header>@foreach(var item in order.Items){<div class="bf-purchase-item"><img src="@item.ImageUrl" alt="@item.ProductName"/><div><a href="/Product/@item.ProductId"><strong>@item.ProductName</strong></a><p>@item.Color · @item.Size · Quantidade @item.Quantity</p></div><div>@if(item.OriginalPrice>item.UnitPrice){<del>@item.OriginalPrice.Value.ToString("C")</del>}<strong>@item.UnitPrice.ToString("C")</strong></div></div>}<footer><strong>@(group=="refund"?"Valor solicitado":"Total") @order.Total.ToString("C")</strong><div class="bf-toolbar">
-@if(group=="pay"){<a class="bf-btn bf-btn--dark" href="@(order.PaymentMethod.Contains("Boleto")?$"/Cart/Boleto/{order.Id}":order.PaymentMethod.Contains("Pix")?$"/Cart/Pix/{order.Id}":$"/Orders/Details/{order.Id}")">Pagar agora</a><form asp-action="Cancel" method="post">@Html.AntiForgeryToken()<input name="id" value="@order.Id" type="hidden"/><button class="bf-btn bf-btn--ghost">Cancelar pedido</button></form>}
-else if(group=="shipping"){<a class="bf-btn bf-btn--dark" href="/Orders/Details/@order.Id#rastreamento">Rastrear pedido</a><form asp-action="Journey" method="post">@Html.AntiForgeryToken()<input name="id" value="@order.Id" type="hidden"/><input name="action" value="received" type="hidden"/><button class="bf-btn bf-btn--ghost">Confirmar recebimento</button></form>}
-else if(order.Status=="Entregue"){<form asp-action="BuyAgain" method="post">@Html.AntiForgeryToken()<input name="id" value="@order.Id" type="hidden"/><button class="bf-btn bf-btn--dark">Comprar novamente</button></form>}
-<a class="bf-btn bf-btn--ghost" href="/Orders/Details/@order.Id">@(group=="done"&&order.Items.Any(i=>!i.Reviewed)?"Avaliar produtos":"Ver detalhes")</a></div></footer></article>}
-@if(!Model.Any()){<div class="bf-empty"><strong>Nenhum pedido encontrado</strong><p>Confira os filtros ou explore o catálogo.</p><a href="/Catalog">Ir ao catálogo</a></div>}</div></section>
+
+@{
+    ViewData["Title"] = "Minhas compras";
+    var selected = ViewData["SelectedStatus"]?.ToString() ?? "all";
+    var counts = ViewData["OrderCounts"] as Dictionary<string, int> ?? new Dictionary<string, int>();
+    var search = ViewData["Search"]?.ToString();
+    var orders = Model?.ToList() ?? new List<OrderDto>();
+}
+
+<section class="bf-section">
+    <div class="bf-container">
+        <h1>Minhas compras</h1>
+
+        <nav class="bf-tabs" aria-label="Status dos pedidos">
+            @foreach (var tab in OrderJourney.Tabs)
+            {
+                <a class="@(selected == tab.Key ? "is-active" : "")"
+                   href="@Url.Action("MyOrders", new { status = tab.Key, search = search })">
+                    @tab.Label (@counts.GetValueOrDefault(tab.Key))
+                </a>
+            }
+        </nav>
+
+        <form method="get" class="bf-form bf-toolbar">
+            <input type="hidden" name="status" value="@selected" />
+            <input name="search" value="@search" placeholder="Buscar por loja, produto ou número do pedido" />
+            <button class="bf-btn bf-btn--dark">Buscar</button>
+            <a href="/Orders/MyOrders">Limpar</a>
+        </form>
+
+        @if (TempData["Success"] is string ok)
+        {
+            <p class="bf-alert">@ok</p>
+        }
+        @if (TempData["Error"] is string err)
+        {
+            <p class="bf-alert bf-alert--error">@err</p>
+        }
+
+        @foreach (var order in orders)
+        {
+            var group = OrderJourney.Group(order);
+            var hasUnreviewedItems = order.Items.Any(i => !i.Reviewed);
+
+            <article class="bf-purchase-card">
+                <header>
+                    <div>
+                        <strong>BETAFIT</strong>
+                        <a href="/Orders/Details/@order.Id#chat">Chat</a> ·
+                        <a href="/">Ver loja</a>
+                        <small>Pedido #@order.Id · @order.CreatedAt.ToString("dd/MM/yyyy")</small>
+                    </div>
+                    <div>
+                        <span class="bf-status-tag @(group == "done" ? "is-active" : "is-inactive")">
+                            @OrderJourney.Label(order)
+                        </span>
+                        <small>@order.TrackingDescription</small>
+                    </div>
+                </header>
+
+                @foreach (var item in order.Items)
+                {
+                    <div class="bf-purchase-item">
+                        <img src="@item.ImageUrl" alt="@item.ProductName" />
+                        <div>
+                            <a href="/Product/@item.ProductId"><strong>@item.ProductName</strong></a>
+                            <p>@item.Color · @item.Size · Quantidade @item.Quantity</p>
+                        </div>
+                        <div>
+                            @if (item.OriginalPrice > item.UnitPrice)
+                            {
+                                <del>@item.OriginalPrice.Value.ToString("C")</del>
+                            }
+                            <strong>@item.UnitPrice.ToString("C")</strong>
+                        </div>
+                    </div>
+                }
+
+                <footer>
+                    <strong>@(group == "refund" ? "Valor solicitado" : "Total") @order.Total.ToString("C")</strong>
+                    <div class="bf-toolbar">
+                        @if (group == "pay")
+                        {
+                            var payUrl = order.PaymentMethod.Contains("Boleto")
+                                ? $"/Cart/Boleto/{order.Id}"
+                                : order.PaymentMethod.Contains("Pix")
+                                    ? $"/Cart/Pix/{order.Id}"
+                                    : $"/Orders/Details/{order.Id}";
+
+                            <a class="bf-btn bf-btn--dark" href="@payUrl">Pagar agora</a>
+
+                            <form asp-action="Cancel" method="post">
+                                @Html.AntiForgeryToken()
+                                <input name="id" value="@order.Id" type="hidden" />
+                                <button class="bf-btn bf-btn--ghost">Cancelar pedido</button>
+                            </form>
+                        }
+                        else if (group == "shipping")
+                        {
+                            <a class="bf-btn bf-btn--dark" href="/Orders/Details/@order.Id#rastreamento">Rastrear pedido</a>
+
+                            <form asp-action="Journey" method="post">
+                                @Html.AntiForgeryToken()
+                                <input name="id" value="@order.Id" type="hidden" />
+                                <input name="action" value="received" type="hidden" />
+                                <button class="bf-btn bf-btn--ghost">Confirmar recebimento</button>
+                            </form>
+                        }
+                        else if (order.Status == "Entregue")
+                        {
+                            <form asp-action="BuyAgain" method="post">
+                                @Html.AntiForgeryToken()
+                                <input name="id" value="@order.Id" type="hidden" />
+                                <button class="bf-btn bf-btn--dark">Comprar novamente</button>
+                            </form>
+                        }
+
+                        <a class="bf-btn bf-btn--ghost" href="/Orders/Details/@order.Id">
+                            @(group == "done" && hasUnreviewedItems ? "Avaliar produtos" : "Ver detalhes")
+                        </a>
+                    </div>
+                </footer>
+            </article>
+        }
+
+        @if (!orders.Any())
+        {
+            <div class="bf-empty">
+                <strong>Nenhum pedido encontrado</strong>
+                <p>Confira os filtros ou explore o catálogo.</p>
+                <a href="/Catalog">Ir ao catálogo</a>
+            </div>
+        }
+    </div>
+</section>

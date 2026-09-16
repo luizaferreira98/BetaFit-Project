@@ -64,7 +64,7 @@
         if (/pix|boleto|cartao|pagamento|pagar/.test(text)) return 'Escolha Pix, boleto, crédito ou débito no checkout. Os pagamentos deste projeto são demonstrativos. Para Pix e boleto, abra o pedido e use a confirmação de pagamento da simulação.';
         if (/entrega|rastre|pedido|compra|atras/.test(text)) return 'Abra Minhas compras e selecione o pedido para consultar o status e o rastreio. Se precisar de uma resposta da loja, use Atendimento Beta Fit dentro desse pedido.';
         if (/tamanho|medida|cor|produto/.test(text)) return 'Abra o produto, selecione a cor e consulte a tabela de medidas antes de escolher o tamanho. As fotos acompanham a cor selecionada.';
-        if (/humano|atendente|loja|pessoa/.test(text)) return 'Para falar com a equipe, abra Minhas compras, escolha o pedido e envie uma mensagem em Atendimento Beta Fit. Este chat fornece orientações automáticas e não encaminha mensagens à equipe.';
+        if (/humano|atendente|loja|pessoa/.test(text)) return 'Use o botão Abrir conversa com a loja abaixo para enviar sua dúvida à equipe. Suas mensagens ficam salvas na área Conversas com a loja. Este assistente responde automaticamente.';
         if (/obrigad|valeu|resolvi/.test(text)) return 'Por nada! Se precisar, escolha outro assunto abaixo.';
         if (/^(oi|ola|bom dia|boa tarde|boa noite)\b/.test(text)) return 'Olá! Sou o assistente virtual BetaFit. Posso orientar sobre pedidos, pagamentos, cupons, tamanhos e reembolsos. Qual é a sua dúvida?';
         return 'Posso ajudar com pedidos e entrega, pagamentos, cupons, tamanhos ou reembolsos. Escolha um assunto abaixo. Para tratar um pedido específico com a equipe, use o atendimento em Minhas compras.';
@@ -79,15 +79,43 @@
         while (log.children.length > 60) log.firstElementChild.remove();
         log.scrollTop = log.scrollHeight;
     };
-    const send = text => {
+    let pending = false;
+    const send = async text => {
         const value = text.trim().slice(0, 500);
-        if (!value) return;
+        if (!value || pending) return;
+        pending = true;
         message(value, true);
-        message(reply(value));
         input.value = '';
-        input.focus({ preventScroll: true });
+        const controls = [...chat.querySelectorAll('[data-chat-topic], button[type="submit"]')];
+        controls.forEach(button => button.disabled = true);
+        const typing = document.createElement('div');
+        typing.className = 'bf-chat-typing';
+        typing.setAttribute('role', 'status');
+        typing.setAttribute('aria-label', 'Assistente BetaFit está escrevendo');
+        typing.innerHTML = '<span aria-hidden="true"><i></i><i></i><i></i></span><small>Assistente escrevendo</small>';
+        log.append(typing);
+        log.scrollTop = log.scrollHeight;
+        try {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            typing.remove();
+            message(reply(value));
+        } finally {
+            typing.remove();
+            pending = false;
+            controls.forEach(button => button.disabled = false);
+        }
     };
     form.addEventListener('submit', event => { event.preventDefault(); send(input.value); });
+    const params = new URLSearchParams(location.search);
+    const question = params.get('question');
+    const productName = params.get('productName');
+    const productId = params.get('productId');
+    const context = chat.querySelector('[data-support-context]');
+    if(productName && context){context.hidden=false;context.textContent='Sobre o produto: '+productName.slice(0,160);}
+    const contact = chat.querySelector('[data-contact-store]');
+    if(contact){const url=new URL('/Support',location.origin);if(productId)url.searchParams.set('productId',productId);url.searchParams.set('subject',(productName?'Dúvida: '+productName:question||'Preciso de ajuda').slice(0,160));contact.href=url.pathname+url.search;}
+    if(question){send(question); chat.scrollIntoView({block:'start'});}
+
     chat.querySelectorAll('[data-chat-topic]').forEach(button => button.addEventListener('click', () => send(button.textContent)));
     document.querySelectorAll('[data-chat-open]').forEach(button => button.addEventListener('click', () => {
         chat.scrollIntoView({ behavior: 'smooth', block: 'start' }); input.focus({ preventScroll: true });

@@ -52,7 +52,7 @@
                 <a class="bf-product-rating" href="#avaliacoes" aria-label="@reviewCount avaliações, média @reviewAverage.ToString("0.0") de 5">
                     <span class="bf-rating-stars" style="--rating:@reviewAverage.ToString(System.Globalization.CultureInfo.InvariantCulture)">★★★★★</span><strong>@(reviewCount == 0 ? "Sem avaliações" : reviewAverage.ToString("0.0"))</strong><small>(@reviewCount @(reviewCount == 1 ? "avaliação" : "avaliações"))</small>
                 </a>
-                @if(Model.SalePrice.HasValue){<del>@Model.Price.ToString("C")</del><span class="bf-badge bf-badge--offer">Oferta</span>}<div class="bf-product-detail__price">@Model.EffectivePrice.ToString("C")</div><p class="bf-product-installments"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3zM3 10h18"/></svg> Em até <strong>12x de @((Model.EffectivePrice/12).ToString("C"))</strong> sem juros no crédito</p>
+                @if(Model.SalePrice.HasValue){<del>@Model.Price.ToString("C")</del><span class="bf-badge bf-badge--offer">Oferta</span>}<div class="bf-product-detail__price">@Model.EffectivePrice.ToString("C")</div><p class="bf-product-installments"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3zM3 10h18"/></svg><span>Em até <strong>12x de @((Model.EffectivePrice/12).ToString("C"))</strong> sem juros no crédito</span></p>
                 @if (Model.Stock <= 0) { <div class="bf-alert bf-alert--error">Produto esgotado no momento.</div> }
                 @if (TempData["Error"] is string errorMessage) { <div class="bf-alert bf-alert--error">@errorMessage</div> }
 
@@ -65,7 +65,6 @@
                         @if(User.Identity?.IsAuthenticated==true){<button type="submit" class="bf-favorite-round" form="product-favorite-form" aria-label="Adicionar ou remover dos favoritos">@((ViewData["IsFavorite"] as bool?)==true?"♥":"♡")</button>}else{<a class="bf-favorite-round" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path" aria-label="Entrar para favoritar">♡</a>}</div></div>
                     </form>
 <form id="product-favorite-form" asp-controller="Favorites" asp-action="Toggle" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@Model.Id" /><input type="hidden" name="returnUrl" value="@Context.Request.Path" /></form>
-                <p class="bf-shipping-note">Frete grátis em compras acima de R$ 299,90</p>
                 @if (!string.IsNullOrWhiteSpace(Model.Description))
                 {
                     <details class="bf-product-description"><summary><span>Descrição</span><b>+</b></summary><p>@Model.Description</p></details>
@@ -75,7 +74,6 @@
 <button type="button" data-info-open="quality"><span>✦</span><span>Performance e conforto<small>Conheça a proposta Beta Fit</small></span></button>
 <button type="button" data-info-open="care"><span>♧</span><span>Mais cuidado, mais durabilidade<small>Como conservar sua peça</small></span></button>
 <button type="button" data-info-open="exchange"><span>⇄</span><span>Trocas e atendimento<small>Confira as orientações da loja</small></span></button></div>
-<div class="bf-product-updates"><span>♧</span><div><strong>Acompanhe suas novidades</strong>@if(User.Identity?.IsAuthenticated==true){<p>Atualizações de pedidos e novidades chegam nas notificações da sua conta.</p><button class="bf-text-link" type="button" data-product-notifications>Ver minhas notificações</button>}else{<p>Entre para receber atualizações de pedidos e novidades da Beta Fit.</p><a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path">Entrar ou criar conta</a>}</div></div>
             </div>
         </div>
     </div></section>

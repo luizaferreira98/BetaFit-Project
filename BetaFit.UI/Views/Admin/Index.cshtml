@@ -1,10 +1,163 @@
 @model List<ProductDto>
-@{ViewData["Title"]="Produtos e estoque";var cats=ViewData["Categories"] as List<CategoryDto>??new();var current=(int?)ViewData["Page"]??1;var pages=(int?)ViewData["Pages"]??1;var size=(int?)ViewData["PageSize"]??20;}
-<section class="bf-section"><div class="bf-container"><div class="bf-toolbar"><div><span class="bf-eyebrow bf-eyebrow--dark">Administração</span><h1>Produtos e estoque</h1></div><a class="bf-btn bf-btn--dark" href="/Admin/NewProduct">+ Novo produto</a></div>
-@if(TempData["Success"] is string ok){<p class="bf-alert">@ok</p>}@if(TempData["Error"] is string err){<p class="bf-alert bf-alert--error">@err</p>}
-<div class="bf-stat-grid"><article><small>Produtos</small><strong>@ViewData["TotalProducts"]</strong></article><article><small>Sem estoque</small><strong>@ViewData["OutCount"]</strong></article><article><small>Estoque baixo</small><strong>@ViewData["LowCount"]</strong></article><article><small>Categorias</small><strong>@cats.Count</strong></article></div>
-<form method="get" class="bf-form bf-toolbar"><input name="search" value="@ViewData["Search"]" placeholder="Buscar produto"/><select name="categoryId"><option value="">Todas as categorias</option>@foreach(var c in cats){<option value="@c.Id" selected="@(ViewData["SelectedCategoryId"] as int?==c.Id)">@c.Name</option>}</select><select name="status"><option value="">Todos os status</option>@foreach(var s in new[]{("active","Ativos"),("inactive","Inativos"),("out","Sem estoque"),("low","Estoque baixo")}){<option value="@s.Item1" selected="@(ViewData["SelectedStatus"]?.ToString()==s.Item1)">@s.Item2</option>}</select><select name="pageSize" aria-label="Produtos por página">@foreach(var n in new[]{10,20,50}){<option value="@n" selected="@(size==n)">@n por página</option>}</select><button class="bf-btn bf-btn--dark">Filtrar</button><a href="/Admin">Limpar</a></form>
-<p>Exibindo @Model.Count de @ViewData["Filtered"] resultados · @ViewData["TotalProducts"] produtos no total. Duplo clique no preço ou estoque para editar.</p><p data-management-feedback role="status"></p>
-<form action="/Admin/Products/Bulk" method="post" id="product-bulk">@Html.AntiForgeryToken()<div class="bf-toolbar"><label><input type="checkbox" data-select-all/> Selecionar página</label><select name="action"><option value="activate">Ativar</option><option value="deactivate">Desativar</option><option value="delete">Excluir</option></select><button class="bf-btn bf-btn--ghost" data-confirm="Aplicar a ação aos produtos selecionados?">Aplicar</button></div>
-<div class="bf-table-scroll"><table class="bf-admin-table"><thead><tr><th></th><th>Produto</th><th>Preço</th><th>Estoque</th><th>Status</th><th>Ações</th></tr></thead><tbody>@foreach(var p in Model){<tr><td><input name="selectedIds" value="@p.Id" type="checkbox" data-select-item/></td><td><div class="bf-product-row"><img src="@p.ImageUrl" alt=""/><div><strong>@p.Name</strong><small>@p.CategoryName · SKU @(string.IsNullOrWhiteSpace(p.Sku)?"não informado":p.Sku)</small>@if(p.IsFeatured){<span class="bf-badge">Em destaque</span>}@if(p.SalePrice.HasValue){<span class="bf-badge bf-badge--offer">Oferta @p.SalePrice.Value.ToString("C")</span>}</div></div></td><td><button type="button" class="bf-inline-value" data-quick="price" data-id="@p.Id" data-value="@p.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)" title="Duplo clique ou Enter para editar preço">@p.Price.ToString("C")</button></td><td><button type="button" class="bf-inline-value" data-quick="stock" data-id="@p.Id" data-value="@p.Stock" title="Duplo clique ou Enter para editar estoque">@p.Stock</button>@if(p.Variants.Count>0){<small>por variação</small>}</td><td><span class="bf-status-tag @(p.Stock==0?"is-out":p.IsActive?"is-active":"is-inactive")">@(p.Stock==0?"Sem estoque":p.IsActive?"Ativo":"Inativo")</span></td><td><div class="bf-table-actions"><a href="/Admin/EditProduct/@p.Id" title="Editar produto" aria-label="Editar @p.Name">✎</a><a href="/Product/@p.Id" target="_blank" title="Ver na loja" aria-label="Ver @p.Name">↗</a><a class="bf-action-delete" href="/Admin/DeleteProduct/@p.Id" title="Excluir produto" aria-label="Excluir @p.Name">⌫</a></div></td></tr>}</tbody></table></div></form>
-<nav class="bf-pagination" aria-label="Páginas de produtos">@for(int n=1;n<=pages;n++){<a class="@(n==current?"is-active":"")" href="@Url.Action("Index",new{page=n,pageSize=size,search=ViewData["Search"],categoryId=ViewData["SelectedCategoryId"],status=ViewData["SelectedStatus"]})">@n</a>}</nav></div></section>
+
+@{
+    ViewData["Title"] = "Produtos e estoque";
+    var cats = ViewData["Categories"] as List<CategoryDto> ?? new List<CategoryDto>();
+    var current = (int?)ViewData["Page"] ?? 1;
+    var pages = (int?)ViewData["Pages"] ?? 1;
+    var size = (int?)ViewData["PageSize"] ?? 20;
+    var selectedCategoryId = ViewData["SelectedCategoryId"] as int?;
+    var selectedStatus = ViewData["SelectedStatus"]?.ToString();
+}
+
+<section class="bf-section">
+    <div class="bf-container">
+        <div class="bf-toolbar">
+            <div>
+                <span class="bf-eyebrow bf-eyebrow--dark">Administração</span>
+                <h1>Produtos e estoque</h1>
+            </div>
+            <a class="bf-btn bf-btn--dark" href="/Admin/NewProduct">+ Novo produto</a>
+        </div>
+
+        @if (TempData["Success"] is string ok)
+        {
+            <p class="bf-alert">@ok</p>
+        }
+        @if (TempData["Error"] is string err)
+        {
+            <p class="bf-alert bf-alert--error">@err</p>
+        }
+
+        <div class="bf-stat-grid">
+            <article><small>Produtos</small><strong>@ViewData["TotalProducts"]</strong></article>
+            <article><small>Sem estoque</small><strong>@ViewData["OutCount"]</strong></article>
+            <article><small>Estoque baixo</small><strong>@ViewData["LowCount"]</strong></article>
+            <article><small>Categorias</small><strong>@cats.Count</strong></article>
+        </div>
+
+        <form method="get" class="bf-form bf-toolbar">
+            <input name="search" value="@ViewData["Search"]" placeholder="Buscar produto" />
+            <select name="categoryId">
+                <option value="">Todas as categorias</option>
+                @foreach (var c in cats)
+                {
+                    <option value="@c.Id" selected="@(selectedCategoryId == c.Id)">@c.Name</option>
+                }
+            </select>
+            <select name="status">
+                <option value="">Todos os status</option>
+                @foreach (var s in new[] { ("active", "Ativos"), ("inactive", "Inativos"), ("out", "Sem estoque"), ("low", "Estoque baixo") })
+                {
+                    <option value="@s.Item1" selected="@(selectedStatus == s.Item1)">@s.Item2</option>
+                }
+            </select>
+            <select name="pageSize" aria-label="Produtos por página">
+                @foreach (var n in new[] { 10, 20, 50 })
+                {
+                    <option value="@n" selected="@(size == n)">@n por página</option>
+                }
+            </select>
+            <button class="bf-btn bf-btn--dark">Filtrar</button>
+            <a href="/Admin">Limpar</a>
+        </form>
+
+        <p>
+            Exibindo @Model.Count de @ViewData["Filtered"] resultados ·
+            @ViewData["TotalProducts"] produtos no total. Duplo clique no preço ou estoque para editar.
+        </p>
+        <p data-management-feedback role="status"></p>
+
+        <form action="/Admin/Products/Bulk" method="post" id="product-bulk">
+            @Html.AntiForgeryToken()
+            <div class="bf-toolbar">
+                <label><input type="checkbox" data-select-all /> Selecionar página</label>
+                <select name="action">
+                    <option value="activate">Ativar</option>
+                    <option value="deactivate">Desativar</option>
+                    <option value="delete">Excluir</option>
+                </select>
+                <button class="bf-btn bf-btn--ghost" data-confirm="Aplicar a ação aos produtos selecionados?">Aplicar</button>
+            </div>
+
+            <div class="bf-table-scroll">
+                <table class="bf-admin-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Produto</th>
+                            <th>Preço</th>
+                            <th>Estoque</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model)
+                        {
+                            <tr>
+                                <td><input name="selectedIds" value="@p.Id" type="checkbox" data-select-item /></td>
+                                <td>
+                                    <div class="bf-product-row">
+                                        <img src="@p.ImageUrl" alt="" />
+                                        <div>
+                                            <strong>@p.Name</strong>
+                                            <small>@p.CategoryName · SKU @(string.IsNullOrWhiteSpace(p.Sku) ? "não informado" : p.Sku)</small>
+                                            @if (p.IsFeatured)
+                                            {
+                                                <span class="bf-badge">Em destaque</span>
+                                            }
+                                            @if (p.SalePrice.HasValue)
+                                            {
+                                                <span class="bf-badge bf-badge--offer">Oferta @p.SalePrice.Value.ToString("C")</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button type="button" class="bf-inline-value" data-quick="price" data-id="@p.Id"
+                                            data-value="@p.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                            title="Duplo clique ou Enter para editar preço">
+                                        @p.Price.ToString("C")
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" class="bf-inline-value" data-quick="stock" data-id="@p.Id"
+                                            data-value="@p.Stock" title="Duplo clique ou Enter para editar estoque">
+                                        @p.Stock
+                                    </button>
+                                    @if (p.Variants.Count > 0)
+                                    {
+                                        <small>por variação</small>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="bf-status-tag @(p.Stock == 0 ? "is-out" : p.IsActive ? "is-active" : "is-inactive")">
+                                        @(p.Stock == 0 ? "Sem estoque" : p.IsActive ? "Ativo" : "Inativo")
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="bf-table-actions">
+                                        <a href="/Admin/EditProduct/@p.Id" title="Editar produto" aria-label="Editar @p.Name">✎</a>
+                                        <a href="/Product/@p.Id" target="_blank" title="Ver na loja" aria-label="Ver @p.Name">↗</a>
+                                        <a class="bf-action-delete" href="/Admin/DeleteProduct/@p.Id" title="Excluir produto" aria-label="Excluir @p.Name">⌫</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </form>
+
+        <nav class="bf-pagination" aria-label="Páginas de produtos">
+            @for (int n = 1; n <= pages; n++)
+            {
+                <a class="@(n == current ? "is-active" : "")"
+                   href="@Url.Action("Index", new { page = n, pageSize = size, search = ViewData["Search"], categoryId = ViewData["SelectedCategoryId"], status = ViewData["SelectedStatus"] })">
+                    @n
+                </a>
+            }
+        </nav>
+    </div>
+</section>

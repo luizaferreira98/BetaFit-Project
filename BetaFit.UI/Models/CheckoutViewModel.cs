@@ -5,6 +5,10 @@ namespace BetaFit.UI.Models;
 
 public class CheckoutViewModel
 {
+    [Required(ErrorMessage="Escolha uma opção de entrega."), Range(1,int.MaxValue)] public int? ShippingRuleId { get; set; }
+    public string? ExpectedTotal { get; set; }
+    public BetaFit.Application.DTOs.ShippingQuoteDto? ShippingQuote { get; set; }
+    public decimal PayableTotal => (ShippingQuote?.Subtotal ?? Total) - (ShippingQuote?.Discount ?? 0) + (ShippingQuote?.Options.FirstOrDefault(o=>o.RuleId==ShippingRuleId)?.Cost ?? 0);
     [StringLength(60)] public string? CouponCode {get;set;}
     [Required, RegularExpression(@"^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$", ErrorMessage="Informe um CPF válido.")]
     public string Cpf { get; set; } = string.Empty;

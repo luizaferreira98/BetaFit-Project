@@ -85,22 +85,6 @@ namespace BetaFit.UI.Services
             product.ImageUrls = product.ImageUrls?.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() ?? new List<string>();
             if (product.ImageUrls.Count == 0 && !string.IsNullOrWhiteSpace(product.ImageUrl))
                 product.ImageUrls.Add(product.ImageUrl!);
-            // O banco antigo pode conter a mesma foto em ImageUrl/ImageUrls e
-            // também registros repetidos na galeria persistente. A imagem
-            // principal passa a ser sempre a primeira foto única da galeria.
-            product.ImageUrl = product.ImageUrls.FirstOrDefault() ?? product.ImageUrl;
-            product.ColorGalleries = product.ColorGalleries?
-                .Where(pair => !string.IsNullOrWhiteSpace(pair.Key))
-                .ToDictionary(pair => pair.Key, pair => (pair.Value ?? new List<string>())
-                    .Where(url => !string.IsNullOrWhiteSpace(url))
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .ToList(), StringComparer.OrdinalIgnoreCase)
-                ?? new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-            product.ColorImageUrls = product.ColorImageUrls?
-                .Where(pair => !string.IsNullOrWhiteSpace(pair.Key) && !string.IsNullOrWhiteSpace(pair.Value))
-                .GroupBy(pair => pair.Key, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(group => group.Key, group => group.First().Value, StringComparer.OrdinalIgnoreCase)
-                ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             // Corrige também produtos antigos que ainda possuem P/M/G salvo em um produto de calçado.
             // Produtos sem variação ficam com lista vazia; a View não inventa tamanho.

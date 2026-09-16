@@ -121,14 +121,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-// Produtos antigos foram cadastrados com nomes de arquivo diferentes dos
-// assets entregues. Normalizamos a URL antes do middleware de arquivos
-// estáticos, preservando inclusive links guardados em pedidos e favoritos.
-app.Use(async (context, next) =>
-{
-    context.Request.Path = ProductMediaPath.Normalize(context.Request.Path);
-    await next();
-});
 app.UseStaticFiles();
 
 app.UseRequestLocalization(new RequestLocalizationOptions().SetDefaultCulture("pt-BR").AddSupportedCultures("pt-BR").AddSupportedUICultures("pt-BR"));

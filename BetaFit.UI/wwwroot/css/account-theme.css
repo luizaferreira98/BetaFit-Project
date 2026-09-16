@@ -49,3 +49,233 @@
     .bf-header.is-menu-open { max-height: 100dvh; overflow-y: auto; }
     .bf-account-shortcuts { grid-template-columns: 1fr; }
 }
+
+/* -------------------------------------------------------------------------
+   Account menu + readability pass
+   ------------------------------------------------------------------------- */
+.bf-account-menu {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.bf-account-menu__trigger {
+    min-height: 42px;
+    padding: 5px 9px 5px 6px;
+    border: 1px solid var(--store-line);
+    border-radius: 7px;
+    background: var(--store-panel);
+    color: var(--store-text);
+    cursor: pointer;
+    transition: border-color .2s, background .2s, color .2s, box-shadow .2s;
+}
+
+.bf-account-menu__trigger:hover,
+.bf-account-menu.is-open .bf-account-menu__trigger {
+    border-color: var(--store-text);
+    background: var(--store-bg);
+}
+
+.bf-account-menu__trigger:focus-visible {
+    outline: 2px solid var(--bf-lime-dark);
+    outline-offset: 2px;
+}
+
+.bf-account-menu__chevron {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform .2s;
+}
+
+.bf-account-menu.is-open .bf-account-menu__trigger > .bf-account-menu__chevron {
+    transform: rotate(180deg);
+}
+
+.bf-account-menu__panel {
+    position: absolute;
+    z-index: 80;
+    top: calc(100% + 10px);
+    right: 0;
+    width: min(360px, calc(100vw - 24px));
+    overflow: hidden;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    border: 1px solid var(--store-line);
+    border-radius: 10px;
+    background: var(--store-panel);
+    color: var(--store-text);
+    box-shadow: 0 18px 50px rgba(0,0,0,.14);
+    transition: opacity .18s ease, transform .18s ease, visibility .18s ease;
+}
+
+.bf-account-menu.is-open .bf-account-menu__panel {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.bf-account-menu__identity {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--store-line);
+}
+
+.bf-account-menu__identity span {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--store-muted);
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.bf-account-menu__identity strong {
+    display: block;
+    overflow: hidden;
+    color: var(--store-text);
+    font-size: 14px;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bf-account-menu__links {
+    padding: 8px;
+}
+
+.bf-account-menu__links > a,
+.bf-account-menu__item,
+.bf-account-menu__footer button {
+    width: 100%;
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--store-text);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.bf-account-menu__links > a:hover,
+.bf-account-menu__item:hover,
+.bf-account-menu__footer button:hover {
+    background: rgba(167,208,0,.12);
+    color: var(--store-text);
+}
+
+.bf-account-menu__icon {
+    width: 22px;
+    flex: 0 0 22px;
+    color: var(--store-muted);
+    font-size: 17px;
+    font-weight: 400;
+    text-align: center;
+}
+
+.bf-account-menu__links a b {
+    margin-left: auto;
+    min-width: 22px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: var(--store-bg);
+    color: var(--store-muted);
+    font-size: 12px;
+    text-align: center;
+}
+
+.bf-account-menu__item > .bf-account-menu__chevron {
+    margin-left: auto;
+    transform: none;
+}
+
+.bf-recent-menu {
+    margin: 0 8px 8px;
+    border-top: 1px solid var(--store-line);
+}
+
+.bf-recent-menu[hidden] { display: none; }
+
+.bf-recent-menu__empty,
+.bf-recent-menu a {
+    display: block;
+    padding: 11px 12px 11px 45px;
+    color: var(--store-muted);
+    font-size: 13px;
+    line-height: 1.4;
+    text-decoration: none;
+}
+
+.bf-recent-menu a {
+    color: var(--store-text);
+    border-bottom: 1px solid var(--store-line);
+}
+
+.bf-recent-menu a:last-child { border-bottom: 0; }
+.bf-recent-menu a:hover { background: rgba(167,208,0,.08); }
+
+.bf-account-menu__footer {
+    padding: 8px;
+    border-top: 1px solid var(--store-line);
+}
+
+/* Dark-mode account/login contrast. */
+[data-theme="dark"] .bf-auth-panel {
+    background: var(--store-bg);
+    color: var(--store-text);
+}
+
+[data-theme="dark"] .bf-auth-panel h1,
+[data-theme="dark"] .bf-form label,
+[data-theme="dark"] .bf-back-link,
+[data-theme="dark"] .bf-auth-switch {
+    color: var(--store-text);
+}
+
+[data-theme="dark"] .bf-auth-switch a,
+[data-theme="dark"] .bf-back-link:hover {
+    color: var(--store-text) !important;
+}
+
+[data-theme="dark"] .bf-form input,
+[data-theme="dark"] .bf-form textarea,
+[data-theme="dark"] .bf-form select {
+    background: var(--store-panel);
+    color: var(--store-text);
+    border-color: var(--store-line);
+}
+
+[data-theme="dark"] .bf-form input::placeholder,
+[data-theme="dark"] .bf-form textarea::placeholder {
+    color: var(--store-muted);
+}
+
+/* The request is specifically for readable text/links; compact numeric badges
+   keep their small size so they remain visually balanced. */
+.bf-favorite-count,
+.bf-cart-count { font-size: 11px !important; }
+
+@media (max-width:1100px) {
+    .bf-account-menu { width: auto; }
+    .bf-account-menu__panel {
+        position: fixed;
+        top: 78px;
+        right: 12px;
+        max-height: calc(100dvh - 92px);
+        overflow-y: auto;
+    }
+}

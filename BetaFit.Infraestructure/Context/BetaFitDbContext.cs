@@ -64,6 +64,8 @@ namespace BetaFit.Infraestructure.Context
         public DbSet<DiscountCoupon> DiscountCoupons {get;set;}
         public DbSet<ShippingRule> ShippingRules { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<SupportConversation> SupportConversations {get;set;}
+        public DbSet<SupportMessage> SupportMessages {get;set;}
         public DbSet<OrderMessage> OrderMessages {get;set;}
 
         /// <summary>

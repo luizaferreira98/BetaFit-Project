@@ -69,3 +69,168 @@ body{font-family:Montserrat,system-ui,sans-serif;color:var(--ui-text);background
 @media(min-width:1351px){.bf-header .bf-header__inner{position:relative;display:grid!important;grid-template-columns:1fr auto 1fr;min-height:78px}.bf-header #header-navigation{position:absolute;left:50%;transform:translateX(-50%);justify-self:auto;z-index:1}.bf-header #header-actions{grid-column:3;justify-self:end}.bf-header .bf-menu-toggle{display:none!important}}
 @media(max-width:1350px){.bf-header .bf-header__inner{display:flex!important;align-items:center;padding:12px 20px}.bf-header .bf-logo{margin-right:auto}.bf-header .bf-menu-toggle{display:inline-flex!important;order:2;margin-left:0}.bf-header #header-navigation,.bf-header #header-actions{display:none!important}.bf-header.is-menu-open #header-navigation{display:flex!important;flex:0 0 100%;order:3;flex-direction:column;align-items:stretch;gap:0;border-top:1px solid var(--ui-line);padding-top:8px}.bf-header.is-menu-open #header-navigation>a{padding:14px 8px;min-height:44px}.bf-header.is-menu-open #header-actions{display:flex!important;flex:0 0 100%;order:4;flex-wrap:wrap;justify-content:flex-start;gap:12px;padding:16px 0 4px;border-top:1px solid var(--ui-line)}.bf-header.is-menu-open .bf-user-chip__name{display:inline}}
 @media(max-width:700px){.bf-header .bf-header__inner{padding-inline:16px}.bf-menu-toggle{width:44px;height:44px}.bf-event-carousel{grid-template-columns:36px minmax(0,1fr) 36px;padding-inline:12px;min-height:68px}.bf-event-carousel__slide{font-size:11px;letter-spacing:.11em}.bf-event-carousel>button{width:30px;height:30px}.bf-event-carousel__dots{bottom:5px}}
+
+/* ========================================================================
+   Beta Fit UI refinement - product reading, clean announcements and mobile
+   ======================================================================== */
+
+/* Minimal notification icon */
+.bf-notifications__trigger {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    padding: 8px !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    box-shadow: none !important;
+}
+.bf-notifications__trigger svg {
+    width: 18px !important;
+    height: 18px !important;
+    stroke: currentColor !important;
+    fill: none !important;
+    stroke-width: 1.65 !important;
+}
+.bf-notifications__trigger b {
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    padding: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    font-size: 9px !important;
+    line-height: 1 !important;
+}
+.bf-notifications__trigger:hover { background: var(--ui-bg) !important; }
+
+/* Green announcement strip: text only, no controls/dots */
+.bf-event-carousel {
+    display: block !important;
+    min-height: 58px !important;
+    padding: 0 20px !important;
+}
+.bf-event-carousel__viewport {
+    height: 58px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 28px !important;
+    overflow: hidden !important;
+}
+.bf-event-carousel__slide {
+    position: static !important;
+    inset: auto !important;
+    opacity: 1 !important;
+    transform: none !important;
+    white-space: nowrap !important;
+    font-size: 12px !important;
+    letter-spacing: .12em !important;
+}
+.bf-event-carousel > button,
+.bf-event-carousel__dots { display: none !important; }
+
+/* Product rail: browsing by horizontal drag/scroll, without side buttons. */
+.bf-product-rail {
+    display: block !important;
+    width: 100% !important;
+    overflow: hidden !important;
+}
+.bf-product-rail > button { display: none !important; }
+.bf-product-rail__track {
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: calc((100% - 60px) / 4) !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    touch-action: pan-x !important;
+    cursor: grab;
+}
+.bf-product-rail__track::-webkit-scrollbar { display: none !important; }
+.bf-product-rail__track:active { cursor: grabbing; }
+.bf-product-rail__track > .bf-product-card { scroll-snap-align: start; }
+
+/* Larger, more comfortable product information reading. */
+.bf-product-detail__content {
+    font-size: 16px;
+}
+.bf-product-detail__content > p,
+.bf-product-description p,
+.bf-product-information button,
+.bf-product-updates,
+.bf-product-installments,
+.bf-shipping-note {
+    font-size: 16px !important;
+    line-height: 1.75 !important;
+}
+.bf-product-description summary {
+    font-size: 17px !important;
+    min-height: 54px;
+}
+.bf-product-information h2 {
+    font-size: 21px !important;
+}
+.bf-product-information button span:last-child small,
+.bf-product-updates p {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+}
+
+/* Product gallery: eliminate visual side bands and give the main image a
+   slightly enlarged presentation. The image itself remains fully usable. */
+.bf-product-gallery__stage {
+    overflow: hidden !important;
+    background: #f3f3f1 !important;
+}
+.bf-product-gallery__stage > img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    transform: scale(1.055) !important;
+    transform-origin: center !important;
+    transition: transform .25s ease, object-position .2s ease !important;
+    background: transparent !important;
+}
+.bf-product-gallery__stage.is-image-zoomed > img {
+    transform: scale(1.22) !important;
+}
+.bf-product-gallery__stage { cursor: zoom-in; }
+.bf-product-gallery__stage.is-image-zoomed { cursor: zoom-out; }
+
+@media (max-width: 1000px) {
+    .bf-product-rail__track { grid-auto-columns: calc((100% - 40px) / 3) !important; }
+}
+@media (max-width: 700px) {
+    .bf-event-carousel { min-height: 52px !important; padding-inline: 12px !important; }
+    .bf-event-carousel__viewport { height: 52px !important; }
+    .bf-event-carousel__slide { font-size: 10px !important; letter-spacing: .08em !important; }
+
+    /* Mobile cards use finger swipe only. No arrow controls or carousel UI. */
+    .bf-product-rail__track {
+        grid-auto-columns: minmax(76vw, 76vw) !important;
+        gap: 14px !important;
+        padding-inline: 2px !important;
+        scroll-snap-type: x mandatory !important;
+    }
+    .bf-product-rail__track > .bf-product-card { scroll-snap-align: center !important; }
+    .bf-product-card__carousel-hint,
+    .bf-product-card__carousel-dots { display: none !important; }
+
+    .bf-product-detail__content > p,
+    .bf-product-description p,
+    .bf-product-information button,
+    .bf-product-updates,
+    .bf-product-installments,
+    .bf-shipping-note { font-size: 16px !important; }
+
+    .bf-product-gallery__stage > img { transform: scale(1.08) !important; }
+    .bf-product-gallery__stage.is-image-zoomed > img { transform: scale(1.30) !important; }
+}

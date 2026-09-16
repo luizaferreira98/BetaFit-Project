@@ -47,7 +47,7 @@
  .bf-help-tab{top:auto;bottom:max(16px,env(safe-area-inset-bottom));right:16px;writing-mode:horizontal-tb;border:1px solid #7775;border-radius:28px;padding:12px 16px;gap:8px}
  body{padding-bottom:76px}
  .bf-announcement__inner{justify-content:center;text-align:center}
- .bf-announcement__inner>span{font-size:9px;white-space:normal}
+ .bf-announcement__inner>span{font-size: 13px;white-space:normal}
  .bf-support-chat{padding:16px}
  .bf-chat-compose{flex-wrap:wrap}
  .bf-chat-compose label{flex-basis:100%}

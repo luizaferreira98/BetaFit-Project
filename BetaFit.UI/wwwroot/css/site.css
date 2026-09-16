@@ -87,10 +87,13 @@
 
 .bf-home-hero__arrow {
     position: absolute;
+    text-align: center;
+    align-items:center;
+    justify-content: center;
     z-index: 4;
     top: 50%;
-    width: 48px;
-    height: 48px;
+    width: 38px;
+    height: 38px;
     border: 1px solid #fff8;
     background: #0007;
     color: #fff;
@@ -99,11 +102,11 @@
 }
 
     .bf-home-hero__arrow.prev {
-        left: 24px
+        left: 12px
     }
 
     .bf-home-hero__arrow.next {
-        right: 24px
+        right: 12px
     }
 
 .bf-home-hero__dots {
@@ -853,7 +856,7 @@ button, input, select, textarea {
 .bf-announcement {
     background: var(--bf-black);
     color: #fff;
-    font-size: 10px;
+    font-size: 14px;
     font-weight: 700;
     letter-spacing: .08em;
     text-transform: uppercase;
@@ -1121,7 +1124,7 @@ button, input, select, textarea {
     padding: 0 22px;
     border: 1px solid transparent;
     border-radius: var(--bf-radius);
-    font-size: 10px;
+    font-size: 14px;
     font-weight: 900;
     letter-spacing: .1em;
     text-transform: uppercase;
@@ -1178,7 +1181,7 @@ button, input, select, textarea {
     gap: 8px;
     align-items: center;
     color: #fff;
-    font-size: 10px;
+    font-size: 14px;
     font-weight: 900;
     letter-spacing: .1em;
     text-transform: uppercase;
@@ -1337,7 +1340,7 @@ button, input, select, textarea {
     .bf-hero__product-tag span, .bf-hero__product-tag small {
         display: block;
         color: #9d9d99;
-        font-size: 9px;
+        font-size: 13px;
         font-weight: 800;
         letter-spacing: .1em;
         text-transform: uppercase;
@@ -1360,7 +1363,7 @@ button, input, select, textarea {
     gap: 28px;
     background: var(--bf-lime);
     color: var(--bf-black);
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 900;
     letter-spacing: .18em;
     text-transform: uppercase;
@@ -1396,7 +1399,7 @@ button, input, select, textarea {
 
 .bf-benefit-strip__icon {
     color: var(--bf-lime-dark);
-    font-size: 10px;
+    font-size: 14px;
     font-weight: 900;
 }
 
@@ -1414,7 +1417,7 @@ button, input, select, textarea {
 .bf-benefit-strip small {
     margin-top: 3px;
     color: var(--bf-muted);
-    font-size: 9px;
+    font-size: 13px;
 }
 
 /* Product cards */
@@ -1479,7 +1482,7 @@ button, input, select, textarea {
     padding: 6px 9px;
     background: var(--bf-lime);
     color: var(--bf-black);
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 900;
     letter-spacing: .1em;
     text-transform: uppercase;
@@ -1495,7 +1498,7 @@ button, input, select, textarea {
 .bf-product-card__cat {
     margin-bottom: 7px;
     color: #7b7c77;
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 700;
     letter-spacing: .05em;
     text-transform: uppercase;
@@ -1543,7 +1546,7 @@ button, input, select, textarea {
     top: 20px;
     left: 22px;
     color: #666;
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 900;
 }
 
@@ -1595,7 +1598,7 @@ button, input, select, textarea {
 }
 
     .bf-story__facts span {
-        font-size: 10px;
+        font-size: 14px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: .08em;
@@ -1605,7 +1608,7 @@ button, input, select, textarea {
         display: block;
         margin-bottom: 6px;
         color: var(--bf-lime-dark);
-        font-size: 9px;
+        font-size: 13px;
     }
 
 .bf-cta {
@@ -1690,7 +1693,7 @@ button, input, select, textarea {
 
     .bf-page-hero__count span {
         color: var(--bf-muted);
-        font-size: 10px;
+        font-size: 14px;
         text-transform: uppercase;
         letter-spacing: .08em;
     }
@@ -1754,7 +1757,7 @@ button, input, select, textarea {
 .bf-catalog-meta {
     padding: 20px 0 18px;
     color: var(--bf-muted);
-    font-size: 10px;
+    font-size: 14px;
     text-transform: uppercase;
     letter-spacing: .08em;
 }
@@ -1796,7 +1799,7 @@ button, input, select, textarea {
     display: inline-flex;
     margin-bottom: 28px;
     color: #686964;
-    font-size: 10px;
+    font-size: 14px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: .08em;
@@ -1885,7 +1888,7 @@ button, input, select, textarea {
     .bf-product-specs span {
         margin-bottom: 5px;
         color: #7b7c77;
-        font-size: 9px;
+        font-size: 13px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: .1em;
@@ -1898,7 +1901,7 @@ button, input, select, textarea {
 .bf-demo-note {
     margin-top: 15px;
     color: #92938e;
-    font-size: 9px;
+    font-size: 13px;
     line-height: 1.6;
 }
 
@@ -1949,7 +1952,7 @@ button, input, select, textarea {
 .bf-cart-item__info span, .bf-cart-item__info small {
     display: block;
     color: var(--bf-muted);
-    font-size: 9px;
+    font-size: 13px;
     text-transform: uppercase;
     letter-spacing: .08em;
 }
@@ -1967,7 +1970,7 @@ button, input, select, textarea {
 
 .bf-cart-item__remove {
     color: #8c8d88;
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: .08em;
@@ -1988,7 +1991,7 @@ button, input, select, textarea {
     .bf-cart-summary > span {
         display: block;
         margin-bottom: 25px;
-        font-size: 10px;
+        font-size: 14px;
         font-weight: 900;
         text-transform: uppercase;
         letter-spacing: .12em;
@@ -2008,7 +2011,7 @@ button, input, select, textarea {
         display: block;
         margin: 16px 0 20px;
         color: var(--bf-muted);
-        font-size: 9px;
+        font-size: 13px;
         line-height: 1.6;
     }
 
@@ -2142,7 +2145,7 @@ button, input, select, textarea {
         display: grid;
         gap: 8px;
         color: #3d3e3a;
-        font-size: 10px;
+        font-size: 14px;
         font-weight: 800;
         letter-spacing: .04em;
         text-transform: uppercase;
@@ -2175,7 +2178,7 @@ button, input, select, textarea {
 .bf-auth-switch {
     margin: 24px 0 0;
     color: var(--bf-muted);
-    font-size: 10px;
+    font-size: 14px;
     text-align: center;
 }
 
@@ -2205,7 +2208,7 @@ button, input, select, textarea {
     .bf-admin-stats span, .bf-admin-stats small {
         display: block;
         color: var(--bf-muted);
-        font-size: 9px;
+        font-size: 13px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: .1em;
@@ -2236,7 +2239,7 @@ button, input, select, textarea {
 
     .bf-admin-list-head > span {
         color: var(--bf-muted);
-        font-size: 10px;
+        font-size: 14px;
         text-transform: uppercase;
         letter-spacing: .08em;
     }
@@ -2280,7 +2283,7 @@ button, input, select, textarea {
 .bf-admin-product__info span, .bf-admin-product__info small {
     display: block;
     color: var(--bf-muted);
-    font-size: 9px;
+    font-size: 13px;
     text-transform: uppercase;
     letter-spacing: .06em;
 }
@@ -2296,7 +2299,7 @@ button, input, select, textarea {
     padding: 5px 7px;
     background: #efefec;
     color: #777873;
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: .08em;
@@ -2314,7 +2317,7 @@ button, input, select, textarea {
 }
 
     .bf-admin-product__actions a {
-        font-size: 9px;
+        font-size: 13px;
         font-weight: 900;
         text-transform: uppercase;
         letter-spacing: .08em;
@@ -2356,7 +2359,7 @@ button, input, select, textarea {
 
 .bf-file-field small {
     color: var(--bf-muted);
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 600;
     text-transform: none;
     letter-spacing: 0;
@@ -2420,7 +2423,7 @@ button, input, select, textarea {
 
     .bf-edit-preview span {
         color: var(--bf-muted);
-        font-size: 9px;
+        font-size: 13px;
         text-transform: uppercase;
         letter-spacing: .08em;
     }
@@ -2476,7 +2479,7 @@ button, input, select, textarea {
     }
 
     .bf-image-upload-preview__placeholder span:last-child {
-        font-size: 10px;
+        font-size: 14px;
     }
 
 .bf-image-upload-preview__icon {
@@ -2513,7 +2516,7 @@ button, input, select, textarea {
     background: rgba(17,17,17,.88);
     color: #fff;
     backdrop-filter: blur(8px);
-    font-size: 9px;
+    font-size: 13px;
 }
 
     .bf-image-upload-preview__meta strong {
@@ -2559,7 +2562,7 @@ button, input, select, textarea {
 
         .bf-edit-preview--with-upload .bf-current-image span {
             color: var(--bf-muted);
-            font-size: 9px;
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: .08em;
         }
@@ -2647,7 +2650,7 @@ button, input, select, textarea {
     display: block;
     margin: -5px 0 24px;
     color: #8c8d88;
-    font-size: 9px;
+    font-size: 13px;
 }
 
 .bf-confirm-product {
@@ -2686,7 +2689,7 @@ button, input, select, textarea {
 .bf-confirm-product span, .bf-confirm-product small {
     display: block;
     color: var(--bf-muted);
-    font-size: 9px;
+    font-size: 13px;
     text-transform: uppercase;
     letter-spacing: .08em;
 }
@@ -2731,13 +2734,13 @@ button, input, select, textarea {
     max-width: 290px;
     margin: 20px 0 0;
     color: #8e8e8a;
-    font-size: 10px;
+    font-size: 14px;
     line-height: 1.8;
 }
 
 .bf-footer h4 {
     margin: 4px 0 16px;
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 900;
     letter-spacing: .14em;
     text-transform: uppercase;
@@ -2755,7 +2758,7 @@ button, input, select, textarea {
 
     .bf-footer li a {
         color: #8e8e8a;
-        font-size: 10px;
+        font-size: 14px;
     }
 
         .bf-footer li a:hover {
@@ -2770,7 +2773,7 @@ button, input, select, textarea {
     .bf-footer__statement span {
         display: block;
         color: var(--bf-lime);
-        font-size: 8px;
+        font-size: 12px;
         font-weight: 900;
         letter-spacing: .16em;
     }
@@ -2789,7 +2792,7 @@ button, input, select, textarea {
     gap: 20px;
     padding-top: 18px;
     color: #666661;
-    font-size: 8px;
+    font-size: 12px;
     text-transform: uppercase;
     letter-spacing: .08em;
 }
@@ -2894,7 +2897,7 @@ button, input, select, textarea {
 
     .bf-nav a {
         padding: 14px 0 13px;
-        font-size: 9px;
+        font-size: 13px;
     }
 
         .bf-nav a::after {
@@ -3526,7 +3529,7 @@ button, input, select, textarea {
     .bf-quantity-row > label, .bf-cart-quantity-form > label {
         margin: 0;
         color: var(--bf-muted);
-        font-size: 10px;
+        font-size: 14px;
         font-weight: 900;
         text-transform: uppercase;
         letter-spacing: .1em;
@@ -3582,7 +3585,7 @@ button, input, select, textarea {
     background: var(--bf-dark);
     color: #fff;
     padding: 10px 14px;
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: .08em;
@@ -3667,7 +3670,7 @@ button, input, select, textarea {
     }
 
     .bf-cart-item__info small {
-        font-size: 10px;
+        font-size: 14px;
         margin-top: 4px;
     }
 
@@ -3683,7 +3686,7 @@ button, input, select, textarea {
     }
 
     .bf-cart-item__remove {
-        font-size: 10px;
+        font-size: 14px;
     }
 
     .bf-cart-quantity-form {
@@ -3729,7 +3732,7 @@ button, input, select, textarea {
     }
 
         .bf-nav a {
-            font-size: 8px;
+            font-size: 12px;
         }
 
     .bf-section {
@@ -3746,7 +3749,7 @@ button, input, select, textarea {
     }
 
         .bf-product-card__body strong {
-            font-size: 10px;
+            font-size: 14px;
         }
 
     .bf-page-hero h1 {
@@ -3814,7 +3817,7 @@ button, input, select, textarea {
         padding: 0 12px;
         background: #fff;
         font: inherit;
-        font-size: 10px;
+        font-size: 14px;
         font-weight: 800
     }
 
@@ -3824,7 +3827,7 @@ button, input, select, textarea {
     padding: 12px;
     text-align: center;
     border: 1px solid var(--bf-line);
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 900;
     text-transform: uppercase
 }
@@ -3850,7 +3853,7 @@ button, input, select, textarea {
         display: grid;
         gap: 7px;
         color: var(--bf-muted);
-        font-size: 10px;
+        font-size: 14px;
         font-weight: 900;
         text-transform: uppercase;
         letter-spacing: .08em
@@ -3905,7 +3908,7 @@ button, input, select, textarea {
 
     .bf-size-picker > span, .bf-admin-gallery > span {
         display: block;
-        font-size: 10px;
+        font-size: 14px;
         font-weight: 900;
         text-transform: uppercase;
         letter-spacing: .1em;
@@ -3930,7 +3933,7 @@ button, input, select, textarea {
     height: 40px;
     border: 1px solid var(--bf-line);
     padding: 0 10px;
-    font-size: 10px;
+    font-size: 14px;
     font-weight: 900;
     cursor: pointer
 }
@@ -3945,7 +3948,7 @@ button, input, select, textarea {
     display: block;
     margin-top: 10px;
     color: var(--bf-muted);
-    font-size: 9px
+    font-size: 13px
 }
 
 .bf-admin-gallery {
@@ -3978,7 +3981,7 @@ button, input, select, textarea {
     }
 
     .bf-admin-gallery__item span {
-        font-size: 8px;
+        font-size: 12px;
         font-weight: 800;
         text-transform: uppercase
     }
@@ -4007,7 +4010,7 @@ button, input, select, textarea {
     .bf-image-preview-thumb span {
         display: block;
         padding: 6px;
-        font-size: 8px;
+        font-size: 12px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis
@@ -4053,7 +4056,7 @@ button, input, select, textarea {
 }
 
     .bf-profile-divider span {
-        font-size: 10px;
+        font-size: 14px;
         font-weight: 900;
         text-transform: uppercase;
         letter-spacing: .1em
@@ -4061,13 +4064,13 @@ button, input, select, textarea {
 
     .bf-profile-divider small {
         color: var(--bf-muted);
-        font-size: 9px
+        font-size: 13px
     }
 
 .bf-form-hint {
     margin: -6px 0 5px;
     color: var(--bf-muted);
-    font-size: 9px;
+    font-size: 13px;
     line-height: 1.6
 }
 
@@ -4193,7 +4196,7 @@ button, input, select, textarea {
 
 .bf-form-kicker {
     color: var(--bf-lime-dark);
-    font-size: 9px !important;
+    font-size: 13px !important;
     font-weight: 900 !important;
     letter-spacing: .13em;
     text-transform: uppercase;
@@ -4217,7 +4220,7 @@ button, input, select, textarea {
     padding: 6px 9px;
     background: var(--bf-black);
     color: #fff;
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: .08em;
@@ -4263,7 +4266,7 @@ button, input, select, textarea {
     padding: 6px 9px;
     background: var(--bf-surface);
     color: #666;
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 900;
     text-transform: uppercase;
 }
@@ -4315,7 +4318,7 @@ button, input, select, textarea {
 .bf-file-drop small {
     margin-top: 9px;
     color: #999;
-    font-size: 9px;
+    font-size: 13px;
 }
 
 .bf-image-upload-preview {
@@ -4350,7 +4353,7 @@ button, input, select, textarea {
     }
 
     .bf-image-upload-preview__placeholder small {
-        font-size: 9px;
+        font-size: 13px;
     }
 
 .bf-image-preview-thumb {
@@ -4400,7 +4403,7 @@ button, input, select, textarea {
 }
 
     .bf-image-preview-thumb__meta strong {
-        font-size: 9px;
+        font-size: 13px;
         text-transform: uppercase;
         letter-spacing: .08em;
     }
@@ -4410,7 +4413,7 @@ button, input, select, textarea {
         text-overflow: ellipsis;
         white-space: nowrap;
         color: #888;
-        font-size: 8px;
+        font-size: 12px;
     }
 
 .bf-admin-gallery {
@@ -4453,7 +4456,7 @@ button, input, select, textarea {
     .bf-admin-gallery__item span {
         display: block;
         padding: 7px 9px;
-        font-size: 8px;
+        font-size: 12px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: .06em;
@@ -4499,7 +4502,7 @@ button, input, select, textarea {
     padding: 5px 8px;
     background: rgba(11,11,11,.72);
     color: #fff;
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 800;
     letter-spacing: .04em;
     text-transform: uppercase;
@@ -4538,7 +4541,7 @@ button, input, select, textarea {
     border: 0;
     background: none;
     color: #666;
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: .06em;
@@ -4570,7 +4573,7 @@ button, input, select, textarea {
 
     .bf-password-requirements li {
         color: #8a8a85;
-        font-size: 10px;
+        font-size: 14px;
     }
 
         .bf-password-requirements li::before {
@@ -4590,7 +4593,7 @@ button, input, select, textarea {
 .bf-password-feedback {
     min-height: 14px;
     color: #a04b45;
-    font-size: 10px;
+    font-size: 14px;
 }
 
     .bf-password-feedback.is-valid {
@@ -4606,7 +4609,7 @@ button, input, select, textarea {
 
 .text-danger {
     color: #a04b45;
-    font-size: 10px;
+    font-size: 14px;
 }
 
 @media (max-width: 800px) {
@@ -4643,7 +4646,7 @@ button, input, select, textarea {
     background: #fff5e6;
     color: #8a5b19;
     border: 1px solid #ecd4ad;
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 800;
     text-align: center;
     text-transform: uppercase;
@@ -4685,7 +4688,7 @@ button, input, select, textarea {
     .bf-review-box > strong {
         display: block;
         margin-bottom: 10px;
-        font-size: 10px;
+        font-size: 14px;
         text-transform: uppercase;
         letter-spacing: .08em;
     }
@@ -4703,7 +4706,7 @@ button, input, select, textarea {
         display: block;
         margin-top: 5px;
         color: #888;
-        font-size: 9px;
+        font-size: 13px;
     }
 
 .bf-confirm-card {
@@ -4984,7 +4987,7 @@ button, input, select, textarea {
     }
 
     .bf-payment-option small {
-        font-size: 10px;
+        font-size: 14px;
         color: var(--bf-muted);
         line-height: 1.45
     }
@@ -5007,13 +5010,13 @@ button, input, select, textarea {
         border: 1px solid var(--bf-line);
         background: #fff;
         font: inherit;
-        font-size: 10px;
+        font-size: 14px;
         font-weight: 800
     }
 
     .bf-order-status-form .bf-btn {
         padding: 11px 12px;
-        font-size: 9px
+        font-size: 13px
     }
 
 .bf-admin-product__actions form {
@@ -5125,7 +5128,7 @@ button, input, select, textarea {
         display: grid;
         gap: 5px;
         color: var(--bf-muted);
-        font-size: 8px;
+        font-size: 12px;
         font-weight: 900;
         letter-spacing: .07em;
         text-transform: uppercase
@@ -5325,7 +5328,7 @@ button, input, select, textarea {
         place-items: center;
         border: 1px solid var(--bf-line);
         border-radius: 50%;
-        font-size: 9px;
+        font-size: 13px;
         font-weight: 900
     }
 
@@ -5335,13 +5338,13 @@ button, input, select, textarea {
     }
 
     .bf-checkout-journey__step strong {
-        font-size: 10px;
+        font-size: 14px;
         text-transform: uppercase;
         letter-spacing: .06em
     }
 
     .bf-checkout-journey__step small {
-        font-size: 9px;
+        font-size: 13px;
         color: var(--bf-muted)
     }
 
@@ -5536,7 +5539,7 @@ button, input, select, textarea {
     gap: 6px;
     border-radius: 24px;
     padding: 10px 12px;
-    font-size: 10px;
+    font-size: 14px;
     font-weight: 900;
     letter-spacing: .06em;
     text-transform: uppercase
@@ -5553,7 +5556,7 @@ button, input, select, textarea {
     bottom: 14px;
     padding: 6px 9px;
     background: rgba(255,255,255,.88);
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 900;
     letter-spacing: .08em
 }
@@ -5580,7 +5583,7 @@ button, input, select, textarea {
 
     .bf-product-rating small {
         color: var(--bf-muted);
-        font-size: 10px
+        font-size: 14px
     }
 
 .bf-product-description {
@@ -5596,7 +5599,7 @@ button, input, select, textarea {
         padding: 17px 0;
         cursor: pointer;
         list-style: none;
-        font-size: 10px;
+        font-size: 14px;
         font-weight: 900;
         letter-spacing: .08em;
         text-transform: uppercase
@@ -5700,7 +5703,7 @@ button, input, select, textarea {
     .bf-product-lightbox__controls span {
         min-width: 44px;
         text-align: center;
-        font-size: 10px;
+        font-size: 14px;
         font-weight: 900
     }
 

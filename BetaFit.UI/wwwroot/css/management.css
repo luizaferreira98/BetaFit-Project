@@ -454,7 +454,7 @@
     position: absolute;
     top: -4px;
     right: -5px;
-    font-size: 10px;
+    font-size: 14px;
     background: #ceff27;
     color: #141414;
     border-radius: 50%;
@@ -542,7 +542,7 @@
 
     .bf-purchase-card .bf-btn {
         padding: 10px;
-        font-size: 10px
+        font-size: 14px
     }
 
     .bf-product-rail__track {

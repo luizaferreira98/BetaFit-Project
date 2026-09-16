@@ -1,0 +1,12 @@
+@model BetaFit.Application.DTOs.SupportThreadDto
+@{ViewData["Title"]=Model.Subject;}
+<div class="bf-support-layout">@await Html.PartialAsync("_SupportSidebar")<section class="bf-support-content">
+<a href="/Support" class="bf-back-link">← Todas as conversas</a>
+<div class="bf-support-chat bf-store-conversation" data-store-conversation data-thread-url="/Support/@Model.Id/Messages">
+<header class="bf-chat-header"><span class="bf-chat-avatar" data-icon="chat"></span><div><h1>@Model.Subject</h1><p>Conversa #@Model.Id · Atendimento da equipe</p></div></header>
+@if(Model.ProductId.HasValue){<a class="bf-chat-context" href="/Product/@Model.ProductId">Ver produto relacionado →</a>}
+<div class="bf-chat-log" data-store-log role="log" aria-live="polite" aria-label="Mensagens com a loja">
+@foreach(var m in Model.Messages){<p class="bf-chat-message @(!m.IsStaff?"is-user":"")" data-message-id="@m.Id"><strong>@(m.IsStaff?"Equipe BetaFit":"Cliente") · @m.CreatedAt.ToLocalTime().ToString("dd/MM HH:mm")</strong>@m.Text</p>}
+</div><form class="bf-form bf-chat-compose" action="/Support/@Model.Id/Send" method="post" data-store-send>@Html.AntiForgeryToken()<label>Sua mensagem<textarea name="Text" maxlength="1000" rows="2" required placeholder="Escreva para a loja…"></textarea></label><button type="submit" class="bf-btn bf-btn--dark"><span data-icon="send"></span>Enviar</button></form>
+<p class="bf-chat-connection" data-store-status role="status">A equipe responderá por aqui. As mensagens são atualizadas automaticamente.</p>
+</div></section></div>

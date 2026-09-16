@@ -26,10 +26,12 @@
                asp-controller="Admin" asp-action="Reviews">☆ Moderação de comentários</a>
         }
 
-        <a asp-controller="Home" asp-action="Index">↗ Ver loja</a>
+        @if(User.IsInRole("Admin")||User.IsInRole("Funcionario")){<a href="/Support">Atendimento aos clientes</a>}
 
         @if (User.IsInRole("Admin"))
         {
+            <a class="@(controller == "AdminShipping" ? "is-active" : "")" href="/Admin/Shipping">▱ Fretes e entregas</a>
+            <a class="@(controller == "AdminReports" ? "is-active" : "")" href="/Admin/Reports">▤ Relatórios da loja</a>
             <a class="@(action == "Coupons" ? "is-active" : "")"
                href="/Admin/Coupons">% Cupons de desconto</a>
         }

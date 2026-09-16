@@ -41,14 +41,17 @@ namespace BetaFit.UI.Controllers
         /// URL: /Catalog
         /// </summary>
         [HttpGet("Catalog")]
-        public async Task<IActionResult> Index(string? searchTerm, int? categoryId, Gender? gender, string? availability, string? sortBy, string viewMode = "grid", int page = 1)
+        public async Task<IActionResult> Index(string? searchTerm, int? categoryId, Gender? gender, string? availability, string? sortBy, string viewMode = "grid", int page = 1, decimal? minPrice = null, decimal? maxPrice = null)
         {
             if (!string.IsNullOrWhiteSpace(searchTerm) && searchTerm.Length > 100) searchTerm = searchTerm[..100];
+            minPrice = minPrice.HasValue ? Math.Max(0, minPrice.Value) : null;
+            maxPrice = maxPrice.HasValue ? Math.Max(0, maxPrice.Value) : null;
+            if(minPrice.HasValue && maxPrice.HasValue && minPrice > maxPrice) (minPrice,maxPrice)=(maxPrice,minPrice);
             ViewData["Title"] = "Catálogo";
 
             var viewModel = new CatalogViewModel
             {
-                SearchTerm = searchTerm,
+                SearchTerm = searchTerm, MinPrice = minPrice, MaxPrice = maxPrice,
                 CategoryId = categoryId,
                 Gender = gender,
                 SortBy = sortBy,
@@ -81,6 +84,8 @@ namespace BetaFit.UI.Controllers
                     query = query.Where(p => p.Gender == gender.Value);
                 }
 
+                if(minPrice.HasValue) query = query.Where(p => p.EffectivePrice >= minPrice.Value);
+                if(maxPrice.HasValue) query = query.Where(p => p.EffectivePrice <= maxPrice.Value);
                 query = availability switch { "in" => query.Where(p => p.Stock > 0), "out" => query.Where(p => p.Stock <= 0), _ => query };
 
                 query = viewModel.SortBy switch
@@ -94,8 +99,7 @@ namespace BetaFit.UI.Controllers
                 var all = query.ToList();
                 viewModel.TotalCount = all.Count;
                 viewModel.TotalPages = (int)Math.Ceiling(all.Count / (double)viewModel.PageSize);
-                if (viewModel.TotalPages > 0)
-                    viewModel.Page = Math.Min(viewModel.Page, viewModel.TotalPages);
+                viewModel.Page = Math.Clamp(viewModel.Page, 1, Math.Max(1,viewModel.TotalPages));
                 viewModel.Items = all
                     .Skip((viewModel.Page - 1) * viewModel.PageSize)
                     .Take(viewModel.PageSize)

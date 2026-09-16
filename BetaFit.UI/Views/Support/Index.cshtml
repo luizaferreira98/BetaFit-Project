@@ -1,0 +1,16 @@
+@model List<BetaFit.Application.DTOs.SupportThreadDto>
+@{ViewData["Title"]="Conversas com a loja"; var staff=User.IsInRole("Admin")||User.IsInRole("Funcionario");}
+<div class="bf-support-layout">@await Html.PartialAsync("_SupportSidebar")<section class="bf-support-content">
+<span class="bf-eyebrow">Atendimento da loja</span><h1>@(staff?"Caixa de entrada":"Minhas conversas")</h1>
+<p>@(staff?"Acompanhe as solicitações e responda aos clientes.":"Converse com a equipe sobre produtos, pedidos ou qualquer dificuldade.")</p>
+@if(ViewData["Error"] is string error){<p class="bf-alert" role="alert">@error</p>}
+@if(TempData["Error"] is string sendError){<p class="bf-alert" role="alert">@sendError</p>}
+<div class="bf-support-threads">@foreach(var c in Model){<a href="/Support/@c.Id"><span data-icon="chat"></span><div><strong>@c.Subject</strong><small>Conversa #@c.Id · @c.UpdatedAt.ToLocalTime().ToString("dd/MM HH:mm")</small></div><span>→</span></a>}
+@if(Model.Count==0){<p>Nenhuma conversa por aqui ainda.</p>}</div>
+<details class="bf-support-new" open="@(!staff)"><summary>Iniciar uma conversa</summary>
+<form action="/Support/Create" method="post" class="bf-form">@Html.AntiForgeryToken()
+<input name="ProductId" type="hidden" value="@Context.Request.Query["productId"]"/>
+<label>Assunto<input name="Subject" minlength="3" maxlength="160" value="@Context.Request.Query["subject"]" placeholder="Ex.: dúvida sobre um produto" required/></label>
+<label>Como podemos ajudar?<textarea name="Text" maxlength="1000" rows="5" required placeholder="Conte o que aconteceu e o que você precisa."></textarea></label>
+<button type="submit" class="bf-btn bf-btn--dark"><span data-icon="send"></span>Enviar para a loja</button>
+</form></details></section></div>

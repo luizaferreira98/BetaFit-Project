@@ -19,6 +19,8 @@ namespace BetaFit.UI.Models
         public string? Availability { get; set; }
         public string ViewMode { get; set; } = "grid";
         public int Page { get; set; } = 1;
+        public decimal? MinPrice { get; set; }
+        public decimal? MaxPrice { get; set; }
         public int PageSize { get; set; } = 9;
 
         public IReadOnlyList<ProductDto> Items { get; set; } = Array.Empty<ProductDto>();

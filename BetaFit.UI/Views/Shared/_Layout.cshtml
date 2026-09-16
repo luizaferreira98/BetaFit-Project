@@ -27,19 +27,22 @@
     <title>@ViewData["Title"] - Beta Fit</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/storefront.css" asp-append-version="true" /><link rel="stylesheet" href="~/css/management.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/account-theme.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/improvements.css" asp-append-version="true" /><link rel="stylesheet" href="~/css/ui-system.css" asp-append-version="true" /><script>try{document.documentElement.dataset.theme=localStorage.getItem("betafit-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch{}</script>
+    <link rel="stylesheet" href="~/css/improvements.css" asp-append-version="true" /><link rel="stylesheet" href="~/css/ui-system.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/store-updates.css" asp-append-version="true" /><script>try{document.documentElement.dataset.theme=localStorage.getItem("betafit-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch{}</script>
+    <link rel="stylesheet" href="~/css/refined.css" asp-append-version="true" />
+    <script src="~/js/page-loading.js" asp-append-version="true"></script>
 </head>
 <body>
     <a class="bf-skip-link" href="#main-content">Pular para o conteúdo</a>
 
     <div class="bf-announcement">
         <div class="bf-container bf-announcement__inner">
-            <span>@siteSettings.Announcement</span>
+            <span>@(siteSettings.Announcement.Equals("Frete grátis em compras acima de R$ 299,90", StringComparison.OrdinalIgnoreCase) ? "Calcule o frete no carrinho · opções por CEP" : siteSettings.Announcement)</span>
             <span class="bf-announcement__right">Projeto demonstrativo · Preços sem venda real</span>
         </div>
     </div>
@@ -58,7 +61,7 @@
                 @foreach(var link in siteSettings.HeaderLinks.Where(x=>!string.IsNullOrWhiteSpace(x.Label)&&!string.IsNullOrWhiteSpace(x.Url))){<a href="@link.Url">@link.Label</a>}
                 @if (isAdmin || isStaff)
                 {
-                    <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" ? "is-active" : "")" asp-controller="Admin" asp-action="Index" title="Administração"><span class="bf-nav-icon" aria-hidden="true">⚙</span> Administração</a>
+                    <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" ? "is-active" : "")" asp-controller="Admin" asp-action="Index" title="Administração"> Administração</a>
                 }
             </nav>
 
@@ -68,17 +71,31 @@
                 <a class="bf-icon-link" asp-controller="Cart" asp-action="Index" aria-label="Carrinho" title="Carrinho"><b class="bf-cart-count">@cartCount</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l1 14H4L5 7ZM8 7V5a4 4 0 0 1 8 0v2"/></svg></a>
                 @if (isAuthenticated)
                 {
-                    <div class="bf-notifications" data-notifications><button class="bf-notifications__trigger" type="button" data-notifications-toggle aria-label="Notificações">♢@if(unreadNotifications>0){<b>@unreadNotifications</b>}</button><div class="bf-notifications__panel"><div class="bf-notifications__head"><strong>Notificações</strong>@if(unreadNotifications>0){<form asp-controller="Notifications" asp-action="ReadAll" method="post">@Html.AntiForgeryToken()<input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" /><button>Marcar como lidas</button></form>}</div>@foreach(var n in notifications.Take(8)){<a class="@(!n.IsRead?"is-unread":"")" href="@(n.LinkUrl??"#")"><strong>@n.Title</strong><span>@n.Message</span><small>@n.CreatedAt.ToLocalTime().ToString("dd/MM HH:mm")</small></a>}@if(!notifications.Any()){<p>Nenhuma notificação.</p>}</div></div>
-                    <a class="bf-user-chip" title="Meu perfil" asp-controller="Account" asp-action="Profile">
-                        <span class="bf-user-chip__icon" aria-hidden="true">@userInitial</span>
-                        <span class="bf-user-chip__name">Minha conta</span>
-                    </a>
-                    <form class="bf-logout-form" asp-controller="Account" asp-action="Logout" method="post" data-confirm="Tem certeza que deseja sair da sua conta?">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="bf-icon-link bf-icon-button" title="Sair" aria-label="Sair">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M15 8l4 4-4 4M19 12H9" /></svg>
+                    <div class="bf-notifications" data-notifications><button class="bf-notifications__trigger" type="button" data-notifications-toggle aria-label="Notificações" title="Notificações"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>@if(unreadNotifications>0){<b>@unreadNotifications</b>}</button><div class="bf-notifications__panel"><div class="bf-notifications__head"><strong>Notificações</strong>@if(unreadNotifications>0){<form asp-controller="Notifications" asp-action="ReadAll" method="post">@Html.AntiForgeryToken()<input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" /><button>Marcar como lidas</button></form>}</div>@foreach(var n in notifications.Take(8)){<a class="@(!n.IsRead?"is-unread":"")" href="@(n.LinkUrl??"#")"><strong>@n.Title</strong><span>@n.Message</span><small>@n.CreatedAt.ToLocalTime().ToString("dd/MM HH:mm")</small></a>}@if(!notifications.Any()){<p>Nenhuma notificação.</p>}</div></div>
+                    <div class="bf-account-menu" data-account-menu>
+                        <button type="button" class="bf-user-chip bf-account-menu__trigger" data-account-toggle aria-controls="bf-account-panel" aria-expanded="false"  title="Abrir menu da conta">
+                            <span class="bf-user-chip__icon" aria-hidden="true">@userInitial</span>
+                            <span class="bf-user-chip__name">Minha conta</span>
+                            <svg class="bf-account-menu__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
                         </button>
-                    </form>
+                        <div id="bf-account-panel" class="bf-account-menu__panel" data-account-panel hidden>
+                            <div class="bf-account-menu__identity">
+                                <span>Conectado como</span>
+                                <strong>@userName</strong>
+                            </div>
+                            <div class="bf-account-menu__links">
+                                <a asp-controller="Account" asp-action="Profile"><span class="bf-account-menu__icon" aria-hidden="true">◉</span> Meu perfil</a>
+                                <a asp-controller="Favorites" asp-action="Index"><span class="bf-account-menu__icon" aria-hidden="true">♡</span> Favoritos <b>@favoriteCount</b></a>
+                                <a asp-controller="Orders" asp-action="MyOrders"><span class="bf-account-menu__icon" aria-hidden="true">□</span> Meus pedidos</a>
+                            </div>
+                            <div class="bf-account-menu__footer">
+                                <form class="bf-logout-form" asp-controller="Account" asp-action="Logout" method="post" data-confirm="Tem certeza que deseja sair da sua conta?">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit"><span class="bf-account-menu__icon" aria-hidden="true">↪</span> Sair</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 }
                 else
                 {
@@ -91,12 +108,22 @@
         </div>
     </header>
 
+    <div id="bf-page-loading" class="bf-page-loading" hidden role="status" aria-live="polite" aria-label="Carregando página">
+        <div class="bf-loading-caption"><span class="bf-loading-dot"></span> Preparando sua próxima página</div>
+        <div class="bf-skeleton bf-skeleton--eyebrow"></div><div class="bf-skeleton bf-skeleton--title"></div>
+        <div class="bf-skeleton-grid">@for(var i=0;i<4;i++){<div><div class="bf-skeleton bf-skeleton--image"></div><div class="bf-skeleton bf-skeleton--line"></div><div class="bf-skeleton bf-skeleton--line short"></div></div>}</div>
+    </div>
     <main id="main-content">
         @if(adminArea){<div class="bf-admin-shell">@await Html.PartialAsync("_AdminSidebar")<div class="bf-admin-main">@RenderBody()</div></div>}else{@RenderBody()}
     </main>
 
     <button class="bf-help-tab" type="button" data-help-open aria-controls="bf-help-panel" aria-expanded="false">Ajuda <span aria-hidden="true">?</span></button>
-    <dialog id="bf-help-panel" class="bf-help-panel" aria-labelledby="bf-help-title"><button type="button" class="bf-help-close" data-help-close aria-label="Fechar ajuda">×</button><span class="bf-eyebrow">Beta Fit</span><h2 id="bf-help-title">Como podemos ajudar?</h2><p>Encontre respostas ou acompanhe sua compra.</p><details><summary>Pedidos e entrega</summary><p>Abra Minhas compras para acompanhar seu pedido, cancelar enquanto estiver pendente ou confirmado e conversar com a loja.</p><a href="/Orders/MyOrders">Minhas compras →</a></details><details><summary>Pagamento Pix</summary><p>Copie o código exibido na página do Pix. O pagamento é uma demonstração e não realiza cobranças.</p></details><details><summary>Trocas e reembolsos</summary><p>Após a entrega, abra o pedido para solicitar reembolso ou envie uma mensagem ao atendimento.</p></details><a class="bf-btn bf-btn--dark" href="/Home/Help">Central de ajuda completa →</a></dialog>
+    <dialog id="bf-help-panel" class="bf-help-panel bf-help-widget" aria-labelledby="bf-help-title">
+        <header><span data-icon="chat"></span><strong>Atendimento BetaFit</strong><button type="button" class="bf-help-close" data-help-close aria-label="Fechar ajuda">×</button></header>
+        <div class="bf-help-widget__body"><span class="bf-eyebrow">Assistente virtual</span><h2 id="bf-help-title">Olá! Como podemos ajudar?</h2><p>Escolha um caminho ou conte sua dúvida. Vamos continuar a conversa na central.</p>
+        <div class="bf-widget-options"><a href="/Home/Help?question=Quero+saber+sobre+um+produto">Quero comprar</a><a href="/Home/Help?question=Preciso+de+ajuda+com+meu+pedido">Pedidos e dúvidas</a><a href="/Support">Falar com a loja</a></div></div>
+        <form action="/Home/Help" method="get" class="bf-widget-compose"><label class="visually-hidden" for="widget-question">Sua dúvida</label><input id="widget-question" name="question" maxlength="500" required placeholder="Escreva sua dúvida…"/><button type="submit" aria-label="Continuar na central de ajuda"><span data-icon="send"></span></button></form>
+    </dialog>
     <footer class="bf-footer">
         <div class="bf-container">
             <div class="bf-footer__main">
@@ -137,6 +164,6 @@
     <script src="~/js/storefront.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 <script src="~/js/management.js" asp-append-version="true"></script>
-<script src="~/js/pwa.js" asp-append-version="true"></script><script src="~/js/ui-system.js" asp-append-version="true"></script></body>
+<script src="~/js/pwa.js" asp-append-version="true"></script><script src="~/js/ui-system.js" asp-append-version="true"></script><script src="~/js/store-updates.js" asp-append-version="true"></script><script src="~/js/shipping.js" asp-append-version="true"></script><script src="~/js/support-experience.js" asp-append-version="true"></script><script src="~/js/refined.js" asp-append-version="true"></script></body>
 </html>
 
