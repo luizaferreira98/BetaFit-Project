@@ -22,16 +22,9 @@ namespace BetaFit.Application.Services
             var users = _userManager.Users.ToList();
             var result = new List<UsuarioDto>();
 
-            // Iteramos sobre os usuários do banco e transformamos em UsuarioDto
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
-
-                // Este endpoint é usado pelo módulo administrativo de
-                // funcionários, portanto clientes (role Usuario) não entram
-                // na listagem.
-                if (!roles.Any(r => IsEmployeeRole(r)))
-                    continue;
 
                 result.Add(new UsuarioDto
                 {

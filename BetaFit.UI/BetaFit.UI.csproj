@@ -18,6 +18,7 @@
       Referenciamos apenas a Application para reaproveitar DTOs, Interfaces
       e ViewModels, evitando duplicar contratos entre as camadas.
     -->
+		<ProjectReference Include="..\BetaFit.API\BetaFit.API.csproj" />
 		<ProjectReference Include="..\BetaFit.Application\BetaFit.Application.csproj" />
 	</ItemGroup>
 

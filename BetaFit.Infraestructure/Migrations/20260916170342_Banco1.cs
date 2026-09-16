@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BetaFit.Infraestructure.Migrations
 {
     /// <inheritdoc />
-    public partial class banco2 : Migration
+    public partial class Banco1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -123,6 +123,11 @@ namespace BetaFit.Infraestructure.Migrations
                     ShippingCity = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: true),
                     ShippingState = table.Column<string>(type: "nvarchar(2)", maxLength: 2, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ShippingCost = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    ShippingMethod = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ShippingMinDays = table.Column<int>(type: "int", nullable: true),
+                    ShippingMaxDays = table.Column<int>(type: "int", nullable: true),
+                    ShippingRuleId = table.Column<int>(type: "int", nullable: true),
                     Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     PaymentId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
@@ -185,6 +190,26 @@ namespace BetaFit.Infraestructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ShippingRules",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CepStart = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
+                    CepEnd = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    MinDays = table.Column<int>(type: "int", nullable: false),
+                    MaxDays = table.Column<int>(type: "int", nullable: false),
+                    FreeAbove = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true),
+                    Active = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShippingRules", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SiteSettings",
                 columns: table => new
                 {
@@ -198,6 +223,22 @@ namespace BetaFit.Infraestructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SiteSettings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SupportConversations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    Subject = table.Column<string>(type: "nvarchar(160)", maxLength: 160, nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SupportConversations", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -383,6 +424,28 @@ namespace BetaFit.Infraestructure.Migrations
                         name: "FK_OrderMessages_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SupportMessages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ConversationId = table.Column<int>(type: "int", nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    IsStaff = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SupportMessages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SupportMessages_SupportConversations_ConversationId",
+                        column: x => x.ConversationId,
+                        principalTable: "SupportConversations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -608,6 +671,11 @@ namespace BetaFit.Infraestructure.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SupportMessages_ConversationId",
+                table: "SupportMessages",
+                column: "ConversationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserNotifications_UserId_IsRead_CreatedAt",
                 table: "UserNotifications",
                 columns: new[] { "UserId", "IsRead", "CreatedAt" });
@@ -656,7 +724,13 @@ namespace BetaFit.Infraestructure.Migrations
                 name: "ProductReviews");
 
             migrationBuilder.DropTable(
+                name: "ShippingRules");
+
+            migrationBuilder.DropTable(
                 name: "SiteSettings");
+
+            migrationBuilder.DropTable(
+                name: "SupportMessages");
 
             migrationBuilder.DropTable(
                 name: "UserNotifications");
@@ -672,6 +746,9 @@ namespace BetaFit.Infraestructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "SupportConversations");
 
             migrationBuilder.DropTable(
                 name: "Categories");
