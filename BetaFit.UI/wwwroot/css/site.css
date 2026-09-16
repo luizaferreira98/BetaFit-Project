@@ -1984,7 +1984,7 @@ button, input, select, textarea {
     grid-template-columns: 92px minmax(0,1fr) auto auto;
     gap: 20px;
     align-items: center;
-    padding: 18px 0;
+    padding: 18px 18px;
     border-bottom: 1px solid var(--bf-line);
 }
 

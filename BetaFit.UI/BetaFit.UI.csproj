@@ -7,18 +7,19 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Content Include="Properties\launchSettings.json" />
+		<Content Include="Properties\launchSettings.json" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<!--
-      CONCEITO IMPORTANTE: A BetaFit.UI (MVC) NUNCA referencia a Infraestructure
+      CONCEITO IMPORTANTE: A BetaFit.UI (MVC) NUNCA referencia a Infrastructure
       nem acessa o banco de dados diretamente. Ela consome exclusivamente a
       BetaFit.API através de HttpClient, assim como o Desktop.
+      
+      ⚠️ REMOVEMOS BetaFit.API daqui - UI não deve incluir a API no deployment!
       Referenciamos apenas a Application para reaproveitar DTOs, Interfaces
       e ViewModels, evitando duplicar contratos entre as camadas.
     -->
-		<ProjectReference Include="..\BetaFit.API\BetaFit.API.csproj" />
 		<ProjectReference Include="..\BetaFit.Application\BetaFit.Application.csproj" />
 	</ItemGroup>
 

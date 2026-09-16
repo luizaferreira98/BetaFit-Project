@@ -145,12 +145,16 @@ var app = builder.Build();
 // A ordem importa! Cada middleware processa a requisição e passa adiante.
 // =====================================================================
 
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     // Swagger só é habilitado em ambiente de desenvolvimento
     app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "SenacGames API v1");
+        options.RoutePrefix = string.Empty; // Swagger na raiz da aplicação
+    });
+//}
 
 app.UseExceptionHandler(handler=>handler.Run(async context=>{
     var error=context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()?.Error;

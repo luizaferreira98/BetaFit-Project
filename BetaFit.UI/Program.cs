@@ -12,8 +12,20 @@ using BetaFit.UI.Helpers;
 using BetaFit.UI.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// =====================================================================
+// LOCALIZAÇÃO (deve ser configurada ANTES de adicionar serviços de rota)
+// =====================================================================
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[] { "pt-BR" };
+    options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
+    options.SupportedCultures = supportedCultures.Select(c => new System.Globalization.CultureInfo(c)).ToList();
+    options.SupportedUICultures = supportedCultures.Select(c => new System.Globalization.CultureInfo(c)).ToList();
+});
 
 // =====================================================================
 // AUTENTICAÇÃO MVC (Cookie local da UI)
@@ -59,22 +71,27 @@ builder.Services.AddSession(options =>
 // =====================================================================
 // HTTP CLIENTS & SERVIÇOS DA API
 // =====================================================================
+
+// Inicializar AppConfig ANTES de registrar serviços HTTP
+// Isso resolve a URL da API uma única vez na inicialização
+AppConfig.Initialize(builder.Configuration, builder.Environment);
+
 // Handler que repassa o cookie de autenticação da API nas requisições
 builder.Services.AddTransient<ApiCookieHandler>();
-
-// Resolve a URL da BetaFit.API dinamicamente (launchSettings ou appsettings)
-var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? AppConfig.ApiBaseUrl;
 
 // Cliente usado apenas para Login/Register (ainda não existe cookie a repassar)
 builder.Services.AddHttpClient("ApiClientAuth", client =>
 {
-    client.BaseAddress = new Uri(apiBaseUrl);
-}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false });
+    client.BaseAddress = new Uri(AppConfig.ApiBaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(30);
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false });
 
 // Cliente padrão para os demais serviços (repassa o cookie de autenticação)
 builder.Services.AddHttpClient("ApiClient", client =>
 {
-    client.BaseAddress = new Uri(apiBaseUrl);
+    client.BaseAddress = new Uri(AppConfig.ApiBaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(30);
 })
 .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false })
 .AddHttpMessageHandler<ApiCookieHandler>();
@@ -92,18 +109,32 @@ builder.Services.AddScoped<IDashboardService>(sp =>
 
 builder.Services.AddScoped<IOrderService>(sp =>
     new HttpOrderService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+
 builder.Services.AddScoped<HttpReviewService>(sp =>
-    new HttpReviewService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient"),sp.GetRequiredService<ILogger<HttpReviewService>>()));
+    new HttpReviewService(
+        sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient"),
+        sp.GetRequiredService<ILogger<HttpReviewService>>()
+    ));
+
 builder.Services.AddScoped<HttpCartService>(sp =>
-    new HttpCartService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient"), sp.GetRequiredService<IHttpContextAccessor>(), sp.GetRequiredService<IProductService>()));
+    new HttpCartService(
+        sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient"),
+        sp.GetRequiredService<IHttpContextAccessor>(),
+        sp.GetRequiredService<IProductService>()
+    ));
+
 builder.Services.AddScoped<HttpFavoriteService>(sp =>
     new HttpFavoriteService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+
 builder.Services.AddScoped<HttpPaymentService>(sp =>
     new HttpPaymentService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+
 builder.Services.AddScoped<HttpProfileService>(sp =>
     new HttpProfileService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+
 builder.Services.AddScoped<HttpSiteSettingsService>(sp =>
     new HttpSiteSettingsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+
 builder.Services.AddScoped<HttpNotificationService>(sp =>
     new HttpNotificationService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
 
@@ -114,6 +145,10 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+// =====================================================================
+// MIDDLEWARE PIPELINE (em ordem correta)
+// =====================================================================
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -123,14 +158,22 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRequestLocalization(new RequestLocalizationOptions().SetDefaultCulture("pt-BR").AddSupportedCultures("pt-BR").AddSupportedUICultures("pt-BR"));
+// ⭐ Localização deve estar CEDO na pipeline
+var requestLocalizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
+app.UseRequestLocalization(requestLocalizationOptions);
+
 app.UseRouting();
 
+// ⭐ Sessão DEPOIS de Routing
 app.UseSession();
 
+// ⭐ Autenticação DEPOIS de Sessão
 app.UseAuthentication();
+
+// ⭐ Autorização DEPOIS de Autenticação
 app.UseAuthorization();
 
+// ⭐ Roteamento de endpoints por ÚLTIMO
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
