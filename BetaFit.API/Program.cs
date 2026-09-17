@@ -176,16 +176,21 @@ app.MapControllers();
 app.MapHub<BetaFit.API.Hubs.OrderHub>("/hubs/orders");
 
 // =====================================================================
-// SEED DATA — Popula o banco com dados iniciais
-// =====================================================================
-//  CONCEITO: O seed é executado na inicialização da aplicação.
-// Ele cria categorias, produtos de exemplo e o usuário admin.
+// MIGRAÇÃO E SEED DATA — Executados na inicialização
 // =====================================================================
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<BetaFitDbContext>();
-    await db.Database.MigrateAsync();
+    var services = scope.ServiceProvider;
+
+    // 1. Aplica as migrações (Idealmente restrito ao ambiente de desenvolvimento)
+    if (app.Environment.IsDevelopment())
+    {
+        var db = services.GetRequiredService<BetaFitDbContext>();
+        await db.Database.MigrateAsync();
+    }
+
+    // 2. Executa a carga inicial de dados
+    await SeedData.SeedAsync(services);
 }
-await SeedData.SeedAsync(app.Services);
 
 app.Run();

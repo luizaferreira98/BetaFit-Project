@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BetaFit.Infraestructure.Migrations
 {
     [DbContext(typeof(BetaFitDbContext))]
-    [Migration("20260916170342_Banco1")]
+    [Migration("20260917175513_Banco1")]
     partial class Banco1
     {
         /// <inheritdoc />

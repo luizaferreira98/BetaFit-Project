@@ -105,35 +105,28 @@ namespace BetaFit.Desktop.Helpers
         /// </returns>
         public static string? Resolve()
         {
-            // Retorna cache se já foi resolvido
             if (_resolved) return _resolvedUrl;
-
             _resolved = true;
 
-            // ── PRIORIDADE 1: launchSettings.json ─────────────────────────────
-            var fromLaunchSettings = TryResolveFromLaunchSettings();
-            if (fromLaunchSettings != null)
-            {
-                _resolvedUrl = fromLaunchSettings;
-                Log($"✅ API localizada em: {_resolvedUrl}");
-                Log($"   Origem: launchSettings.json do {ApiProjectName}");
-                return _resolvedUrl;
-            }
-
-            // ── PRIORIDADE 2: appsettings.json ────────────────────────────────
+            // ── PRIORIDADE 1: appsettings.json ────────────────────────────────
             var fromAppSettings = TryResolveFromAppSettings();
             if (fromAppSettings != null)
             {
                 _resolvedUrl = fromAppSettings;
-                Log($"✅ API localizada em: {_resolvedUrl}");
-                Log($"   Origem: appsettings.json (configuração manual)");
+                Log($"✅ API localizada em: {_resolvedUrl} (appsettings.json)");
                 return _resolvedUrl;
             }
 
-            // ── PRIORIDADE 3: não encontrado ──────────────────────────────────
+            // ── PRIORIDADE 2: launchSettings.json (desenvolvimento local) ──────
+            var fromLaunchSettings = TryResolveFromLaunchSettings();
+            if (fromLaunchSettings != null)
+            {
+                _resolvedUrl = fromLaunchSettings;
+                Log($"✅ API localizada em: {_resolvedUrl} (launchSettings.json)");
+                return _resolvedUrl;
+            }
+
             Log("❌ URL da API não foi localizada.");
-            Log("   Verifique se SenacGames.API/Properties/launchSettings.json existe");
-            Log("   ou configure manualmente em appsettings.json → ApiSettings.BaseUrl");
             _resolvedUrl = null;
             return null;
         }
@@ -327,9 +320,12 @@ namespace BetaFit.Desktop.Helpers
 
                 var json = File.ReadAllText(path);
                 // Remove comentários de linha (// ...) que não são JSON padrão
-                json = RemoveJsonComments(json);
-
-                using var doc = JsonDocument.Parse(json);
+                var options = new JsonDocumentOptions
+                {
+                    CommentHandling = JsonCommentHandling.Skip,
+                    AllowTrailingCommas = true
+                };
+                using var doc = JsonDocument.Parse(json, options);
                 var root = doc.RootElement;
 
                 // Formato novo: ApiSettings.BaseUrl

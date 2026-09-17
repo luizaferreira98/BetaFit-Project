@@ -436,3 +436,6 @@ FodyWeavers.xsd
 
 # Manter o arquivo de exemplo
 !**/appsettings.example.json
+
+# Ignorar appsettings do Desktop
+BetaFit.Desktop/appsettings.json

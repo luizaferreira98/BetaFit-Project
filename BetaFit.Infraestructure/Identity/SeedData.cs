@@ -3,7 +3,7 @@
 // =============================================================================
 // Seed Data são os dados iniciais utilizados para popular o banco.
 // O método abaixo é idempotente: pode ser executado várias vezes sem duplicar
-// produtos ou categorias.
+// produtos, categorias, roles ou usuários.
 // =============================================================================
 
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +23,8 @@ namespace BetaFit.Infraestructure.Identity
     public static class SeedData
     {
         /// <summary>
-        /// Popula categorias, catálogo de produtos, roles e usuário administrador.
+        /// Popula roles, usuário administrador, categorias, catálogo de produtos,
+        /// tamanhos, cores e galeria. Idempotente.
         /// </summary>
         public static async Task SeedAsync(IServiceProvider serviceProvider)
         {
@@ -33,13 +34,55 @@ namespace BetaFit.Infraestructure.Identity
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            // Aplica migrations pendentes automaticamente.
-            await context.Database.MigrateAsync();
+            // =================================================================
+            // 1. SEED DE ROLES (idempotente)
+            // =================================================================
+            if (!await roleManager.RoleExistsAsync("Admin"))
+                await roleManager.CreateAsync(new IdentityRole("Admin"));
 
-            // =====================================================================
-            // 1. SEED DE CATEGORIAS
-            // =====================================================================
+            if (!await roleManager.RoleExistsAsync("Usuario"))
+                await roleManager.CreateAsync(new IdentityRole("Usuario"));
 
+            if (!await roleManager.RoleExistsAsync("Funcionario"))
+                await roleManager.CreateAsync(new IdentityRole("Funcionario"));
+
+            // =================================================================
+            // 2. SEED DO USUÁRIO ADMIN (idempotente)
+            // =================================================================
+            var adminEmail = "admin@betafit.com";
+            var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
+            if (adminUser == null)
+            {
+                adminUser = new IdentityUser
+                {
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    EmailConfirmed = true
+                };
+
+                var result = await userManager.CreateAsync(adminUser, "Admin@123");
+
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
+                }
+            }
+
+            if (adminUser is not null)
+            {
+                var adminClaims = await userManager.GetClaimsAsync(adminUser);
+
+                if (!adminClaims.Any(c => c.Type == "FullName"))
+                    await userManager.AddClaimAsync(adminUser, new Claim("FullName", "Administrador BetaFit"));
+
+                if (!adminClaims.Any(c => c.Type == "BirthDate"))
+                    await userManager.AddClaimAsync(adminUser, new Claim("BirthDate", "1990-01-01"));
+            }
+
+            // =================================================================
+            // 3. SEED DE CATEGORIAS (idempotente)
+            // =================================================================
             var categoryDefinitions = new[]
             {
                 ("Camisetas", "Camisetas casuais e esportivas"),
@@ -72,13 +115,9 @@ namespace BetaFit.Infraestructure.Identity
             var tenis = await context.Categories.FirstAsync(c => c.Name == "Tênis");
             var acessorios = await context.Categories.FirstAsync(c => c.Name == "Acessórios");
 
-            // =====================================================================
-            // 2. SEED / ATUALIZAÇÃO DO CATÁLOGO DE PRODUTOS
-            // =====================================================================
-            // A lista abaixo reúne os produtos presentes nos arquivos enviados:
-            // roupas, tênis, bonés, shakers, galões e garrafas temáticas.
-            // =====================================================================
-
+            // =================================================================
+            // 4. SEED / ATUALIZAÇÃO DO CATÁLOGO DE PRODUTOS (idempotente por Name)
+            // =================================================================
             var products = new List<Product>
             {
                 // ---------------- TÊNIS ----------------
@@ -146,7 +185,6 @@ namespace BetaFit.Infraestructure.Identity
                     IsFeatured = false,
                     CreatedAt = DateTime.Now
                 },
-
 
                 // ---------------- CAMISETAS / REGATAS ----------------
                 new Product
@@ -435,7 +473,6 @@ namespace BetaFit.Infraestructure.Identity
                     CreatedAt = DateTime.Now
                 },
 
-
                 // ---------------- LEGGINGS / CALÇAS DE TREINO ----------------
                 new Product
                 {
@@ -488,7 +525,6 @@ namespace BetaFit.Infraestructure.Identity
                     IsFeatured = false,
                     CreatedAt = DateTime.Now
                 },
-
 
                 // ---------------- SHORTS ----------------
                 new Product
@@ -543,7 +579,6 @@ namespace BetaFit.Infraestructure.Identity
                     CreatedAt = DateTime.Now
                 },
 
-
                 // ---------------- MOLETONS ----------------
                 new Product
                 {
@@ -557,7 +592,6 @@ namespace BetaFit.Infraestructure.Identity
                     IsFeatured = true,
                     CreatedAt = DateTime.Now
                 },
-
 
                 // ---------------- ACESSÓRIOS ----------------
                 new Product
@@ -857,10 +891,9 @@ namespace BetaFit.Infraestructure.Identity
 
             await context.SaveChangesAsync();
 
-            // =====================================================================
-            // 2.1. TAMANHOS E CORES
-            // =====================================================================
-
+            // =================================================================
+            // 5. TAMANHOS (idempotente)
+            // =================================================================
             var clothingCategoryIds = await context.Categories
                 .Where(c =>
                     c.Name == "Camisetas" ||
@@ -910,7 +943,9 @@ namespace BetaFit.Infraestructure.Identity
                 accessory.AvailableSizesJson = "[]";
             }
 
-            // Define cores básicas quando o produto ainda não possui cores.
+            // =================================================================
+            // 6. CORES (idempotente - só preenche se ainda estiver vazio)
+            // =================================================================
             foreach (var product in await context.Products.ToListAsync())
             {
                 if (!string.IsNullOrWhiteSpace(product.AvailableColorsJson) &&
@@ -935,7 +970,9 @@ namespace BetaFit.Infraestructure.Identity
                 product.AvailableColorsJson = JsonSerializer.Serialize(colors);
             }
 
-            // Cores e galerias específicas dos bonés.
+            // =================================================================
+            // 7. GALERIAS ESPECÍFICAS DOS BONÉS (idempotente)
+            // =================================================================
             var capProducts = await context.Products
                 .Where(p => p.Name.StartsWith("Boné Beta Fit"))
                 .ToListAsync();
@@ -958,13 +995,9 @@ namespace BetaFit.Infraestructure.Identity
 
             await context.SaveChangesAsync();
 
-            // =====================================================================
-            // 2.2. GALERIA PERSISTENTE
-            // =====================================================================
-            // Garante que produtos sem registros em ProductImage tenham sua
-            // imagem principal cadastrada na galeria.
-            // =====================================================================
-
+            // =================================================================
+            // 8. GALERIA PERSISTENTE (ProductImage) - idempotente
+            // =================================================================
             foreach (var product in await context.Products.Include(p => p.Images).ToListAsync())
             {
                 if (product.Images.Any())
@@ -1002,76 +1035,6 @@ namespace BetaFit.Infraestructure.Identity
             }
 
             await context.SaveChangesAsync();
-
-            // =====================================================================
-            // 3. SEED DE ROLES
-            // =====================================================================
-
-            if (!await roleManager.RoleExistsAsync("Admin"))
-            {
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
-            }
-
-            if (!await roleManager.RoleExistsAsync("Usuario"))
-            {
-                await roleManager.CreateAsync(new IdentityRole("Usuario"));
-            }
-
-            if (!await roleManager.RoleExistsAsync("Funcionario"))
-            {
-                await roleManager.CreateAsync(new IdentityRole("Funcionario"));
-            }
-
-            // =====================================================================
-            // 4. SEED DO USUÁRIO ADMINISTRADOR
-            // =====================================================================
-
-            var adminEmail = "admin@betafit.com";
-            var adminUser = await userManager.FindByEmailAsync(adminEmail);
-
-            if (adminUser == null)
-            {
-                adminUser = new IdentityUser
-                {
-                    UserName = adminEmail,
-                    Email = adminEmail,
-                    EmailConfirmed = true
-                };
-
-                var result = await userManager.CreateAsync(adminUser, "Admin@123");
-
-                if (result.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(adminUser, "Admin");
-
-                    await userManager.AddClaimsAsync(
-                        adminUser,
-                        new[]
-                        {
-                            new Claim("FullName", "Administrador BetaFit"),
-                            new Claim("BirthDate", "1990-01-01")
-                        });
-                }
-            }
-
-            if (adminUser is not null)
-            {
-                var adminClaims = await userManager.GetClaimsAsync(adminUser);
-
-                if (!adminClaims.Any(c => c.Type == "FullName"))
-                {
-                    await userManager.AddClaimAsync(
-                        adminUser,
-                        new Claim("FullName", "Administrador BetaFit"));
-                }
-
-                if (!adminClaims.Any(c => c.Type == "BirthDate"))
-                {
-                    await userManager.AddClaimAsync(
-                        adminUser,
-                        new Claim("BirthDate", "1990-01-01"));
-                }
-            }
         }
     }
 }
