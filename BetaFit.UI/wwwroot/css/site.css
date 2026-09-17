@@ -15,98 +15,160 @@
     --bf-shadow: 0 18px 50px rgba(0, 0, 0, .08);
 }
 
-/* 2026 storefront/admin experience */
+/* =====================================
+   BETAFIT - HERO COM IMAGENS
+===================================== */
+
 .bf-home-hero {
     position: relative;
     min-height: 590px;
     background: #080b0d;
-    color: #fff;
-    overflow: hidden
+    overflow: hidden;
 }
+
+/* Slides */
 
 .bf-home-hero__slide {
     position: absolute;
     inset: 0;
     opacity: 0;
     visibility: hidden;
-    transition: opacity .55s ease
+    transition: opacity 0.55s ease, visibility 0.55s ease;
 }
 
     .bf-home-hero__slide.is-active {
         opacity: 1;
         visibility: visible;
-        z-index: 1
+        z-index: 1;
     }
 
-.bf-home-hero__media, .bf-home-hero video {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    background-position: center;
-    background-size: cover
-}
+    /* Imagens e vídeos */
+
+    .bf-home-hero__media,
+    .bf-home-hero__slide video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+/* Overlay para leitura do texto */
 
 .bf-home-hero__overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg,rgba(2,5,8,.88),rgba(2,5,8,.18))
+    background: linear-gradient( 90deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.55) 45%, rgba(0, 0, 0, 0.10) 100% );
+    pointer-events: none;
 }
+
+/* Conteúdo */
 
 .bf-home-hero__content {
     position: relative;
     z-index: 2;
-    min-height: 590px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: flex-start;
-    max-width: 1200px
+    justify-content: center;
+    min-height: 590px;
+    padding-top: 70px;
+    padding-bottom: 70px;
 }
 
-    .bf-home-hero__content span {
-        font-size: .78rem;
-        letter-spacing: .25em;
+    /* Títulos */
+
+    .bf-home-hero__content h1,
+    .bf-home-hero__content .bf-home-hero__title {
+        max-width: 780px;
+        font-size: clamp(3rem, 7vw, 6rem);
+        line-height: 0.95;
         text-transform: uppercase;
-        font-weight: 800
+        margin: 18px 0;
     }
 
-    .bf-home-hero__content h1 {
-        max-width: 780px;
-        font-size: clamp(3rem,8vw,7rem);
-        line-height: .88;
-        text-transform: uppercase;
-        margin: 18px 0
-    }
+    /* Descrição */
 
     .bf-home-hero__content p {
-        max-width: 650px;
-        font-size: 1.12rem
+        max-width: 600px;
+        font-size: 1.12rem;
+        line-height: 1.6;
+        color: #f0f0f0;
+        margin-bottom: 28px;
     }
 
-.bf-home-hero__arrow {
-    position: absolute;
-    text-align: center;
-    align-items:center;
-    justify-content: center;
-    z-index: 4;
-    top: 50%;
-    width: 38px;
-    height: 38px;
-    border: 1px solid #fff8;
-    background: #0007;
-    color: #fff;
-    border-radius: 50%;
-    font-size: 2rem
+/* Responsividade */
+
+@media (max-width: 768px) {
+
+    .bf-home-hero,
+    .bf-home-hero__content {
+        min-height: 520px;
+    }
+
+    .bf-home-hero__content {
+        padding: 60px 24px;
+    }
+
+        .bf-home-hero__content h1,
+        .bf-home-hero__content .bf-home-hero__title {
+            font-size: clamp(2.5rem, 10vw, 4rem);
+        }
+
+        .bf-home-hero__content p {
+            font-size: 1rem;
+        }
+
+    .bf-home-hero__media {
+        background-position: 65% center;
+    }
+
+    .bf-home-hero__overlay {
+        background: linear-gradient( 90deg, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.45) );
+    }
 }
 
+.bf-home-hero__arrow {
+    /* Posicionamento no banner */
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    /* Centralização do ícone dentro do botão */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Tamanho e forma circular */
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    /* Aparência */
+    background: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    /* Fonte */
+    font-size: 32px;
+    line-height: 1; /* evita o "line-height" herdado empurrar a seta */
+    font-family: Arial, sans-serif; /* fonte com glifos previsíveis */
+    /* Suavidade */
+    transition: background 0.2s ease;
+}
+
+    .bf-home-hero__arrow:hover {
+        background: rgba(0, 0, 0, 0.7);
+    }
+
     .bf-home-hero__arrow.prev {
-        left: 12px
+        left: 24px;
     }
 
     .bf-home-hero__arrow.next {
-        right: 12px
+        right: 24px;
     }
 
 .bf-home-hero__dots {
@@ -1922,7 +1984,7 @@ button, input, select, textarea {
     grid-template-columns: 92px minmax(0,1fr) auto auto;
     gap: 20px;
     align-items: center;
-    padding: 18px 0;
+    padding: 18px 18px;
     border-bottom: 1px solid var(--bf-line);
 }
 
@@ -1982,7 +2044,7 @@ button, input, select, textarea {
 
 .bf-cart-summary {
     position: sticky;
-    top: 110px;
+    top: 60px;
     padding: 24px;
     background: var(--bf-surface);
     border: 1px solid var(--bf-line);
@@ -5284,6 +5346,10 @@ button, input, select, textarea {
 
 .bf-checkout-form {
     animation: bf-checkout-enter .55s var(--bf-ease-out, ease) both
+}
+
+.bf-checkout-form .bf-form-grid {
+    align-items: start;
 }
 
 .bf-checkout-confirmation {

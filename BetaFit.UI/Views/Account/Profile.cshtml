@@ -1,35 +1,50 @@
 @model UserDto
 @using BetaFit.Application.DTOs
-@{ ViewData["Title"]="Meu perfil"; }
+@{
+    ViewData["Title"] = "Meu perfil"; var avatarName = !string.IsNullOrWhiteSpace(Model.FullName) ? Model.FullName : (!string.IsNullOrWhiteSpace(Model.Email) ? Model.Email : "U");
+}
 <section class="bf-page-hero bf-page-hero--compact bf-profile-hero"><div class="bf-container bf-page-hero__inner"><div><span class="bf-eyebrow bf-eyebrow--dark">Área do cliente</span><h1>Meu perfil</h1><p>Veja seus dados e escolha abaixo exatamente o que deseja alterar.</p></div></div></section>
-<section class="bf-section bf-section--catalog"><div class="bf-container bf-profile-page">
-@if(TempData["Sucesso"] is string ok){<div class="bf-alert" role="status">@ok</div>}
-@if(TempData["Erro"] is string error){<div class="bf-alert bf-alert--error" role="alert">@error</div>}
-@if(!ViewData.ModelState.IsValid){<div class="bf-alert bf-alert--error" role="alert">@Html.ValidationSummary(false,"",new{@class="bf-validation"})</div>}
-<div class="bf-account-shortcuts"><a class="bf-account-tile" asp-controller="Orders" asp-action="MyOrders"><strong>Minhas compras →</strong><span>Histórico, acompanhamento e detalhes dos pedidos.</span></a><a class="bf-account-tile" asp-action="Cards"><strong>Meus cartões →</strong><span>@Model.Cards.Count cadastrado(s). Adicione ou exclua cartões.</span></a></div><div class="bf-profile-summary">
-    <div class="bf-profile-heading"><div class="bf-user-avatar">@((Model?.FullName??Model?.Email??"U").Substring(0,1).ToUpper())</div><div><span class="bf-eyebrow bf-eyebrow--dark">Dados da conta</span><h2>@(Model?.FullName ?? "Seu perfil")</h2></div></div>
-    <dl class="bf-profile-data">
-        <div><dt>E-mail</dt><dd>@Model.Email</dd></div><div><dt>Telefone</dt><dd>@Model.PhoneNumber</dd></div>
-        <div><dt>Nascimento</dt><dd>@(Model.BirthDate?.ToString("dd/MM/yyyy") ?? "Não informado")</dd></div><div><dt>Gênero</dt><dd>@(Model.Gender ?? "Não informado")</dd></div>
-        <div>
-            <dt>CPF</dt>
+<section class="bf-section bf-section--catalog">
+    <div class="bf-container bf-profile-page">
+        @if (TempData["Sucesso"] is string ok)
+        {
+            <div class="bf-alert" role="status">@ok</div>
+        }
+        @if (TempData["Erro"] is string error)
+        {
+            <div class="bf-alert bf-alert--error" role="alert">@error</div>
+        }
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="bf-alert bf-alert--error" role="alert">@Html.ValidationSummary(false, "", new { @class = "bf-validation" })</div>
+        }
+        <div class="bf-account-shortcuts"><a class="bf-account-tile" asp-controller="Orders" asp-action="MyOrders"><strong>Minhas compras →</strong><span>Histórico, acompanhamento e detalhes dos pedidos.</span></a><a class="bf-account-tile" asp-action="Cards"><strong>Meus cartões →</strong><span>@Model.Cards.Count cadastrado(s). Adicione ou exclua cartões.</span></a></div><div class="bf-profile-summary">
+        <div class="bf-profile-heading"><div class="bf-user-avatar">@(avatarName.Substring(0, 1).ToUpper())</div><div><span class="bf-eyebrow bf-eyebrow--dark">Dados da conta</span><h2>@(Model.FullName ?? "Seu perfil")</h2></div></div>
+        <dl class="bf-profile-data">
+            <div><dt>E-mail</dt><dd>@Model.Email</dd></div>
+            <div><dt>Telefone</dt><dd>@Model.PhoneNumber</dd></div>
+            <div><dt>Nascimento</dt><dd>@(Model.BirthDate?.ToString("dd/MM/yyyy") ?? "Não informado")</dd></div>
+            <div><dt>Gênero</dt><dd>@(Model.Gender ?? "Não informado")</dd></div>
+            <div>
+                <dt>CPF</dt>
 
-             <dd data-cpf-display>
-                @(string.IsNullOrWhiteSpace(Model.Cpf)
-                ? "Não informado"
-                : Model.Cpf)
-            </dd>
-        </div>
-        <div><dt>Endereço</dt><dd>@(string.IsNullOrWhiteSpace(Model.Street) ? "Não cadastrado" : $"{Model.Street}, {Model.Number} · {Model.City}/{Model.State}")</dd></div>
-        <div><dt>Cartões</dt><dd>@Model.Cards.Count cadastrado(s)</dd></div>
-    </dl>
+                <dd data-cpf-display>
+                    @(string.IsNullOrWhiteSpace(Model.Cpf)
+                    ? "Não informado"
+                    : Model.Cpf)
+                </dd>
+            </div>
+            <div><dt>Endereço</dt><dd>@(string.IsNullOrWhiteSpace(Model.Street) ? "Não cadastrado" : $"{Model.Street}, {Model.Number} · {Model.City}/{Model.State}")</dd></div>
+            <div><dt>Cartões</dt><dd>@Model.Cards.Count cadastrado(s)</dd></div>
+        </dl>
+    </div>
+    <div class="bf-profile-edit-list">
+
+
+        <a class="bf-account-tile" asp-action="ChangeEmail"><strong>Editar e-mail →</strong><span>Abra a página de troca de e-mail para confirmar seus dados.</span></a>
+        <a class="bf-account-tile" asp-action="ChangePassword"><strong>Editar senha →</strong><span>Altere sua senha em uma página dedicada, com confirmação de segurança.</span></a>
+        <details class="bf-profile-editor"><summary><span><strong>Editar endereço</strong><small>O CEP pode preencher automaticamente os dados disponíveis.</small></span><b>+</b></summary><form asp-action="UpdateAddress" method="post" class="bf-form bf-form--admin" data-address-form>@Html.AntiForgeryToken()<div class="bf-form-grid"><label>CPF<input name="Cpf" value="@Model.Cpf" maxlength="14" inputmode="numeric" data-cpf-mask required /></label><label>CEP<input name="Cep" value="@Model.Cep" maxlength="9" inputmode="numeric" data-cep-mask data-viacep required /><small class="bf-field-status" data-viacep-status></small></label><label class="bf-form-grid__full">Rua<input name="Street" value="@Model.Street" maxlength="180" data-address-street required /></label><label>Número<input name="Number" value="@Model.Number" maxlength="20" data-address-number required /></label><label>Complemento<input name="Complement" value="@Model.Complement" maxlength="120" data-address-complement /></label><label>Bairro<input name="Neighborhood" value="@Model.Neighborhood" maxlength="120" data-address-neighborhood required /></label><label>Cidade<input name="City" value="@Model.City" maxlength="120" data-address-city required /></label><label>Estado<input name="State" value="@Model.State" maxlength="2" data-address-state required /></label></div><button class="bf-btn bf-btn--dark" type="submit">Salvar endereço</button></form></details>
+
+    </div>
 </div>
-<div class="bf-profile-edit-list">
-
-
-<a class="bf-account-tile" asp-action="ChangeEmail"><strong>Editar e-mail →</strong><span>Abra a página de troca de e-mail para confirmar seus dados.</span></a>
-    <a class="bf-account-tile" asp-action="ChangePassword"><strong>Editar senha →</strong><span>Altere sua senha em uma página dedicada, com confirmação de segurança.</span></a>
-    <details class="bf-profile-editor"><summary><span><strong>Editar endereço</strong><small>O CEP pode preencher automaticamente os dados disponíveis.</small></span><b>+</b></summary><form asp-action="UpdateAddress" method="post" class="bf-form bf-form--admin" data-address-form>@Html.AntiForgeryToken()<div class="bf-form-grid"><label>CPF<input name="Cpf" value="@Model.Cpf" maxlength="14" inputmode="numeric" data-cpf-mask required /></label><label>CEP<input name="Cep" value="@Model.Cep" maxlength="9" inputmode="numeric" data-cep-mask data-viacep required /><small class="bf-field-status" data-viacep-status></small></label><label class="bf-form-grid__full">Rua<input name="Street" value="@Model.Street" maxlength="180" data-address-street required /></label><label>Número<input name="Number" value="@Model.Number" maxlength="20" data-address-number required /></label><label>Complemento<input name="Complement" value="@Model.Complement" maxlength="120" data-address-complement /></label><label>Bairro<input name="Neighborhood" value="@Model.Neighborhood" maxlength="120" data-address-neighborhood required /></label><label>Cidade<input name="City" value="@Model.City" maxlength="120" data-address-city required /></label><label>Estado<input name="State" value="@Model.State" maxlength="2" data-address-state required /></label></div><button class="bf-btn bf-btn--dark" type="submit">Salvar endereço</button></form></details>
-
-</div>
-</div></section>
+</section>

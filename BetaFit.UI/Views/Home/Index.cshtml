@@ -3,145 +3,363 @@
 @{
     ViewData["Title"] = "Início";
 
-    var fallbackSlides = new[]
+    // Imagens locais do banner
+    var bannerImages = new[]
+    {
+        Url.Content("~/images/hero/0a8b0318-6370-4a2b-9176-2761ad36ff6c.png"),
+        Url.Content("~/images/hero/15409e65-8139-46e8-865b-4df240e70ea9.png"),
+        Url.Content("~/images/hero/a982845e-031c-4c81-8940-c57a78127098.png")
+    };
+
+    // Slides padrão
+    var fallbackSlides = new List<HeroSlideDto>
     {
         new HeroSlideDto
         {
             Title = "Vista sua disciplina.",
             Subtitle = "Performance, conforto e identidade em cada peça.",
             ButtonText = "Ver coleção",
-            ButtonUrl = "/Catalog"
+            ButtonUrl = Url.Action("Index", "Catalog") ?? "/Catalog",
+            MediaType = "image",
+            MediaUrl = bannerImages[0]
         },
+
         new HeroSlideDto
         {
             Title = "Seu ritmo. Sua escolha.",
-            Subtitle = "Encontre roupas, acessórios e novidades para acompanhar sua rotina.",
+            Subtitle = "Encontre roupas e acessórios para acompanhar sua rotina.",
             ButtonText = "Explorar catálogo",
-            ButtonUrl = "/Catalog"
+            ButtonUrl = Url.Action("Index", "Catalog") ?? "/Catalog",
+            MediaType = "image",
+            MediaUrl = bannerImages[1]
         },
+
         new HeroSlideDto
         {
             Title = "Treine sem parar.",
-            Subtitle = "Frete grátis nas compras acima de R$ 299,90.",
+            Subtitle = "Descubra produtos para cada etapa da sua evolução.",
             ButtonText = "Conhecer produtos",
-            ButtonUrl = "/Catalog"
+            ButtonUrl = Url.Action("Index", "Catalog") ?? "/Catalog",
+            MediaType = "image",
+            MediaUrl = bannerImages[2]
         }
     };
 
-    var slides = Model.SiteSettings.HeroSlides
+    // Slides configurados pela administração
+    var slides = Model.SiteSettings?.HeroSlides?
         .Where(x => !string.IsNullOrWhiteSpace(x.Title))
-        .ToList();
+        .ToList() ?? new List<HeroSlideDto>();
 
+    // Complementa os slides quando há poucos cadastrados
     if (slides.Count < 2)
     {
-        slides.AddRange(fallbackSlides.Where(x => !slides.Any(existing => existing.Title == x.Title)));
+        foreach (var fallback in fallbackSlides)
+        {
+            if (!slides.Any(x => x.Title == fallback.Title))
+            {
+                slides.Add(fallback);
+            }
+        }
     }
 
-    var highlights = new[] { "Performance", "Conforto", "Edições especiais", "Novos produtos", "Beta Fit" };
+    var highlights = new[]
+    {
+        "Performance",
+        "Conforto",
+        "Edições especiais",
+        "Novos produtos",
+        "Beta Fit"
+    };
 }
 
-<section class="bf-home-hero" data-hero-carousel>
+<!-- ========================================
+     HERO PRINCIPAL
+======================================== -->
+
+<section class="bf-home-hero"
+         data-hero-carousel
+         aria-label="Destaques Beta Fit">
+
     @for (var i = 0; i < slides.Count; i++)
     {
         var slide = slides[i];
-        <article class="bf-home-hero__slide @(i == 0 ? "is-active" : "")" data-hero-slide>
-            @if (slide.MediaType == "video" && !string.IsNullOrWhiteSpace(slide.MediaUrl))
+
+        // Usa uma imagem local quando não houver mídia cadastrada
+        var mediaUrl = !string.IsNullOrWhiteSpace(slide.MediaUrl)
+            ? slide.MediaUrl
+            : bannerImages[i % bannerImages.Length];
+
+        var isVideo =
+            string.Equals(
+                slide.MediaType,
+                "video",
+                StringComparison.OrdinalIgnoreCase
+            )
+            && !string.IsNullOrWhiteSpace(slide.MediaUrl);
+
+        var buttonUrl = !string.IsNullOrWhiteSpace(slide.ButtonUrl)
+            ? slide.ButtonUrl
+            : Url.Action("Index", "Catalog") ?? "/Catalog";
+
+        <article class="bf-home-hero__slide @(i == 0 ? "is-active" : "")"
+                 data-hero-slide
+                 aria-hidden="@(i != 0 ? "true" : "false")">
+
+            <!-- IMAGEM OU VÍDEO -->
+            @if (isVideo)
             {
-                <video autoplay muted loop playsinline>
-                    <source src="@slide.MediaUrl" />
+                <video autoplay
+                       muted
+                       loop
+                       playsinline
+                       preload="metadata">
+
+                    <source src="@mediaUrl" />
+
                 </video>
             }
-            else if (!string.IsNullOrWhiteSpace(slide.MediaUrl))
+            else
             {
-                <div class="bf-home-hero__media" style="background-image:url('@slide.MediaUrl')"></div>
+                <div class="bf-home-hero__media"
+                     style="background-image: url('@mediaUrl');">
+                </div>
             }
+
+            <!-- CAMADA ESCURA -->
             <div class="bf-home-hero__overlay"></div>
+
+            <!-- CONTEÚDO DO BANNER -->
             <div class="bf-container bf-home-hero__content">
-                <span>Beta Fit · Coleções especiais</span>
-                <h1>@slide.Title</h1>
-                <p>@slide.Subtitle</p>
-                <a class="bf-btn bf-btn--primary" href="@slide.ButtonUrl">@slide.ButtonText →</a>
+
+                <span>
+                    Beta Fit · Coleções especiais
+                </span>
+
+                @if (i == 0)
+                {
+                    <h1>@slide.Title</h1>
+                }
+                else
+                {
+                    <h2 class="bf-home-hero__title">
+                        @slide.Title
+                    </h2>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(slide.Subtitle))
+                {
+                    <p>@slide.Subtitle</p>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(slide.ButtonText))
+                {
+                    <a class="bf-btn bf-btn--primary"
+                       href="@buttonUrl">
+
+                        @slide.ButtonText →
+
+                    </a>
+                }
+
             </div>
+
         </article>
     }
 
+    <!-- CONTROLES DO CARROSSEL -->
     @if (slides.Count > 1)
     {
-        <button class="bf-home-hero__arrow prev" data-hero-prev>‹</button>
-        <button class="bf-home-hero__arrow next" data-hero-next>›</button>
+        <button type="button"
+                class="bf-home-hero__arrow prev"
+                data-hero-prev
+                aria-label="Slide anterior">
+            ‹
+        </button>
+
+        <button type="button"
+                class="bf-home-hero__arrow next"
+                data-hero-next
+                aria-label="Próximo slide">
+            ›
+        </button>
+
         <div class="bf-home-hero__dots">
+
             @for (var i = 0; i < slides.Count; i++)
             {
-                <button class="@(i == 0 ? "is-active" : "")" data-hero-dot="@i" aria-label="Slide @(i + 1)"></button>
+                <button type="button"
+                        class="@(i == 0 ? "is-active" : "")"
+                        data-hero-dot="@i"
+                        aria-label="Ir para o slide @(i + 1)"
+                        aria-current="@(i == 0 ? "true" : "false")">
+                </button>
             }
+
         </div>
     }
+
 </section>
 
-<section class="bf-event-carousel" data-event-carousel aria-label="Destaques Beta Fit">
+
+<!-- ========================================
+     DESTAQUES DA MARCA
+======================================== -->
+
+<section class="bf-event-carousel"
+         data-event-carousel
+         aria-label="Destaques Beta Fit">
+
     <div class="bf-event-carousel__viewport">
+
         @foreach (var item in highlights)
         {
-            <strong class="bf-event-carousel__slide">@item</strong>
+            <strong class="bf-event-carousel__slide">
+                @item
+            </strong>
         }
+
     </div>
+
 </section>
+
+
+<!-- ========================================
+     PRODUTOS RECENTES
+======================================== -->
 
 <section class="bf-section">
+
     <div class="bf-container">
+
         <div class="bf-section__head">
+
             <div>
-                <span class="bf-eyebrow bf-eyebrow--dark">Novidades</span>
+
+                <span class="bf-eyebrow bf-eyebrow--dark">
+                    Novidades
+                </span>
+
                 <h2>Acabaram de chegar</h2>
+
             </div>
-            <a asp-controller="Catalog" asp-action="Index">Ver todos →</a>
+
+            <a asp-controller="Catalog"
+               asp-action="Index">
+                Ver todos →
+            </a>
+
         </div>
-        @await Html.PartialAsync("_ProductRail", Model.RecentProducts)
+
+        @await Html.PartialAsync(
+            "_ProductRail",
+            Model.RecentProducts
+        )
+
     </div>
+
 </section>
 
+
+<!-- ========================================
+     PRODUTOS POR CATEGORIA
+======================================== -->
 @foreach (var group in Model.ProductsByCategory)
 {
     var firstProduct = group.Value.FirstOrDefault();
+
     var category = firstProduct is not null
-        ? Model.Categories.FirstOrDefault(c => c.Id == firstProduct.CategoryId)
+        ? Model.Categories.FirstOrDefault(
+            c => c.Id == firstProduct.CategoryId
+        )
         : null;
 
     <section class="bf-section bf-section--soft">
+
         <div class="bf-container">
+
             <div class="bf-section__head">
+
                 <div>
-                    <span class="bf-eyebrow bf-eyebrow--dark">Coleção</span>
+
+                    <span class="bf-eyebrow bf-eyebrow--dark">
+                        Coleção
+                    </span>
+
                     <h2>@group.Key</h2>
+
                 </div>
+
                 @if (category is not null)
                 {
-                    <a href="/categoria/@category.Slug">Ver categoria →</a>
+                    <a href="/categoria/@category.Slug">
+                        Ver categoria →
+                    </a>
                 }
+
             </div>
-            @await Html.PartialAsync("_ProductRail", group.Value)
+
+            @await Html.PartialAsync(
+                "_ProductRail",
+                group.Value
+            )
+
         </div>
+
     </section>
 }
 
+
+<!-- ========================================
+     DIFERENCIAIS DA BETAFIT
+======================================== -->
+
 <section class="bf-section bf-home-values">
+
     <div class="bf-container">
+
         <div class="bf-home-values__grid">
+
             <article>
+
                 <strong>01</strong>
+
                 <h3>Compra segura</h3>
-                <p>Checkout demonstrativo com validações próximas a uma experiência real.</p>
+
+                <p>
+                    Checkout demonstrativo com validações
+                    próximas a uma experiência real.
+                </p>
+
             </article>
+
             <article>
+
                 <strong>02</strong>
+
                 <h3>Escolha completa</h3>
-                <p>Compare fotos de cada cor e escolha tamanho apenas na página do produto.</p>
+
+                <p>
+                    Compare fotos de cada cor e escolha
+                    tamanho na página do produto.
+                </p>
+
             </article>
+
             <article>
+
                 <strong>03</strong>
+
                 <h3>Acompanhe tudo</h3>
-                <p>Receba notificações no site e por email a cada etapa importante.</p>
+
+                <p>
+                    Receba notificações no site e por email
+                    a cada etapa importante.
+                </p>
+
             </article>
+
         </div>
+
     </div>
+
 </section>

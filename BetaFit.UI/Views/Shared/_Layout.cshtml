@@ -42,7 +42,6 @@
 
     <div class="bf-announcement">
         <div class="bf-container bf-announcement__inner">
-            <span>@(siteSettings.Announcement.Equals("Frete grátis em compras acima de R$ 299,90", StringComparison.OrdinalIgnoreCase) ? "Calcule o frete no carrinho · opções por CEP" : siteSettings.Announcement)</span>
             <span class="bf-announcement__right">Projeto demonstrativo · Preços sem venda real</span>
         </div>
     </div>
@@ -57,7 +56,6 @@
             <nav id="header-navigation" class="bf-nav" aria-label="Navegação principal">
                 <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "is-active" : "")" asp-controller="Home" asp-action="Index">Início</a>
                 <a class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Catalog" ? "is-active" : "")" asp-controller="Catalog" asp-action="Index">Catálogo</a>
-                @if (isAuthenticated) { <a asp-controller="Orders" asp-action="MyOrders">Minhas compras</a> }
                 @foreach(var link in siteSettings.HeaderLinks.Where(x=>!string.IsNullOrWhiteSpace(x.Label)&&!string.IsNullOrWhiteSpace(x.Url))){<a href="@link.Url">@link.Label</a>}
                 @if (isAdmin || isStaff)
                 {
@@ -67,7 +65,6 @@
 
             <div id="header-actions" class="bf-header__actions">
                 <button type="button" class="bf-icon-link bf-icon-button" data-theme-toggle aria-label="Ativar modo escuro" title="Alternar tema"><svg class="bf-theme-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14A8 8 0 0 1 10 4a8 8 0 1 0 10 10Z"/></svg><svg class="bf-theme-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button>
-                <a class="bf-icon-link" asp-controller="Favorites" asp-action="Index" aria-label="Favoritos: @favoriteCount produtos" title="Favoritos"><b class="bf-favorite-count">@favoriteCount</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 5c-3-3-6-1-8 1-2-2-5-4-8-1-4 4 2 9 8 14 6-5 12-10 8-14Z"/></svg></a>
                 <a class="bf-icon-link" asp-controller="Cart" asp-action="Index" aria-label="Carrinho" title="Carrinho"><b class="bf-cart-count">@cartCount</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l1 14H4L5 7ZM8 7V5a4 4 0 0 1 8 0v2"/></svg></a>
                 @if (isAuthenticated)
                 {

@@ -18,7 +18,7 @@
             {
                 <a class="@(selected == tab.Key ? "is-active" : "")"
                    href="@Url.Action("MyOrders", new { status = tab.Key, search = search })">
-                    @tab.Label (@counts.GetValueOrDefault(tab.Key))
+                    @tab.Label (@counts.GetValueOrDefault(tab.Key)) 
                 </a>
             }
         </nav>
