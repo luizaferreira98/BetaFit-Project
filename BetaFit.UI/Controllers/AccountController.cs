@@ -2,13 +2,12 @@
 // BetaFit.UI - AccountController (Proxy HTTP para a BetaFit.API)
 // =============================================================================
 //  CONCEITO: A autenticação real (senhas, hashes, roles) vive inteiramente
-using Microsoft.AspNetCore.Http;
 // na BetaFit.API via ASP.NET Core Identity. Este Controller apenas repassa
 // as credenciais para a API e, com a resposta dela, cria um cookie de
 // sessão LOCAL do MVC (para proteger as páginas com [Authorize]) guardando
 // também o cookie da API para ser reenviado nas próximas chamadas.
 // =============================================================================
-
+using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using BetaFit.Application.DTOs;
 using BetaFit.UI.Services;

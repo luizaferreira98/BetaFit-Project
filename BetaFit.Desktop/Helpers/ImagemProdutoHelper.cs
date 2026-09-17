@@ -87,14 +87,7 @@ namespace BetaFit.Desktop.Helpers
         /// </summary>
         public static string? ResolverUrlAbsoluta(string imageUrl)
         {
-            if (Uri.TryCreate(imageUrl, UriKind.Absolute, out _))
-                return imageUrl;
-
-            var uiBaseUrl = AppConfig.UiBaseUrl;
-            if (string.IsNullOrWhiteSpace(uiBaseUrl))
-                return null;
-
-            return $"{uiBaseUrl.TrimEnd('/')}/{imageUrl.TrimStart('/')}";
+            return ImageUrlResolver.Resolve(imageUrl);
         }
 
         /// <summary>
