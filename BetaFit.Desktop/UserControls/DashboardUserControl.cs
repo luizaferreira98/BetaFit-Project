@@ -165,7 +165,7 @@ namespace BetaFit.Desktop.UserControls
 
             var colFoto = (DataGridViewImageColumn)gridUltimosPedidos.Columns["colFotoItem"];
             colFoto.ImageLayout = DataGridViewImageCellLayout.Zoom;
-            colFoto.DefaultCellStyle.NullValue = ImagemUrlProdutoHelper.Placeholder;
+            colFoto.DefaultCellStyle.NullValue = ImagemProdutoHelper.Placeholder;
             colFoto.DefaultCellStyle.Padding = new Padding(3);
         }
 
